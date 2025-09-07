@@ -183,7 +183,7 @@
                                     </button>
                                 </div>
                                 <div class="col-md-8">
-                                    <form>
+                                    <form id="profileForm">
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label">用户名</label>
@@ -192,19 +192,19 @@
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label">真实姓名</label>
-                                                <input type="text" class="form-control" 
+                                                <input type="text" class="form-control" id="realName" name="realName"
                                                        th:value="${user != null ? user.realName : '系统管理员'}">
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label">邮箱地址</label>
-                                                <input type="email" class="form-control" 
+                                                <input type="email" class="form-control" id="email" name="email"
                                                        th:value="${user != null ? user.email : 'admin@edu.com'}">
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label">手机号码</label>
-                                                <input type="tel" class="form-control" 
+                                                <input type="tel" class="form-control" id="phone" name="phone"
                                                        th:value="${user != null ? user.phone : '13800000001'}">
                                             </div>
                                         </div>
@@ -221,11 +221,11 @@
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">个人简介</label>
-                                            <textarea class="form-control" rows="3" 
+                                            <textarea class="form-control" rows="3" id="bio" name="bio"
                                                       placeholder="请输入个人简介...">系统超级管理员，负责整个教育平台的运营和维护工作。</textarea>
                                         </div>
                                         <div class="text-end">
-                                            <button type="button" class="btn btn-outline-secondary me-2">重置</button>
+                                            <button type="button" class="btn btn-outline-secondary me-2" onclick="resetProfileForm()">重置</button>
                                             <button type="submit" class="btn btn-danger">
                                                 <i class="fas fa-save me-1"></i>保存修改
                                             </button>
@@ -247,18 +247,21 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <h6><i class="fas fa-key me-2"></i>修改密码</h6>
-                                    <form>
+                                    <form id="passwordForm">
                                         <div class="mb-3">
                                             <label class="form-label">当前密码</label>
-                                            <input type="password" class="form-control" placeholder="请输入当前密码">
+                                            <input type="password" class="form-control" id="currentPassword" name="currentPassword" 
+                                                   placeholder="请输入当前密码" required>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">新密码</label>
-                                            <input type="password" class="form-control" placeholder="请输入新密码">
+                                            <input type="password" class="form-control" id="newPassword" name="newPassword" 
+                                                   placeholder="请输入新密码" required minlength="6">
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">确认新密码</label>
-                                            <input type="password" class="form-control" placeholder="请再次输入新密码">
+                                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" 
+                                                   placeholder="请再次输入新密码" required>
                                         </div>
                                         <button type="submit" class="btn btn-danger">
                                             <i class="fas fa-key me-1"></i>修改密码
@@ -290,6 +293,32 @@
                             </h5>
                         </div>
                         <div class="card-body">
+                            <div class="row mb-3" th:if="${loginStatistics != null}">
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <h5 class="text-primary" th:text="${loginStatistics.totalLogins}">0</h5>
+                                        <small class="text-muted">总登录次数</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <h5 class="text-success" th:text="${loginStatistics.successLogins}">0</h5>
+                                        <small class="text-muted">成功登录</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <h5 class="text-danger" th:text="${loginStatistics.failedLogins}">0</h5>
+                                        <small class="text-muted">失败登录</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <h5 class="text-info" th:text="${#numbers.formatDecimal(loginStatistics.successRate, 1, 1)} + '%'">0%</h5>
+                                        <small class="text-muted">成功率</small>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead class="table-dark">
@@ -302,26 +331,18 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>2025-09-04 11:10:22</td>
-                                            <td>192.168.1.100</td>
-                                            <td>Windows 10 / Chrome 118</td>
-                                            <td>北京市</td>
-                                            <td><span class="badge bg-success">当前会话</span></td>
+                                        <tr th:if="${loginLogs == null or #lists.isEmpty(loginLogs)}">
+                                            <td colspan="5" class="text-center text-muted">暂无登录记录</td>
                                         </tr>
-                                        <tr>
-                                            <td>2025-09-03 09:15:30</td>
-                                            <td>192.168.1.100</td>
-                                            <td>Windows 10 / Chrome 118</td>
-                                            <td>北京市</td>
-                                            <td><span class="badge bg-secondary">已退出</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>2025-09-02 14:22:15</td>
-                                            <td>192.168.1.100</td>
-                                            <td>Windows 10 / Chrome 118</td>
-                                            <td>北京市</td>
-                                            <td><span class="badge bg-secondary">已退出</span></td>
+                                        <tr th:each="log : ${loginLogs}">
+                                            <td th:text="${#temporals.format(log.loginTime, 'yyyy-MM-dd HH:mm:ss')}">2025-09-04 11:10:22</td>
+                                            <td th:text="${log.ipAddress}">192.168.1.100</td>
+                                            <td th:text="${log.operatingSystem + ' / ' + log.browser}">Windows 10 / Chrome 118</td>
+                                            <td th:text="${log.location}">本地网络</td>
+                                            <td>
+                                                <span th:if="${log.status == 'SUCCESS'}" class="badge bg-success">登录成功</span>
+                                                <span th:if="${log.status == 'FAILED'}" class="badge bg-danger">登录失败</span>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -334,5 +355,125 @@
     </div>
 
     <script src="/edu/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 个人信息表单提交
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {
+                realName: formData.get('realName'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                bio: formData.get('bio')
+            };
+            
+            fetch('/edu/admin/api/profile/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('个人信息更新成功！');
+                    location.reload();
+                } else {
+                    alert('更新失败：' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('更新失败，请稍后重试');
+            });
+        });
+        
+        // 密码修改表单提交
+        document.getElementById('passwordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const currentPassword = formData.get('currentPassword');
+            const newPassword = formData.get('newPassword');
+            const confirmPassword = formData.get('confirmPassword');
+            
+            // 前端验证
+            if (newPassword !== confirmPassword) {
+                alert('新密码和确认密码不一致');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                alert('新密码长度不能少于6位');
+                return;
+            }
+            
+            const data = {
+                currentPassword: currentPassword,
+                newPassword: newPassword,
+                confirmPassword: confirmPassword
+            };
+            
+            fetch('/edu/admin/api/profile/change-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('密码修改成功！');
+                    document.getElementById('passwordForm').reset();
+                } else {
+                    alert('修改失败：' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('修改失败，请稍后重试');
+            });
+        });
+        
+        // 重置个人信息表单
+        function resetProfileForm() {
+            document.getElementById('profileForm').reset();
+        }
+        
+        // 页面加载完成后加载登录记录
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLoginLogs();
+        });
+        
+        // 加载登录记录
+        function loadLoginLogs() {
+            fetch('/edu/admin/api/profile/login-logs?limit=10')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.loginLogs) {
+                    updateLoginLogsTable(data.loginLogs);
+                    updateLoginStatistics(data.statistics);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading login logs:', error);
+            });
+        }
+        
+        // 更新登录记录表格
+        function updateLoginLogsTable(logs) {
+            // 这个函数可以用来动态更新登录记录表格
+            // 由于我们已经在服务器端渲染了数据，这里暂时不需要实现
+        }
+        
+        // 更新登录统计信息
+        function updateLoginStatistics(statistics) {
+            // 这个函数可以用来动态更新统计信息
+            // 由于我们已经在服务器端渲染了数据，这里暂时不需要实现
+        }
+    </script>
 </body>
 </html>

@@ -3,9 +3,11 @@ package com.edu.controller;
 import com.edu.entity.User;
 import com.edu.entity.Course;
 import com.edu.entity.Order;
+import com.edu.entity.LoginLog;
 import com.edu.service.UserService;
 import com.edu.service.CourseService;
 import com.edu.service.OrderService;
+import com.edu.service.LoginLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +27,9 @@ public class PageController {
     
     @Autowired
     private OrderService orderService;
+    
+    @Autowired
+    private LoginLogService loginLogService;
     
     /**
      * 首页
@@ -242,7 +247,13 @@ public class PageController {
             return "redirect:/auth/login";
         }
         
+        // 获取最近的登录记录
+        List<LoginLog> loginLogs = loginLogService.getUserLoginLogs(user.getId(), 10);
+        LoginLogService.LoginLogStatistics statistics = loginLogService.getUserLoginStatistics(user.getId());
+        
         model.addAttribute("user", user);
+        model.addAttribute("loginLogs", loginLogs);
+        model.addAttribute("loginStatistics", statistics);
         return "admin/profile";
     }
     

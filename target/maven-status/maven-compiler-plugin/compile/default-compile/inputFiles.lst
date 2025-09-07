@@ -2,12 +2,14 @@ C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\controller\
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\service\OrderService.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\controller\AdminController.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\repository\FileRepository.java
+C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\entity\LoginLog.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\service\CouponService.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\controller\CouponController.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\entity\UserCoupon.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\service\SimpleCaptchaService.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\controller\OrderController.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\config\DataInitializer.java
+C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\repository\LoginLogRepository.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\EduLogicVulApplication.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\controller\CaptchaController.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\controller\CourseController.java
@@ -32,3 +34,4 @@ C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\service\Cou
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\controller\AuthController.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\entity\Order.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\repository\UserCouponRepository.java
+C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\service\LoginLogService.java

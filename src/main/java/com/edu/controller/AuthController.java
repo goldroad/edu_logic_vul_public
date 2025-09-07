@@ -3,9 +3,11 @@ package com.edu.controller;
 import com.edu.entity.User;
 import com.edu.service.SimpleCaptchaService;
 import com.edu.service.UserService;
+import com.edu.service.LoginLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,11 +22,15 @@ public class AuthController {
     @Autowired
     private SimpleCaptchaService simpleCaptchaService;
     
+    @Autowired
+    private LoginLogService loginLogService;
+    
     /**
      * 登录接口
      */
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, String> request, HttpSession session) {
+    public Map<String, Object> login(@RequestBody Map<String, String> request, 
+                                   HttpSession session, HttpServletRequest httpRequest) {
         String username = request.get("username");
         String password = request.get("password");
         String captcha = request.get("captcha");
@@ -35,6 +41,14 @@ public class AuthController {
         if (!simpleCaptchaService.verifyCaptcha(session.getId(), captcha)) {
             response.put("success", false);
             response.put("message", "验证码错误");
+            
+            // 记录登录失败日志
+            User user = userService.findByUsernameOrEmailOrPhone(username);
+            if (user != null) {
+                loginLogService.recordLoginLog(user.getId(), user.getUsername(), 
+                                             httpRequest, "FAILED", session.getId());
+            }
+            
             return response;
         }
         
@@ -44,10 +58,22 @@ public class AuthController {
         if ("登录成功".equals(result)) {
             User user = userService.findByUsernameOrEmailOrPhone(username);
             session.setAttribute("user", user);
+            
+            // 记录登录成功日志
+            loginLogService.recordLoginLog(user.getId(), user.getUsername(), 
+                                         httpRequest, "SUCCESS", session.getId());
+            
             response.put("success", true);
             response.put("message", result);
             response.put("user", user);
         } else {
+            // 记录登录失败日志
+            User user = userService.findByUsernameOrEmailOrPhone(username);
+            if (user != null) {
+                loginLogService.recordLoginLog(user.getId(), user.getUsername(), 
+                                             httpRequest, "FAILED", session.getId());
+            }
+            
             response.put("success", false);
             response.put("message", result);
         }
