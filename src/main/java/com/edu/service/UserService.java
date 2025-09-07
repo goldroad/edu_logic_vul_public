@@ -66,8 +66,8 @@ public class UserService {
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
-        user.setEmail(email);
-        user.setPhone(phone);
+        user.setEmail(email != null && !email.trim().isEmpty() ? email : null);
+        user.setPhone(phone != null && !phone.trim().isEmpty() ? phone : null);
         user.setRole(User.Role.STUDENT);
         user.setEnabled(true);
         userRepository.save(user);
@@ -133,6 +133,37 @@ public class UserService {
         return userRepository.findByUsernameOrEmailOrPhone(username);
     }
     
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+    
+    /**
+     * 创建新用户
+     */
+    public User createUser(String username, String password, String realName, String email, String phone, String role) {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setRealName(realName != null && !realName.trim().isEmpty() ? realName : null);
+        user.setEmail(email != null && !email.trim().isEmpty() ? email : null);
+        user.setPhone(phone != null && !phone.trim().isEmpty() ? phone : null);
+        
+        // 设置角色
+        try {
+            user.setRole(User.Role.valueOf(role));
+        } catch (IllegalArgumentException e) {
+            user.setRole(User.Role.STUDENT); // 默认为学生
+        }
+        
+        user.setEnabled(true);
+        user.setBalance(0.0);
+        user.setCreateTime(LocalDateTime.now());
+        user.setUpdateTime(LocalDateTime.now());
+        
+        userRepository.save(user);
+        return user;
+    }
+    
     /**
      * 获取用户统计信息
      */
@@ -155,7 +186,7 @@ public class UserService {
         
         return allUsers.stream()
                 .filter(user -> {
-                    boolean roleMatch = role == null || role.equals("ALL") || user.getRole().name().equals(role);
+                    boolean roleMatch = role == null || role.trim().isEmpty() || role.equals("ALL") || user.getRole().name().equals(role);
                     boolean statusMatch = enabled == null || user.getEnabled().equals(enabled);
                     return roleMatch && statusMatch;
                 })
@@ -196,14 +227,14 @@ public class UserService {
     public boolean updateUser(Long userId, String realName, String email, String phone, String role) {
         User user = userRepository.findById(userId);
         if (user != null) {
-            if (realName != null && !realName.trim().isEmpty()) {
-                user.setRealName(realName);
+            if (realName != null) {
+                user.setRealName(realName.trim().isEmpty() ? null : realName);
             }
-            if (email != null && !email.trim().isEmpty()) {
-                user.setEmail(email);
+            if (email != null) {
+                user.setEmail(email.trim().isEmpty() ? null : email);
             }
-            if (phone != null && !phone.trim().isEmpty()) {
-                user.setPhone(phone);
+            if (phone != null) {
+                user.setPhone(phone.trim().isEmpty() ? null : phone);
             }
             if (role != null && !role.trim().isEmpty()) {
                 try {
@@ -241,13 +272,17 @@ public class UserService {
         
         return allUsers.stream()
                 .filter(user -> {
-                    boolean roleMatch = role == null || role.equals("ALL") || user.getRole().name().equals(role);
+                    boolean roleMatch = role == null || role.trim().isEmpty() || role.equals("ALL") || user.getRole().name().equals(role);
                     boolean statusMatch = enabled == null || user.getEnabled().equals(enabled);
                     boolean searchMatch = search == null || search.trim().isEmpty() || 
                             (user.getUsername() != null && user.getUsername().toLowerCase().contains(search.toLowerCase())) ||
                             (user.getRealName() != null && user.getRealName().toLowerCase().contains(search.toLowerCase())) ||
                             (user.getEmail() != null && user.getEmail().toLowerCase().contains(search.toLowerCase()));
                     return roleMatch && statusMatch && searchMatch;
+                })
+                .sorted((u1, u2) -> {
+                    // 按ID排序，确保分页结果稳定
+                    return u1.getId().compareTo(u2.getId());
                 })
                 .skip(offset)
                 .limit(limit)
@@ -262,7 +297,7 @@ public class UserService {
         
         return (int) allUsers.stream()
                 .filter(user -> {
-                    boolean roleMatch = role == null || role.equals("ALL") || user.getRole().name().equals(role);
+                    boolean roleMatch = role == null || role.trim().isEmpty() || role.equals("ALL") || user.getRole().name().equals(role);
                     boolean statusMatch = enabled == null || user.getEnabled().equals(enabled);
                     boolean searchMatch = search == null || search.trim().isEmpty() || 
                             (user.getUsername() != null && user.getUsername().toLowerCase().contains(search.toLowerCase())) ||

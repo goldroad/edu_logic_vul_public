@@ -178,7 +178,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2><i class="fas fa-users me-2"></i>用户管理</h2>
                         <div>
-                            <button class="btn btn-danger me-2">
+                            <button class="btn btn-danger me-2" onclick="showAddUserModal()">
                                 <i class="fas fa-plus me-1"></i>新增用户
                             </button>
                             <nav aria-label="breadcrumb">
@@ -273,8 +273,10 @@
                                         <tr th:each="user : ${users}">
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <img th:src="@{https://via.placeholder.com/40x40/{color}/ffffff?text={initial}(color=${user.role.name() == 'ADMIN' ? 'dc3545' : (user.role.name() == 'TEACHER' ? '28a745' : '007bff')}, initial=${#strings.substring(user.realName != null ? user.realName : user.username, 0, 1)})}" 
-                                                         class="user-avatar me-3">
+                                                    <div class="user-avatar me-3 d-flex align-items-center justify-content-center text-white fw-bold"
+                                                         th:style="'background-color: ' + (${user.role.name() == 'ADMIN'} ? '#dc3545' : (${user.role.name() == 'TEACHER'} ? '#28a745' : '#007bff'))"
+                                                         th:text="${#strings.substring(user.realName != null ? user.realName : user.username, 0, 1)}">
+                                                    </div>
                                                     <div>
                                                         <div class="fw-bold" th:text="${user.realName != null ? user.realName : user.username}">用户名</div>
                                                         <small class="text-muted" th:text="'ID: ' + ${user.id}">ID: 1</small>
@@ -323,7 +325,7 @@
                     <nav aria-label="用户分页" th:if="${totalPages > 1}">
                         <ul class="pagination justify-content-center">
                             <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled' : ''">
-                                <a class="page-link" th:href="@{/edu/admin/users(page=${currentPage - 1}, role=${selectedRole}, status=${selectedStatus}, search=${search})}" 
+                                <a class="page-link" th:href="@{/admin/users(page=${currentPage - 1}, role=${selectedRole}, status=${selectedStatus}, search=${search})}" 
                                    th:if="${currentPage > 1}">上一页</a>
                                 <span class="page-link" th:if="${currentPage == 1}">上一页</span>
                             </li>
@@ -332,7 +334,7 @@
                             <th:block th:each="pageNum : ${#numbers.sequence(1, totalPages)}">
                                 <li class="page-item" th:if="${pageNum <= 3 || pageNum >= totalPages - 2 || (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)}"
                                     th:classappend="${pageNum == currentPage} ? 'active' : ''">
-                                    <a class="page-link" th:href="@{/edu/admin/users(page=${pageNum}, role=${selectedRole}, status=${selectedStatus}, search=${search})}" 
+                                    <a class="page-link" th:href="@{/admin/users(page=${pageNum}, role=${selectedRole}, status=${selectedStatus}, search=${search})}" 
                                        th:text="${pageNum}" th:if="${pageNum != currentPage}">1</a>
                                     <span class="page-link" th:if="${pageNum == currentPage}" th:text="${pageNum}">1</span>
                                 </li>
@@ -345,7 +347,7 @@
                             </th:block>
                             
                             <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled' : ''">
-                                <a class="page-link" th:href="@{/edu/admin/users(page=${currentPage + 1}, role=${selectedRole}, status=${selectedStatus}, search=${search})}" 
+                                <a class="page-link" th:href="@{/admin/users(page=${currentPage + 1}, role=${selectedRole}, status=${selectedStatus}, search=${search})}" 
                                    th:if="${currentPage < totalPages}">下一页</a>
                                 <span class="page-link" th:if="${currentPage == totalPages}">下一页</span>
                             </li>
@@ -416,6 +418,57 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                     <button type="button" class="btn btn-primary" onclick="saveUserEdit()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 新增用户模态框 -->
+    <div class="modal fade" id="addUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">新增用户</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addUserForm">
+                        <div class="mb-3">
+                            <label class="form-label">用户名 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="addUsername" required>
+                            <div class="form-text">用户名用于登录，不能重复</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">密码 <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="addPassword" required>
+                            <div class="form-text">密码长度至少6位</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">真实姓名</label>
+                            <input type="text" class="form-control" id="addRealName">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">邮箱</label>
+                            <input type="email" class="form-control" id="addEmail">
+                            <div class="form-text">邮箱不能重复</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">手机号</label>
+                            <input type="text" class="form-control" id="addPhone">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">角色 <span class="text-danger">*</span></label>
+                            <select class="form-select" id="addRole" required>
+                                <option value="STUDENT">学生</option>
+                                <option value="TEACHER">教师</option>
+                                <option value="ADMIN">管理员</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveNewUser()">创建用户</button>
                 </div>
             </div>
         </div>
@@ -603,6 +656,59 @@
                     alert('重置失败');
                 });
             }
+        }
+        
+        // 显示新增用户模态框
+        function showAddUserModal() {
+            // 清空表单
+            document.getElementById('addUserForm').reset();
+            new bootstrap.Modal(document.getElementById('addUserModal')).show();
+        }
+        
+        // 保存新用户
+        function saveNewUser() {
+            const formData = {
+                username: document.getElementById('addUsername').value.trim(),
+                password: document.getElementById('addPassword').value,
+                realName: document.getElementById('addRealName').value.trim(),
+                email: document.getElementById('addEmail').value.trim(),
+                phone: document.getElementById('addPhone').value.trim(),
+                role: document.getElementById('addRole').value
+            };
+            
+            // 基本验证
+            if (!formData.username) {
+                alert('请输入用户名');
+                return;
+            }
+            
+            if (!formData.password || formData.password.length < 6) {
+                alert('密码长度至少6位');
+                return;
+            }
+            
+            // 发送创建请求
+            fetch('/edu/api/admin/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('用户创建成功');
+                    bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide();
+                    location.reload();
+                } else {
+                    alert('创建失败: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('创建失败，请检查网络连接');
+            });
         }
         
         // 辅助函数

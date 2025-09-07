@@ -131,6 +131,73 @@ public class AdminUserController {
     }
     
     /**
+     * 创建新用户
+     */
+    @PostMapping
+    public Map<String, Object> createUser(@RequestBody Map<String, String> request,
+                                        HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null || currentUser.getRole() != User.Role.ADMIN) {
+            response.put("success", false);
+            response.put("message", "权限不足");
+            return response;
+        }
+        
+        String username = request.get("username");
+        String realName = request.get("realName");
+        String email = request.get("email");
+        String phone = request.get("phone");
+        String role = request.get("role");
+        String password = request.get("password");
+        
+        // 验证必填字段
+        if (username == null || username.trim().isEmpty()) {
+            response.put("success", false);
+            response.put("message", "用户名不能为空");
+            return response;
+        }
+        
+        if (password == null || password.trim().isEmpty()) {
+            response.put("success", false);
+            response.put("message", "密码不能为空");
+            return response;
+        }
+        
+        // 检查用户名是否已存在
+        if (userService.findByUsername(username) != null) {
+            response.put("success", false);
+            response.put("message", "用户名已存在");
+            return response;
+        }
+        
+        // 检查邮箱是否已存在
+        if (email != null && !email.trim().isEmpty() && userService.findByEmail(email) != null) {
+            response.put("success", false);
+            response.put("message", "邮箱已存在");
+            return response;
+        }
+        
+        try {
+            User newUser = userService.createUser(username, password, realName, email, phone, role);
+            if (newUser != null) {
+                response.put("success", true);
+                response.put("message", "用户创建成功");
+                response.put("user", newUser);
+            } else {
+                response.put("success", false);
+                response.put("message", "创建失败");
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "创建失败: " + e.getMessage());
+        }
+        
+        return response;
+    }
+    
+    /**
      * 重置用户密码
      */
     @PostMapping("/{id}/reset-password")
