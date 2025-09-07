@@ -48,37 +48,43 @@
             padding: 1.5rem;
         }
         .admin-badge {
-            background: #dc3545;
+            background: rgba(255,255,255,0.2);
             color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            margin-left: 0.5rem;
-        }
-        .btn-danger {
-            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
-            border: none;
-            border-radius: 10px;
-        }
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        .course-card {
-            transition: transform 0.3s;
-        }
-        .course-card:hover {
-            transform: translateY(-5px);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
         }
         .course-image {
             height: 200px;
             object-fit: cover;
-            border-radius: 10px;
+            border-radius: 10px 10px 0 0;
         }
         .status-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
+            font-size: 0.75rem;
+            padding: 0.5rem 0.75rem;
+        }
+        .btn-group-sm .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        .search-box {
+            border-radius: 25px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1.5rem;
+        }
+        .search-box:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+        .pagination .page-link {
+            border-radius: 50px;
+            margin: 0 2px;
+            border: none;
+            color: #dc3545;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #dc3545;
+            border-color: #dc3545;
         }
     </style>
 </head>
@@ -86,32 +92,19 @@
     <!-- 导航栏 -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/edu/admin/dashboard">
-                <i class="fas fa-shield-alt me-2"></i>管理后台
+            <a class="navbar-brand fw-bold" href="/edu/">
+                <i class="fas fa-graduation-cap me-2"></i>在线教育系统
             </a>
-            
             <div class="navbar-nav ms-auto">
                 <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                    <a class="nav-link dropdown-toggle admin-badge" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="fas fa-user-shield me-1"></i>
-                        <span th:text="${user != null ? user.realName : '管理员'}">管理员</span>
-                        <span class="admin-badge">ADMIN</span>
+                        <span th:text="${session.user != null ? session.user.realName : '管理员'}">管理员</span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/edu/admin/profile">
-                            <i class="fas fa-user me-2"></i>管理员资料
-                        </a></li>
-                        <li><a class="dropdown-item" href="/edu/admin/settings">
-                            <i class="fas fa-cog me-2"></i>系统设置
-                        </a></li>
+                        <li><a class="dropdown-item" href="/edu/admin/profile"><i class="fas fa-user me-2"></i>个人资料</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/edu/student/dashboard">
-                            <i class="fas fa-user me-2"></i>切换到学生视图
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/edu/auth/logout">
-                            <i class="fas fa-sign-out-alt me-2"></i>退出登录
-                        </a></li>
+                        <li><a class="dropdown-item" href="/edu/logout"><i class="fas fa-sign-out-alt me-2"></i>退出登录</a></li>
                     </ul>
                 </div>
             </div>
@@ -121,14 +114,14 @@
     <div class="container-fluid">
         <div class="row">
             <!-- 侧边栏 -->
-            <div class="col-md-3 col-lg-2 px-0">
+            <div class="col-md-2 p-0">
                 <div class="sidebar">
                     <nav class="nav flex-column">
                         <a class="nav-link" href="/edu/admin/dashboard">
-                            <i class="fas fa-tachometer-alt me-2"></i>仪表板
+                            <i class="fas fa-tachometer-alt me-2"></i>仪表盘
                         </a>
-                        <a class="nav-link" href="/edu/admin/profile">
-                            <i class="fas fa-user me-2"></i>管理员资料
+                        <a class="nav-link" href="/edu/admin/users">
+                            <i class="fas fa-users me-2"></i>用户管理
                         </a>
                         <a class="nav-link active" href="/edu/admin/courses">
                             <i class="fas fa-book me-2"></i>课程管理
@@ -137,41 +130,26 @@
                             <i class="fas fa-shopping-cart me-2"></i>订单管理
                         </a>
                         <a class="nav-link" href="/edu/admin/coupons">
-                            <i class="fas fa-ticket-alt me-2"></i>优惠券管理
+                            <i class="fas fa-tags me-2"></i>优惠券管理
                         </a>
-                        <a class="nav-link" href="/edu/admin/financial">
-                            <i class="fas fa-chart-line me-2"></i>财务报表
-                            <span class="admin-badge">机密</span>
-                        </a>
-                        <a class="nav-link" href="/edu/admin/system">
-                            <i class="fas fa-server me-2"></i>系统监控
-                            <span class="admin-badge">高危</span>
-                        </a>
-                        <a class="nav-link" href="/edu/admin/logs">
-                            <i class="fas fa-file-alt me-2"></i>系统日志
-                            <span class="admin-badge">敏感</span>
+                        <a class="nav-link" href="/edu/admin/settings">
+                            <i class="fas fa-cog me-2"></i>系统设置
                         </a>
                     </nav>
                 </div>
             </div>
 
             <!-- 主内容区 -->
-            <div class="col-md-9 col-lg-10">
+            <div class="col-md-10">
                 <div class="main-content">
-                    <!-- 页面标题 -->
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2><i class="fas fa-book me-2"></i>课程管理</h2>
-                        <div>
-                            <button class="btn btn-danger me-2">
-                                <i class="fas fa-plus me-1"></i>新增课程
-                            </button>
-                            <nav aria-label="breadcrumb">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="/edu/admin/dashboard">仪表板</a></li>
-                                    <li class="breadcrumb-item active">课程管理</li>
-                                </ol>
-                            </nav>
-                        </div>
+                        <h2 class="fw-bold text-dark">课程管理</h2>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/edu/admin/dashboard" class="text-decoration-none">首页</a></li>
+                                <li class="breadcrumb-item active">课程管理</li>
+                            </ol>
+                        </nav>
                     </div>
 
                     <!-- 统计信息 -->
@@ -206,71 +184,92 @@
                         <div class="col-md-3">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <i class="fas fa-users fa-2x text-info mb-3"></i>
-                                    <h4 th:text="${statistics != null ? statistics.totalStudents : '0'}">0</h4>
-                                    <p class="text-muted">总学员数</p>
+                                    <i class="fas fa-eye-slash fa-2x text-secondary mb-3"></i>
+                                    <h4 th:text="${statistics != null ? statistics.offlineCount : '0'}">0</h4>
+                                    <p class="text-muted">已下架</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 课程列表 -->
+                    <!-- 操作栏 -->
                     <div class="card">
                         <div class="card-header">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-list me-2"></i>课程列表
-                                </h5>
-                                <div class="d-flex">
-                                    <select class="form-select form-select-sm me-2" id="statusFilter" style="width: auto;" onchange="filterCourses()">
-                                        <option value="ALL" th:selected="${currentStatus == null or currentStatus == 'ALL'}">全部状态</option>
-                                        <option value="PUBLISHED" th:selected="${currentStatus == 'PUBLISHED'}">已发布</option>
-                                        <option value="DRAFT" th:selected="${currentStatus == 'DRAFT'}">草稿</option>
-                                    </select>
-                                    <input type="text" class="form-control form-control-sm" id="searchInput" 
-                                           placeholder="搜索课程..." style="width: 200px;" 
-                                           th:value="${currentSearch}" onkeypress="handleSearchKeyPress(event)">
-                                    <button class="btn btn-outline-secondary btn-sm ms-2" onclick="searchCourses()">
-                                        <i class="fas fa-search"></i>
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <h5 class="mb-0"><i class="fas fa-list me-2"></i>课程列表</h5>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <button class="btn btn-light me-2" onclick="showCreateCourseModal()">
+                                        <i class="fas fa-plus me-1"></i>新增课程
+                                    </button>
+                                    <button class="btn btn-outline-light" onclick="location.reload()">
+                                        <i class="fas fa-sync-alt me-1"></i>刷新
                                     </button>
                                 </div>
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="row" th:if="${courses != null and !courses.empty}">
-                                <div class="col-md-6 col-lg-4 mb-4" th:each="course : ${courses}">
-                                    <div class="card course-card h-100">
+                            <!-- 筛选和搜索 -->
+                            <div class="row mb-4">
+                                <div class="col-md-8">
+                                    <div class="d-flex align-items-center">
+                                        <select class="form-select form-select-sm me-2" id="statusFilter" style="width: auto;" onchange="filterCourses()">
+                                            <option value="ALL" th:selected="${currentStatus == null or currentStatus == 'ALL'}">全部状态</option>
+                                            <option value="PUBLISHED" th:selected="${currentStatus == 'PUBLISHED'}">已发布</option>
+                                            <option value="DRAFT" th:selected="${currentStatus == 'DRAFT'}">草稿</option>
+                                            <option value="OFFLINE" th:selected="${currentStatus == 'OFFLINE'}">已下架</option>
+                                        </select>
+                                        <input type="text" class="form-control search-box" id="searchInput" 
+                                               placeholder="搜索课程标题..." th:value="${currentSearch}"
+                                               onkeypress="if(event.key==='Enter') searchCourses()">
+                                        <button class="btn btn-danger ms-2" onclick="searchCourses()">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 课程列表 -->
+                            <div class="row" th:if="${courses != null and !courses.isEmpty()}">
+                                <div class="col-md-4 mb-4" th:each="course : ${courses}">
+                                    <div class="card h-100">
                                         <div class="position-relative">
-                                            <img src="https://via.placeholder.com/300x200/007bff/ffffff?text=Course" 
+                                            <img th:src="${course.coverImage != null ? '/edu/files/' + course.coverImage : 'https://via.placeholder.com/300x200/007bff/ffffff?text=Course'}" 
                                                  class="card-img-top course-image" alt="课程封面">
-                                            <span class="badge bg-success status-badge" 
-                                                  th:text="${course.status == T(com.edu.entity.Course.CourseStatus).PUBLISHED ? '已发布' : '草稿'}">已发布</span>
+                                            <span class="badge position-absolute top-0 end-0 m-2 status-badge" 
+                                                  th:classappend="${course.status.name() == 'PUBLISHED' ? 'bg-success' : (course.status.name() == 'OFFLINE' ? 'bg-secondary' : 'bg-warning')}"
+                                                  th:text="${course.status.name() == 'PUBLISHED' ? '已发布' : (course.status.name() == 'OFFLINE' ? '已下架' : '草稿')}">已发布</span>
                                         </div>
                                         <div class="card-body">
-                                            <h6 class="card-title" th:text="${course.title}">Java基础编程</h6>
-                                            <p class="card-text text-muted small" th:text="${course.description}">
-                                                从零开始学习Java编程语言，掌握面向对象编程思想
-                                            </p>
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <span class="text-danger fw-bold" th:text="'¥' + ${course.price}">¥199.00</span>
-                                                <small class="text-muted" th:text="${course.studentCount} + '人学习'">156人学习</small>
-                                            </div>
+                                            <h6 class="card-title fw-bold" th:text="${course.title}">课程标题</h6>
+                                            <p class="card-text text-muted small" th:text="${course.description}">课程描述</p>
                                             <div class="d-flex justify-content-between align-items-center">
-                                                <small class="text-muted" th:text="${course.teacher != null ? course.teacher.realName : '张老师'}">张老师</small>
+                                                <div>
+                                                    <span class="text-danger fw-bold">¥<span th:text="${course.price}">199</span></span>
+                                                    <small class="text-muted ms-2">
+                                                        <i class="fas fa-user me-1"></i><span th:text="${course.studentCount}">0</span>人
+                                                    </small>
+                                                </div>
                                                 <div class="btn-group btn-group-sm">
                                                     <button class="btn btn-outline-primary" title="编辑" 
                                                             th:onclick="'editCourse(' + ${course.id} + ')'">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
                                                     <button class="btn btn-outline-success" title="发布" 
-                                                            th:if="${course.status == T(com.edu.entity.Course.CourseStatus).DRAFT}"
+                                                            th:if="${course.status.name() == 'DRAFT'}"
                                                             th:onclick="'updateCourseStatus(' + ${course.id} + ', \'PUBLISHED\')'">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
                                                     <button class="btn btn-outline-warning" title="下架" 
-                                                            th:if="${course.status == T(com.edu.entity.Course.CourseStatus).PUBLISHED}"
-                                                            th:onclick="'updateCourseStatus(' + ${course.id} + ', \'DRAFT\')'">
+                                                            th:if="${course.status.name() == 'PUBLISHED'}"
+                                                            th:onclick="'updateCourseStatus(' + ${course.id} + ', \'OFFLINE\')'">
                                                         <i class="fas fa-eye-slash"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-success" title="重新发布" 
+                                                            th:if="${course.status.name() == 'OFFLINE'}"
+                                                            th:onclick="'updateCourseStatus(' + ${course.id} + ', \'PUBLISHED\')'">
+                                                        <i class="fas fa-redo"></i>
                                                     </button>
                                                     <button class="btn btn-outline-danger" title="删除"
                                                             th:onclick="'deleteCourse(' + ${course.id} + ')'">
@@ -282,152 +281,86 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- 默认课程数据（如果没有从后端获取到数据） -->
-                            <div class="row" th:if="${courses == null or courses.empty}">
-                                <div class="col-md-6 col-lg-4 mb-4">
-                                    <div class="card course-card h-100">
-                                        <div class="position-relative">
-                                            <img src="https://via.placeholder.com/300x200/007bff/ffffff?text=Java" 
-                                                 class="card-img-top course-image" alt="课程封面">
-                                            <span class="badge bg-success status-badge">已发布</span>
-                                        </div>
-                                        <div class="card-body">
-                                            <h6 class="card-title">Java基础编程</h6>
-                                            <p class="card-text text-muted small">
-                                                从零开始学习Java编程语言，掌握面向对象编程思想
-                                            </p>
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <span class="text-danger fw-bold">¥199.00</span>
-                                                <small class="text-muted">156人学习</small>
-                                            </div>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <small class="text-muted">张老师</small>
-                                                <div class="btn-group btn-group-sm">
-                                                    <button class="btn btn-outline-primary" title="编辑">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline-warning" title="下架">
-                                                        <i class="fas fa-eye-slash"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline-danger" title="删除">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-6 col-lg-4 mb-4">
-                                    <div class="card course-card h-100">
-                                        <div class="position-relative">
-                                            <img src="https://via.placeholder.com/300x200/28a745/ffffff?text=Spring" 
-                                                 class="card-img-top course-image" alt="课程封面">
-                                            <span class="badge bg-success status-badge">已发布</span>
-                                        </div>
-                                        <div class="card-body">
-                                            <h6 class="card-title">Spring Boot实战</h6>
-                                            <p class="card-text text-muted small">
-                                                深入学习Spring Boot框架，快速构建企业级应用
-                                            </p>
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <span class="text-danger fw-bold">¥299.00</span>
-                                                <small class="text-muted">89人学习</small>
-                                            </div>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <small class="text-muted">张老师</small>
-                                                <div class="btn-group btn-group-sm">
-                                                    <button class="btn btn-outline-primary" title="编辑">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline-warning" title="下架">
-                                                        <i class="fas fa-eye-slash"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline-danger" title="删除">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-6 col-lg-4 mb-4">
-                                    <div class="card course-card h-100">
-                                        <div class="position-relative">
-                                            <img src="https://via.placeholder.com/300x200/ffc107/ffffff?text=Database" 
-                                                 class="card-img-top course-image" alt="课程封面">
-                                            <span class="badge bg-warning status-badge">草稿</span>
-                                        </div>
-                                        <div class="card-body">
-                                            <h6 class="card-title">数据库设计与优化</h6>
-                                            <p class="card-text text-muted small">
-                                                学习数据库设计原理，掌握SQL优化技巧
-                                            </p>
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <span class="text-danger fw-bold">¥259.00</span>
-                                                <small class="text-muted">0人学习</small>
-                                            </div>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <small class="text-muted">张老师</small>
-                                                <div class="btn-group btn-group-sm">
-                                                    <button class="btn btn-outline-primary" title="编辑">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline-success" title="发布">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline-danger" title="删除">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+
+                            <!-- 空状态 -->
+                            <div class="text-center py-5" th:if="${courses == null or courses.isEmpty()}">
+                                <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">暂无课程数据</h5>
+                                <p class="text-muted">点击"新增课程"按钮创建第一个课程</p>
+                            </div>
+
+                            <!-- 分页 -->
+                            <div class="d-flex justify-content-center mt-4" th:if="${totalPages > 1}">
+                                <nav>
+                                    <ul class="pagination">
+                                        <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                                            <a class="page-link" th:href="@{/admin/courses(page=${currentPage - 1}, status=${currentStatus}, search=${currentSearch})}">
+                                                <i class="fas fa-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" 
+                                            th:classappend="${i == currentPage ? 'active' : ''}">
+                                            <a class="page-link" th:href="@{/admin/courses(page=${i}, status=${currentStatus}, search=${currentSearch})}" 
+                                               th:text="${i + 1}">1</a>
+                                        </li>
+                                        <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                                            <a class="page-link" th:href="@{/admin/courses(page=${currentPage + 1}, status=${currentStatus}, search=${currentSearch})}">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
                             </div>
                         </div>
                     </div>
-
-                    <!-- 分页 -->
-                    <nav aria-label="课程分页" th:if="${pageResult != null and pageResult.totalPages > 1}">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item" th:classappend="${!pageResult.hasPrevious} ? 'disabled'">
-                                <a class="page-link" th:href="@{/edu/admin/courses(page=${pageResult.currentPage - 1}, status=${currentStatus}, search=${currentSearch})}" 
-                                   tabindex="-1">上一页</a>
-                            </li>
-                            
-                            <!-- 页码显示逻辑 -->
-                            <th:block th:each="pageNum : ${#numbers.sequence(1, pageResult.totalPages)}">
-                                <li class="page-item" th:if="${pageNum <= 5 or (pageNum >= pageResult.currentPage - 2 and pageNum <= pageResult.currentPage + 2) or pageNum >= pageResult.totalPages - 4}"
-                                    th:classappend="${pageNum == pageResult.currentPage} ? 'active'">
-                                    <a class="page-link" th:href="@{/edu/admin/courses(page=${pageNum}, status=${currentStatus}, search=${currentSearch})}" 
-                                       th:text="${pageNum}">1</a>
-                                </li>
-                                <li class="page-item disabled" th:if="${pageNum == 6 and pageResult.totalPages > 10 and pageResult.currentPage <= 3}">
-                                    <span class="page-link">...</span>
-                                </li>
-                                <li class="page-item disabled" th:if="${pageNum == pageResult.totalPages - 5 and pageResult.totalPages > 10 and pageResult.currentPage >= pageResult.totalPages - 2}">
-                                    <span class="page-link">...</span>
-                                </li>
-                            </th:block>
-                            
-                            <li class="page-item" th:classappend="${!pageResult.hasNext} ? 'disabled'">
-                                <a class="page-link" th:href="@{/edu/admin/courses(page=${pageResult.currentPage + 1}, status=${currentStatus}, search=${currentSearch})}">下一页</a>
-                            </li>
-                        </ul>
-                    </nav>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="/edu/js/bootstrap.bundle.min.js"></script>
-    
+    <!-- 新增课程模态框 -->
+    <div class="modal fade" id="createCourseModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">新增课程</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createCourseForm">
+                        <div class="mb-3">
+                            <label for="createCourseTitle" class="form-label">课程标题 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="createCourseTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="createCourseDescription" class="form-label">课程描述 <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="createCourseDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="createCoursePrice" class="form-label">课程价格 <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="createCoursePrice" step="0.01" min="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="createCourseCover" class="form-label">课程封面</label>
+                            <input type="file" class="form-control" id="createCourseCover" accept="image/*">
+                            <div class="form-text">支持JPG、PNG格式，文件大小不超过5MB</div>
+                            <div id="createCoverPreview" class="mt-2" style="display: none;">
+                                <img id="createCoverImage" src="" alt="封面预览" style="max-width: 200px; max-height: 150px; border-radius: 5px;">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveCreateCourse()">创建课程</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 编辑课程模态框 -->
     <div class="modal fade" id="editCourseModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">编辑课程</h5>
@@ -448,6 +381,14 @@
                             <label for="editCoursePrice" class="form-label">课程价格</label>
                             <input type="number" class="form-control" id="editCoursePrice" step="0.01" min="0" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="editCourseCover" class="form-label">课程封面</label>
+                            <input type="file" class="form-control" id="editCourseCover" accept="image/*">
+                            <div class="form-text">支持JPG、PNG格式，文件大小不超过5MB</div>
+                            <div id="editCoverPreview" class="mt-2">
+                                <img id="editCoverImage" src="" alt="当前封面" style="max-width: 200px; max-height: 150px; border-radius: 5px;">
+                            </div>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -458,24 +399,148 @@
         </div>
     </div>
 
+    <script src="/edu/js/bootstrap.bundle.min.js"></script>
     <script>
+        // 显示新增课程模态框
+        function showCreateCourseModal() {
+            document.getElementById('createCourseForm').reset();
+            document.getElementById('createCoverPreview').style.display = 'none';
+            
+            const modal = new bootstrap.Modal(document.getElementById('createCourseModal'));
+            modal.show();
+        }
+        
+        // 保存新增课程
+        function saveCreateCourse() {
+            const title = document.getElementById('createCourseTitle').value;
+            const description = document.getElementById('createCourseDescription').value;
+            const price = document.getElementById('createCoursePrice').value;
+            const coverFile = document.getElementById('createCourseCover').files[0];
+            
+            if (!title || !description || !price) {
+                alert('请填写所有必填字段');
+                return;
+            }
+            
+            if (parseFloat(price) <= 0) {
+                alert('课程价格必须大于0');
+                return;
+            }
+            
+            if (coverFile) {
+                uploadCoverAndCreateCourse(coverFile, title, description, price);
+            } else {
+                createCourse(title, description, price, null);
+            }
+        }
+        
+        // 上传封面并创建课程
+        function uploadCoverAndCreateCourse(coverFile, title, description, price) {
+            const formData = new FormData();
+            formData.append('file', coverFile);
+            
+            fetch('/edu/admin/api/course-files/upload-cover', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    createCourse(title, description, price, data.filePath);
+                } else {
+                    alert('封面上传失败：' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('封面上传失败');
+            });
+        }
+        
+        // 创建课程
+        function createCourse(title, description, price, coverImage) {
+            const courseData = {
+                title: title,
+                description: description,
+                price: parseFloat(price),
+                coverImage: coverImage
+            };
+            
+            fetch('/edu/admin/api/courses', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(courseData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('课程创建成功');
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('createCourseModal'));
+                    modal.hide();
+                    location.reload();
+                } else {
+                    alert('课程创建失败：' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('课程创建失败');
+            });
+        }
+        
+        // 处理封面文件选择（新增课程）
+        document.getElementById('createCourseCover').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('文件大小不能超过5MB');
+                    e.target.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('createCoverImage').src = e.target.result;
+                    document.getElementById('createCoverPreview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // 处理封面文件选择（编辑课程）
+        document.getElementById('editCourseCover').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('文件大小不能超过5MB');
+                    e.target.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('editCoverImage').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
         // 筛选课程
         function filterCourses() {
             const status = document.getElementById('statusFilter').value;
             const search = document.getElementById('searchInput').value;
-            const url = new URL(window.location);
-            url.searchParams.set('page', '1');
+            
+            let url = '/edu/admin/courses?page=0';
             if (status && status !== 'ALL') {
-                url.searchParams.set('status', status);
-            } else {
-                url.searchParams.delete('status');
+                url += '&status=' + status;
             }
             if (search) {
-                url.searchParams.set('search', search);
-            } else {
-                url.searchParams.delete('search');
+                url += '&search=' + encodeURIComponent(search);
             }
-            window.location.href = url.toString();
+            
+            window.location.href = url;
         }
         
         // 搜索课程
@@ -483,16 +548,8 @@
             filterCourses();
         }
         
-        // 处理搜索框回车事件
-        function handleSearchKeyPress(event) {
-            if (event.key === 'Enter') {
-                searchCourses();
-            }
-        }
-        
         // 编辑课程
         function editCourse(courseId) {
-            // 获取课程详情
             fetch(`/edu/admin/api/courses/${courseId}`)
                 .then(response => response.json())
                 .then(data => {
@@ -502,6 +559,14 @@
                         document.getElementById('editCourseTitle').value = course.title;
                         document.getElementById('editCourseDescription').value = course.description;
                         document.getElementById('editCoursePrice').value = course.price;
+                        
+                        if (course.coverImage) {
+                            document.getElementById('editCoverImage').src = '/edu/files/' + course.coverImage;
+                            document.getElementById('editCoverPreview').style.display = 'block';
+                        } else {
+                            document.getElementById('editCoverImage').src = 'https://via.placeholder.com/200x150/007bff/ffffff?text=No+Image';
+                            document.getElementById('editCoverPreview').style.display = 'block';
+                        }
                         
                         const modal = new bootstrap.Modal(document.getElementById('editCourseModal'));
                         modal.show();
@@ -521,17 +586,54 @@
             const title = document.getElementById('editCourseTitle').value;
             const description = document.getElementById('editCourseDescription').value;
             const price = document.getElementById('editCoursePrice').value;
+            const coverFile = document.getElementById('editCourseCover').files[0];
             
             if (!title || !description || !price) {
                 alert('请填写所有必填字段');
                 return;
             }
             
+            if (coverFile) {
+                uploadCoverAndUpdateCourse(coverFile, courseId, title, description, price);
+            } else {
+                updateCourse(courseId, title, description, price, null);
+            }
+        }
+        
+        // 上传封面并更新课程
+        function uploadCoverAndUpdateCourse(coverFile, courseId, title, description, price) {
+            const formData = new FormData();
+            formData.append('file', coverFile);
+            
+            fetch('/edu/admin/api/course-files/upload-cover', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateCourse(courseId, title, description, price, data.filePath);
+                } else {
+                    alert('封面上传失败：' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('封面上传失败');
+            });
+        }
+        
+        // 更新课程
+        function updateCourse(courseId, title, description, price, coverImage) {
             const updateData = {
                 title: title,
                 description: description,
                 price: parseFloat(price)
             };
+            
+            if (coverImage) {
+                updateData.coverImage = coverImage;
+            }
             
             fetch(`/edu/admin/api/courses/${courseId}`, {
                 method: 'PUT',
@@ -559,13 +661,14 @@
         
         // 更新课程状态
         function updateCourseStatus(courseId, status) {
-            const statusText = status === 'PUBLISHED' ? '发布' : '下架';
-            if (!confirm(`确定要${statusText}这门课程吗？`)) {
+            const statusText = status === 'PUBLISHED' ? '发布' : (status === 'OFFLINE' ? '下架' : '草稿');
+            
+            if (!confirm(`确定要${statusText}这个课程吗？`)) {
                 return;
             }
             
             fetch(`/edu/admin/api/courses/${courseId}/status`, {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -588,7 +691,7 @@
         
         // 删除课程
         function deleteCourse(courseId) {
-            if (!confirm('确定要删除这门课程吗？此操作不可恢复！')) {
+            if (!confirm('确定要删除这个课程吗？此操作不可恢复！')) {
                 return;
             }
             

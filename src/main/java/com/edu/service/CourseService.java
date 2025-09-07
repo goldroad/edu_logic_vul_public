@@ -33,6 +33,27 @@ public class CourseService {
         return course;
     }
     
+    /**
+     * 创建课程（带封面）
+     */
+    public Course createCourse(String title, String description, BigDecimal price, String coverImage, User teacher) {
+        Course course = new Course();
+        course.setTitle(title);
+        course.setDescription(description);
+        course.setPrice(price);
+        course.setOriginalPrice(price);
+        course.setCoverImage(coverImage);
+        course.setTeacherId(teacher.getId());
+        course.setTeacher(teacher);
+        course.setStatus(Course.CourseStatus.DRAFT);
+        course.setStudentCount(0);
+        course.setCreateTime(LocalDateTime.now());
+        course.setUpdateTime(LocalDateTime.now());
+        
+        courseRepository.save(course);
+        return course;
+    }
+    
     public List<Course> getPublishedCourses() {
         return courseRepository.findByStatus("PUBLISHED");
     }
@@ -102,11 +123,12 @@ public class CourseService {
         long totalCourses = courseRepository.countTotalCourses();
         long publishedCount = courseRepository.countByStatus("PUBLISHED");
         long draftCount = courseRepository.countByStatus("DRAFT");
+        long offlineCount = courseRepository.countByStatus("OFFLINE");
         
         // 计算总学员数（这里简化处理，实际应该从订单表统计）
         long totalStudents = publishedCount * 50; // 模拟数据
         
-        return new CourseStatistics(totalCourses, publishedCount, draftCount, totalStudents);
+        return new CourseStatistics(totalCourses, publishedCount, draftCount, offlineCount, totalStudents);
     }
     
     /**
@@ -158,6 +180,31 @@ public class CourseService {
     }
     
     /**
+     * 更新课程信息（带封面）
+     */
+    public boolean updateCourse(Long courseId, String title, String description, BigDecimal price, String coverImage) {
+        Course course = courseRepository.findById(courseId);
+        if (course != null) {
+            if (title != null && !title.trim().isEmpty()) {
+                course.setTitle(title);
+            }
+            if (description != null && !description.trim().isEmpty()) {
+                course.setDescription(description);
+            }
+            if (price != null && price.compareTo(BigDecimal.ZERO) > 0) {
+                course.setPrice(price);
+            }
+            if (coverImage != null && !coverImage.trim().isEmpty()) {
+                course.setCoverImage(coverImage);
+            }
+            course.setUpdateTime(LocalDateTime.now());
+            courseRepository.update(course);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
      * 课程分页结果类
      */
     public static class CoursePageResult {
@@ -191,18 +238,21 @@ public class CourseService {
         private final long totalCourses;
         private final long publishedCount;
         private final long draftCount;
+        private final long offlineCount;
         private final long totalStudents;
         
-        public CourseStatistics(long totalCourses, long publishedCount, long draftCount, long totalStudents) {
+        public CourseStatistics(long totalCourses, long publishedCount, long draftCount, long offlineCount, long totalStudents) {
             this.totalCourses = totalCourses;
             this.publishedCount = publishedCount;
             this.draftCount = draftCount;
+            this.offlineCount = offlineCount;
             this.totalStudents = totalStudents;
         }
         
         public long getTotalCourses() { return totalCourses; }
         public long getPublishedCount() { return publishedCount; }
         public long getDraftCount() { return draftCount; }
+        public long getOfflineCount() { return offlineCount; }
         public long getTotalStudents() { return totalStudents; }
     }
 }

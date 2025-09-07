@@ -44,6 +44,15 @@ public class PageController {
     }
     
     /**
+     * 用户退出登录
+     */
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/auth/login";
+    }
+    
+    /**
      * 显示登录页面
      */
     @GetMapping("/auth/login")
