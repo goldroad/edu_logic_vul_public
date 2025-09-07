@@ -515,6 +515,9 @@ public class PageController {
     @GetMapping("/admin/users")
     public String adminUsers(@RequestParam(required = false) String role,
                            @RequestParam(required = false) String status,
+                           @RequestParam(required = false, defaultValue = "1") int page,
+                           @RequestParam(required = false, defaultValue = "10") int size,
+                           @RequestParam(required = false) String search,
                            HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
@@ -532,13 +535,22 @@ public class PageController {
             enabled = false;
         }
         
-        List<User> users = userService.findUsersByRoleAndStatus(role, enabled);
+        // 分页查询用户
+        int offset = (page - 1) * size;
+        List<User> users = userService.findUsersByRoleAndStatusWithPagination(role, enabled, search, offset, size);
+        int totalUsers = userService.countUsersByRoleAndStatus(role, enabled, search);
+        int totalPages = (int) Math.ceil((double) totalUsers / size);
         
         model.addAttribute("user", user);
         model.addAttribute("statistics", statistics);
         model.addAttribute("users", users);
         model.addAttribute("selectedRole", role);
         model.addAttribute("selectedStatus", status);
+        model.addAttribute("search", search);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalUsers", totalUsers);
+        model.addAttribute("pageSize", size);
         return "admin/users";
     }
 }

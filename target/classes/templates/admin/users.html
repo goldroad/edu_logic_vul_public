@@ -249,7 +249,8 @@
                                         <option value="active" th:selected="${selectedStatus == 'active'}">活跃</option>
                                         <option value="inactive" th:selected="${selectedStatus == 'inactive'}">已封禁</option>
                                     </select>
-                                    <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="搜索用户..." style="width: 200px;" onkeyup="searchUsers()">
+                                    <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="搜索用户..." style="width: 200px;" 
+                                           th:value="${search}" onkeyup="searchUsers()">
                                 </div>
                             </div>
                         </div>
@@ -319,24 +320,43 @@
                     </div>
 
                     <!-- 分页 -->
-                    <nav aria-label="用户分页">
+                    <nav aria-label="用户分页" th:if="${totalPages > 1}">
                         <ul class="pagination justify-content-center">
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1">上一页</a>
+                            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled' : ''">
+                                <a class="page-link" th:href="@{/edu/admin/users(page=${currentPage - 1}, role=${selectedRole}, status=${selectedStatus}, search=${search})}" 
+                                   th:if="${currentPage > 1}">上一页</a>
+                                <span class="page-link" th:if="${currentPage == 1}">上一页</span>
                             </li>
-                            <li class="page-item active">
-                                <a class="page-link" href="#">1</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">2</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">3</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">下一页</a>
+                            
+                            <!-- 页码显示逻辑 -->
+                            <th:block th:each="pageNum : ${#numbers.sequence(1, totalPages)}">
+                                <li class="page-item" th:if="${pageNum <= 3 || pageNum >= totalPages - 2 || (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)}"
+                                    th:classappend="${pageNum == currentPage} ? 'active' : ''">
+                                    <a class="page-link" th:href="@{/edu/admin/users(page=${pageNum}, role=${selectedRole}, status=${selectedStatus}, search=${search})}" 
+                                       th:text="${pageNum}" th:if="${pageNum != currentPage}">1</a>
+                                    <span class="page-link" th:if="${pageNum == currentPage}" th:text="${pageNum}">1</span>
+                                </li>
+                                <li class="page-item disabled" th:if="${pageNum == 4 && currentPage > 5}">
+                                    <span class="page-link">...</span>
+                                </li>
+                                <li class="page-item disabled" th:if="${pageNum == totalPages - 3 && currentPage < totalPages - 4}">
+                                    <span class="page-link">...</span>
+                                </li>
+                            </th:block>
+                            
+                            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled' : ''">
+                                <a class="page-link" th:href="@{/edu/admin/users(page=${currentPage + 1}, role=${selectedRole}, status=${selectedStatus}, search=${search})}" 
+                                   th:if="${currentPage < totalPages}">下一页</a>
+                                <span class="page-link" th:if="${currentPage == totalPages}">下一页</span>
                             </li>
                         </ul>
+                        
+                        <div class="text-center mt-3">
+                            <small class="text-muted">
+                                第 <span th:text="${currentPage}">1</span> 页，共 <span th:text="${totalPages}">1</span> 页，
+                                总计 <span th:text="${totalUsers}">0</span> 个用户
+                            </small>
+                        </div>
                     </nav>
                 </div>
             </div>
@@ -344,5 +364,270 @@
     </div>
 
     <script src="/edu/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 用户详情模态框 -->
+    <div class="modal fade" id="userDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">用户详情</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="userDetailContent">
+                    <!-- 用户详情内容 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 编辑用户模态框 -->
+    <div class="modal fade" id="editUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">编辑用户</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editUserForm">
+                        <input type="hidden" id="editUserId">
+                        <div class="mb-3">
+                            <label class="form-label">真实姓名</label>
+                            <input type="text" class="form-control" id="editRealName">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">邮箱</label>
+                            <input type="email" class="form-control" id="editEmail">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">手机号</label>
+                            <input type="text" class="form-control" id="editPhone">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">角色</label>
+                            <select class="form-select" id="editRole">
+                                <option value="STUDENT">学生</option>
+                                <option value="TEACHER">教师</option>
+                                <option value="ADMIN">管理员</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveUserEdit()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 筛选用户
+        function filterUsers() {
+            const role = document.getElementById('roleFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const search = document.getElementById('searchInput').value;
+            
+            const url = new URL(window.location);
+            url.searchParams.set('page', '1');
+            if (role) url.searchParams.set('role', role);
+            else url.searchParams.delete('role');
+            if (status) url.searchParams.set('status', status);
+            else url.searchParams.delete('status');
+            if (search) url.searchParams.set('search', search);
+            else url.searchParams.delete('search');
+            
+            window.location.href = url.toString();
+        }
+        
+        // 搜索用户
+        function searchUsers() {
+            clearTimeout(window.searchTimeout);
+            window.searchTimeout = setTimeout(filterUsers, 500);
+        }
+        
+        // 查看用户详情
+        function viewUser(userId) {
+            fetch(`/edu/api/admin/users/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const user = data.user;
+                        const content = `
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>用户ID:</strong> ${user.id}</p>
+                                    <p><strong>用户名:</strong> ${user.username}</p>
+                                    <p><strong>真实姓名:</strong> ${user.realName || '未设置'}</p>
+                                    <p><strong>邮箱:</strong> ${user.email || '未设置'}</p>
+                                    <p><strong>手机号:</strong> ${user.phone || '未设置'}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>角色:</strong> ${getRoleText(user.role)}</p>
+                                    <p><strong>状态:</strong> ${user.enabled ? '活跃' : '已封禁'}</p>
+                                    <p><strong>余额:</strong> ¥${user.balance || 0}</p>
+                                    <p><strong>注册时间:</strong> ${formatDateTime(user.createTime)}</p>
+                                    <p><strong>更新时间:</strong> ${formatDateTime(user.updateTime)}</p>
+                                </div>
+                            </div>
+                        `;
+                        document.getElementById('userDetailContent').innerHTML = content;
+                        new bootstrap.Modal(document.getElementById('userDetailModal')).show();
+                    } else {
+                        alert('获取用户信息失败: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('获取用户信息失败');
+                });
+        }
+        
+        // 编辑用户
+        function editUser(userId) {
+            fetch(`/edu/api/admin/users/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const user = data.user;
+                        document.getElementById('editUserId').value = user.id;
+                        document.getElementById('editRealName').value = user.realName || '';
+                        document.getElementById('editEmail').value = user.email || '';
+                        document.getElementById('editPhone').value = user.phone || '';
+                        document.getElementById('editRole').value = user.role;
+                        
+                        new bootstrap.Modal(document.getElementById('editUserModal')).show();
+                    } else {
+                        alert('获取用户信息失败: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('获取用户信息失败');
+                });
+        }
+        
+        // 保存用户编辑
+        function saveUserEdit() {
+            const userId = document.getElementById('editUserId').value;
+            const formData = {
+                realName: document.getElementById('editRealName').value,
+                email: document.getElementById('editEmail').value,
+                phone: document.getElementById('editPhone').value,
+                role: document.getElementById('editRole').value
+            };
+            
+            fetch(`/edu/api/admin/users/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('用户信息更新成功');
+                    bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
+                    location.reload();
+                } else {
+                    alert('更新失败: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('更新失败');
+            });
+        }
+        
+        // 封禁用户
+        function banUser(userId) {
+            if (confirm('确定要封禁这个用户吗？')) {
+                fetch(`/edu/api/admin/users/${userId}/ban`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('用户已封禁');
+                        location.reload();
+                    } else {
+                        alert('封禁失败: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('封禁失败');
+                });
+            }
+        }
+        
+        // 解封用户
+        function unbanUser(userId) {
+            if (confirm('确定要解封这个用户吗？')) {
+                fetch(`/edu/api/admin/users/${userId}/unban`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('用户已解封');
+                        location.reload();
+                    } else {
+                        alert('解封失败: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('解封失败');
+                });
+            }
+        }
+        
+        // 重置密码
+        function resetPassword(userId) {
+            if (confirm('确定要重置这个用户的密码吗？')) {
+                fetch(`/edu/api/admin/users/${userId}/reset-password`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`密码重置成功！新密码为: ${data.newPassword}`);
+                    } else {
+                        alert('重置失败: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('重置失败');
+                });
+            }
+        }
+        
+        // 辅助函数
+        function getRoleText(role) {
+            switch(role) {
+                case 'ADMIN': return '管理员';
+                case 'TEACHER': return '教师';
+                case 'STUDENT': return '学生';
+                default: return role;
+            }
+        }
+        
+        function formatDateTime(dateTime) {
+            if (!dateTime) return '未知';
+            return new Date(dateTime).toLocaleString('zh-CN');
+        }
+        
+        // 页面加载完成后设置搜索框值
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const search = urlParams.get('search');
+            if (search) {
+                document.getElementById('searchInput').value = search;
+            }
+        });
+    </script>
 </body>
 </html>

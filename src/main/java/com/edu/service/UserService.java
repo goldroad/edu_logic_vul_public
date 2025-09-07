@@ -234,6 +234,46 @@ public class UserService {
     }
     
     /**
+     * 分页查询用户
+     */
+    public List<User> findUsersByRoleAndStatusWithPagination(String role, Boolean enabled, String search, int offset, int limit) {
+        List<User> allUsers = userRepository.findAll();
+        
+        return allUsers.stream()
+                .filter(user -> {
+                    boolean roleMatch = role == null || role.equals("ALL") || user.getRole().name().equals(role);
+                    boolean statusMatch = enabled == null || user.getEnabled().equals(enabled);
+                    boolean searchMatch = search == null || search.trim().isEmpty() || 
+                            (user.getUsername() != null && user.getUsername().toLowerCase().contains(search.toLowerCase())) ||
+                            (user.getRealName() != null && user.getRealName().toLowerCase().contains(search.toLowerCase())) ||
+                            (user.getEmail() != null && user.getEmail().toLowerCase().contains(search.toLowerCase()));
+                    return roleMatch && statusMatch && searchMatch;
+                })
+                .skip(offset)
+                .limit(limit)
+                .collect(java.util.stream.Collectors.toList());
+    }
+    
+    /**
+     * 统计符合条件的用户数量
+     */
+    public int countUsersByRoleAndStatus(String role, Boolean enabled, String search) {
+        List<User> allUsers = userRepository.findAll();
+        
+        return (int) allUsers.stream()
+                .filter(user -> {
+                    boolean roleMatch = role == null || role.equals("ALL") || user.getRole().name().equals(role);
+                    boolean statusMatch = enabled == null || user.getEnabled().equals(enabled);
+                    boolean searchMatch = search == null || search.trim().isEmpty() || 
+                            (user.getUsername() != null && user.getUsername().toLowerCase().contains(search.toLowerCase())) ||
+                            (user.getRealName() != null && user.getRealName().toLowerCase().contains(search.toLowerCase())) ||
+                            (user.getEmail() != null && user.getEmail().toLowerCase().contains(search.toLowerCase()));
+                    return roleMatch && statusMatch && searchMatch;
+                })
+                .count();
+    }
+    
+    /**
      * 用户统计信息类
      */
     public static class UserStatistics {
