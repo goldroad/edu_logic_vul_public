@@ -3,12 +3,14 @@ package com.edu.controller;
 import com.edu.entity.User;
 import com.edu.service.UserService;
 import com.edu.service.SimpleCaptchaService;
+import com.edu.service.LoginLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +24,9 @@ public class WebAuthController {
     @Autowired
     private SimpleCaptchaService simpleCaptchaService;
     
+    @Autowired
+    private LoginLogService loginLogService;
+    
     /**
      * 用户登录处理 - 包含用户名枚举漏洞
      */
@@ -30,10 +35,17 @@ public class WebAuthController {
                        @RequestParam String password,
                        @RequestParam String captcha,
                        HttpSession session,
+                       HttpServletRequest request,
                        RedirectAttributes redirectAttributes) {
         
         // 验证码验证（包含多个漏洞）
         if (!simpleCaptchaService.verifyCaptcha(session.getId(), captcha)) {
+            // 记录登录失败日志 - 验证码错误
+            User user = userService.findByUsernameOrEmailOrPhone(username);
+            if (user != null) {
+                loginLogService.recordLoginLog(user.getId(), user.getUsername(), 
+                                             request, "FAILED", session.getId());
+            }
             redirectAttributes.addFlashAttribute("error", "验证码错误");
             return "redirect:/auth/login";
         }
@@ -47,6 +59,9 @@ public class WebAuthController {
         
         // 密码验证
         if (!user.getPassword().equals(password)) {
+            // 记录登录失败日志 - 密码错误
+            loginLogService.recordLoginLog(user.getId(), user.getUsername(), 
+                                         request, "FAILED", session.getId());
             redirectAttributes.addFlashAttribute("error", "密码错误");
             return "redirect:/auth/login";
         }
@@ -55,6 +70,10 @@ public class WebAuthController {
         session.setAttribute("user", user);
         session.setAttribute("userId", user.getId());
         session.setAttribute("userRole", user.getRole().name());
+        
+        // 记录登录成功日志
+        loginLogService.recordLoginLog(user.getId(), user.getUsername(), 
+                                     request, "SUCCESS", session.getId());
         
         // 根据用户角色跳转到不同页面
         switch (user.getRole()) {
