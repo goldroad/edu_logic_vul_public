@@ -53,7 +53,18 @@ public class CourseFileController {
         
         try {
             Map<String, Object> result = fileService.uploadFile(file, admin.getId());
-            return ResponseEntity.ok(result);
+            if ((Boolean) result.get("success")) {
+                // 获取上传的文件信息
+                com.edu.entity.File fileEntity = (com.edu.entity.File) result.get("file");
+                response.put("success", true);
+                response.put("message", "文件上传成功");
+                response.put("filePath", fileEntity.getStoredName()); // 返回存储的文件名
+                response.put("fileUrl", "/edu/files/" + fileEntity.getStoredName()); // 返回访问URL
+            } else {
+                response.put("success", false);
+                response.put("message", result.get("message"));
+            }
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "文件上传失败: " + e.getMessage());
