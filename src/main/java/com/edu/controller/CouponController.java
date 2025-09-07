@@ -1,239 +1,238 @@
 package com.edu.controller;
 
 import com.edu.entity.Coupon;
-import com.edu.entity.User;
-import com.edu.entity.UserCoupon;
 import com.edu.service.CouponService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/coupon")
+@RequestMapping("/admin/api/coupons")
 public class CouponController {
-    
+
     @Autowired
     private CouponService couponService;
-    
+
     /**
-     * 获取可用优惠券列表
+     * 获取优惠券列表API
      */
-    @GetMapping("/available")
-    public Map<String, Object> getAvailableCoupons() {
-        Map<String, Object> response = new HashMap<>();
+    @GetMapping
+    public ResponseEntity<Map<String, Object>> getCoupons(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String keyword) {
         
-        List<Coupon> coupons = couponService.getAvailableCoupons();
-        
-        response.put("success", true);
-        response.put("coupons", coupons);
-        
-        return response;
-    }
-    
-    /**
-     * 领取优惠券
-     */
-    @PostMapping("/{couponId}/receive")
-    public Map<String, Object> receiveCoupon(@PathVariable Long couponId, HttpSession session) {
-        Map<String, Object> response = new HashMap<>();
-        
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
-            response.put("success", false);
-            response.put("message", "请先登录");
-            return response;
-        }
-        
-        // 领取优惠券处理
-        boolean success = couponService.receiveCoupon(couponId, currentUser);
-        
-        if (success) {
-            response.put("success", true);
-            response.put("message", "优惠券领取成功");
-        } else {
-            response.put("success", false);
-            response.put("message", "优惠券领取失败，可能已被领完或您已领取过");
-        }
-        
-        return response;
-    }
-    
-    /**
-     * 安全领取优惠券
-     */
-    @PostMapping("/{couponId}/receive-safe")
-    public Map<String, Object> receiveCouponSafe(@PathVariable Long couponId, HttpSession session) {
-        Map<String, Object> response = new HashMap<>();
-        
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
-            response.put("success", false);
-            response.put("message", "请先登录");
-            return response;
-        }
-        
-        // 使用安全的方法
-        boolean success = couponService.receiveCouponSafe(couponId, currentUser);
-        
-        if (success) {
-            response.put("success", true);
-            response.put("message", "优惠券领取成功");
-        } else {
-            response.put("success", false);
-            response.put("message", "优惠券领取失败，可能已被领完或您已领取过");
-        }
-        
-        return response;
-    }
-    
-    /**
-     * 获取用户的优惠券
-     */
-    @GetMapping("/my")
-    public Map<String, Object> getMyCoupons(HttpSession session) {
-        Map<String, Object> response = new HashMap<>();
-        
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
-            response.put("success", false);
-            response.put("message", "请先登录");
-            return response;
-        }
-        
-        List<UserCoupon> userCoupons = couponService.getUserCoupons(currentUser);
-        
-        response.put("success", true);
-        response.put("coupons", userCoupons);
-        
-        return response;
-    }
-    
-    /**
-     * 创建优惠券 - 未授权访问
-     */
-    @PostMapping("/create")
-    public Map<String, Object> createCoupon(@RequestBody Map<String, Object> request) {
-        Map<String, Object> response = new HashMap<>();
-        
-        // 漏洞：接口未鉴权，任何人都可以创建优惠券
         try {
-            String name = (String) request.get("name");
-            String code = (String) request.get("code");
-            Coupon.CouponType type = Coupon.CouponType.valueOf((String) request.get("type"));
-            BigDecimal discountValue = new BigDecimal(request.get("discountValue").toString());
-            BigDecimal minAmount = request.containsKey("minAmount") ? 
-                new BigDecimal(request.get("minAmount").toString()) : BigDecimal.ZERO;
-            Integer totalCount = ((Number) request.get("totalCount")).intValue();
+            CouponService.CouponPageResult result = couponService.getCouponsWithPagination(page, size, status, keyword);
             
-            LocalDateTime startTime = LocalDateTime.now();
-            LocalDateTime endTime = LocalDateTime.now().plusDays(30);
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("coupons", result.getCoupons());
+            response.put("total", result.getTotal());
+            response.put("currentPage", result.getCurrentPage());
+            response.put("totalPages", result.getTotalPages());
             
-            Coupon coupon = couponService.createCoupon(name, code, type, discountValue, 
-                minAmount, totalCount, startTime, endTime);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "获取优惠券列表失败：" + e.getMessage());
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    /**
+     * 获取优惠券统计信息API
+     */
+    @GetMapping("/statistics")
+    public ResponseEntity<Map<String, Object>> getCouponStatistics() {
+        try {
+            CouponService.CouponStatistics statistics = couponService.getCouponStatistics();
             
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("statistics", statistics);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "获取统计信息失败：" + e.getMessage());
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    /**
+     * 获取优惠券详情API
+     */
+    @GetMapping("/{couponId}")
+    public ResponseEntity<Map<String, Object>> getCouponDetail(@PathVariable Long couponId) {
+        try {
+            Coupon coupon = couponService.getCouponById(couponId);
+            
+            Map<String, Object> response = new HashMap<>();
+            if (coupon != null) {
+                response.put("success", true);
+                response.put("coupon", coupon);
+            } else {
+                response.put("success", false);
+                response.put("message", "优惠券不存在");
+            }
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "获取优惠券详情失败：" + e.getMessage());
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    /**
+     * 创建优惠券API
+     */
+    @PostMapping
+    public ResponseEntity<Map<String, Object>> createCoupon(@RequestBody Map<String, Object> requestData) {
+        try {
+            String name = (String) requestData.get("name");
+            String code = (String) requestData.get("code");
+            String typeStr = (String) requestData.get("type");
+            BigDecimal discountValue = new BigDecimal(requestData.get("discountValue").toString());
+            BigDecimal minAmount = new BigDecimal(requestData.get("minAmount").toString());
+            Integer totalCount = Integer.valueOf(requestData.get("totalCount").toString());
+            String startTimeStr = (String) requestData.get("startTime");
+            String endTimeStr = (String) requestData.get("endTime");
+
+            // 如果没有提供代码，自动生成
+            if (code == null || code.trim().isEmpty()) {
+                code = couponService.generateCouponCode();
+            }
+
+            Coupon.CouponType type = Coupon.CouponType.valueOf(typeStr);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime startTime = LocalDateTime.parse(startTimeStr, formatter);
+            LocalDateTime endTime = LocalDateTime.parse(endTimeStr, formatter);
+
+            Coupon coupon = couponService.createCoupon(name, code, type, discountValue, minAmount, totalCount, startTime, endTime);
+
+            Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "优惠券创建成功");
             response.put("coupon", coupon);
-            
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
             response.put("success", false);
-            response.put("message", "创建失败: " + e.getMessage());
+            response.put("message", "创建优惠券失败：" + e.getMessage());
+            return ResponseEntity.ok(response);
         }
-        
-        return response;
     }
-    
+
     /**
-     * 获取所有优惠券 - 未授权访问
+     * 更新优惠券API
      */
-    @GetMapping("/all")
-    public Map<String, Object> getAllCoupons() {
-        Map<String, Object> response = new HashMap<>();
-        
-        // 漏洞：接口未鉴权，任何人都可以查看所有优惠券
-        List<Coupon> coupons = couponService.findAll();
-        
-        response.put("success", true);
-        response.put("coupons", coupons);
-        
-        return response;
-    }
-    
-    /**
-     * 批量领取优惠券
-     */
-    @PostMapping("/{couponId}/batch-receive")
-    public Map<String, Object> batchReceiveCoupon(@PathVariable Long couponId, 
-                                                 @RequestParam(defaultValue = "10") int count,
-                                                 HttpSession session) {
-        Map<String, Object> response = new HashMap<>();
-        
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
-            response.put("success", false);
-            response.put("message", "请先登录");
-            return response;
-        }
-        
-        // 批量领取处理
-        int successCount = 0;
-        for (int i = 0; i < count; i++) {
-            if (couponService.receiveCoupon(couponId, currentUser)) {
-                successCount++;
-            }
-        }
-        
-        response.put("success", true);
-        response.put("message", String.format("尝试领取 %d 次，成功 %d 次", count, successCount));
-        response.put("successCount", successCount);
-        
-        return response;
-    }
-    
-    /**
-     * 兑换优惠券（通过兑换码）
-     */
-    @PostMapping("/exchange")
-    public Map<String, Object> exchangeCoupon(@RequestBody Map<String, String> request, HttpSession session) {
-        Map<String, Object> response = new HashMap<>();
-        
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
-            response.put("success", false);
-            response.put("message", "请先登录");
-            return response;
-        }
-        
-        String code = request.get("code");
-        if (code == null || code.trim().isEmpty()) {
-            response.put("success", false);
-            response.put("message", "兑换码不能为空");
-            return response;
-        }
-        
+    @PutMapping("/{couponId}")
+    public ResponseEntity<Map<String, Object>> updateCoupon(@PathVariable Long couponId, @RequestBody Map<String, Object> requestData) {
         try {
-            // 通过兑换码兑换优惠券
-            // 存在并发漏洞
-            boolean success = couponService.exchangeCouponByCode(code.trim(), currentUser);
-            
-            if (success) {
-                response.put("success", true);
-                response.put("message", "优惠券兑换成功");
-            } else {
-                response.put("success", false);
-                response.put("message", "兑换失败，兑换码无效或已被使用");
-            }
+            String name = (String) requestData.get("name");
+            String code = (String) requestData.get("code");
+            String typeStr = (String) requestData.get("type");
+            BigDecimal discountValue = new BigDecimal(requestData.get("discountValue").toString());
+            BigDecimal minAmount = new BigDecimal(requestData.get("minAmount").toString());
+            Integer totalCount = Integer.valueOf(requestData.get("totalCount").toString());
+            String startTimeStr = (String) requestData.get("startTime");
+            String endTimeStr = (String) requestData.get("endTime");
+
+            Coupon.CouponType type = Coupon.CouponType.valueOf(typeStr);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime startTime = LocalDateTime.parse(startTimeStr, formatter);
+            LocalDateTime endTime = LocalDateTime.parse(endTimeStr, formatter);
+
+            Coupon coupon = couponService.updateCoupon(couponId, name, code, type, discountValue, minAmount, totalCount, startTime, endTime);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "优惠券更新成功");
+            response.put("coupon", coupon);
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
             response.put("success", false);
-            response.put("message", "兑换失败：" + e.getMessage());
+            response.put("message", "更新优惠券失败：" + e.getMessage());
+            return ResponseEntity.ok(response);
         }
-        
-        return response;
+    }
+
+    /**
+     * 更新优惠券状态API
+     */
+    @PutMapping("/{couponId}/status")
+    public ResponseEntity<Map<String, Object>> updateCouponStatus(@PathVariable Long couponId, @RequestBody Map<String, Object> requestData) {
+        try {
+            Boolean enabled = (Boolean) requestData.get("enabled");
+            couponService.updateCouponStatus(couponId, enabled);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", enabled ? "优惠券已启用" : "优惠券已禁用");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "更新优惠券状态失败：" + e.getMessage());
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    /**
+     * 删除优惠券API
+     */
+    @DeleteMapping("/{couponId}")
+    public ResponseEntity<Map<String, Object>> deleteCoupon(@PathVariable Long couponId) {
+        try {
+            couponService.deleteCoupon(couponId);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "优惠券删除成功");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "删除优惠券失败：" + e.getMessage());
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    /**
+     * 生成优惠券代码API
+     */
+    @GetMapping("/generate-code")
+    public ResponseEntity<Map<String, Object>> generateCouponCode() {
+        try {
+            String code = couponService.generateCouponCode();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("code", code);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "生成优惠券代码失败：" + e.getMessage());
+            return ResponseEntity.ok(response);
+        }
     }
 }

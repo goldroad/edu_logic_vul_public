@@ -1,32 +1,83 @@
 package com.edu.service;
 
 import com.edu.entity.Coupon;
-import com.edu.entity.User;
-import com.edu.entity.UserCoupon;
 import com.edu.repository.CouponRepository;
-import com.edu.repository.UserCouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class CouponService {
-    
+
     @Autowired
     private CouponRepository couponRepository;
-    
-    @Autowired
-    private UserCouponRepository userCouponRepository;
-    
+
+    /**
+     * 分页查询优惠券
+     */
+    public CouponPageResult getCouponsWithPagination(int page, int size, String status, String keyword) {
+        int offset = (page - 1) * size;
+        List<Coupon> coupons;
+        long total;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            coupons = couponRepository.searchCoupons(keyword.trim(), offset, size);
+            // 简化处理，实际应该有专门的搜索计数方法
+            total = couponRepository.countTotal();
+        } else if (status != null && !status.equals("ALL")) {
+            coupons = couponRepository.findByStatusWithPagination(status, offset, size);
+            total = getCountByStatus(status);
+        } else {
+            coupons = couponRepository.findAllWithPagination(offset, size);
+            total = couponRepository.countTotal();
+        }
+
+        // 计算每个优惠券的状态
+        for (Coupon coupon : coupons) {
+            coupon.setStatus(calculateCouponStatus(coupon));
+        }
+
+        return new CouponPageResult(coupons, total, page, size);
+    }
+
+    /**
+     * 获取优惠券统计信息
+     */
+    public CouponStatistics getCouponStatistics() {
+        long total = couponRepository.countTotal();
+        long active = couponRepository.countActive();
+        long usedUp = couponRepository.countUsedUp();
+        long expired = couponRepository.countExpired();
+        long disabled = couponRepository.countDisabled();
+
+        return new CouponStatistics(total, active, usedUp, expired, disabled);
+    }
+
+    /**
+     * 根据ID获取优惠券
+     */
+    public Coupon getCouponById(Long id) {
+        Coupon coupon = couponRepository.findById(id);
+        if (coupon != null) {
+            coupon.setStatus(calculateCouponStatus(coupon));
+        }
+        return coupon;
+    }
+
     /**
      * 创建优惠券
      */
     public Coupon createCoupon(String name, String code, Coupon.CouponType type, 
-                              BigDecimal discountValue, BigDecimal minAmount, 
+                              java.math.BigDecimal discountValue, java.math.BigDecimal minAmount,
                               Integer totalCount, LocalDateTime startTime, LocalDateTime endTime) {
+        // 检查优惠券代码是否已存在
+        if (couponRepository.findByCode(code) != null) {
+            throw new RuntimeException("优惠券代码已存在");
+        }
+
         Coupon coupon = new Coupon();
         coupon.setName(name);
         coupon.setCode(code);
@@ -39,219 +90,170 @@ public class CouponService {
         coupon.setEndTime(endTime);
         coupon.setEnabled(true);
         coupon.setCreateTime(LocalDateTime.now());
-        
-        couponRepository.save(coupon);
+
+        couponRepository.insert(coupon);
+        coupon.setStatus(calculateCouponStatus(coupon));
         return coupon;
     }
-    
+
     /**
-     * 领取优惠券
+     * 更新优惠券
      */
-    public boolean receiveCoupon(Long couponId, User user) {
-        Coupon coupon = couponRepository.findById(couponId);
-        if (coupon == null) {
-            return false;
+    public Coupon updateCoupon(Long id, String name, String code, Coupon.CouponType type,
+                              java.math.BigDecimal discountValue, java.math.BigDecimal minAmount,
+                              Integer totalCount, LocalDateTime startTime, LocalDateTime endTime) {
+        Coupon existingCoupon = couponRepository.findById(id);
+        if (existingCoupon == null) {
+            throw new RuntimeException("优惠券不存在");
+        }
+
+        // 如果修改了代码，检查新代码是否已存在
+        if (!existingCoupon.getCode().equals(code)) {
+            Coupon codeCheck = couponRepository.findByCode(code);
+            if (codeCheck != null && !codeCheck.getId().equals(id)) {
+                throw new RuntimeException("优惠券代码已存在");
+            }
+        }
+
+        existingCoupon.setName(name);
+        existingCoupon.setCode(code);
+        existingCoupon.setType(type);
+        existingCoupon.setDiscountValue(discountValue);
+        existingCoupon.setMinAmount(minAmount);
+        existingCoupon.setTotalCount(totalCount);
+        existingCoupon.setStartTime(startTime);
+        existingCoupon.setEndTime(endTime);
+
+        couponRepository.update(existingCoupon);
+        existingCoupon.setStatus(calculateCouponStatus(existingCoupon));
+        return existingCoupon;
+    }
+
+    /**
+     * 更新优惠券状态（启用/禁用）
+     */
+    public void updateCouponStatus(Long id, Boolean enabled) {
+        couponRepository.updateStatus(id, enabled);
+    }
+
+    /**
+     * 删除优惠券
+     */
+    public void deleteCoupon(Long id) {
+        couponRepository.deleteById(id);
+    }
+
+    /**
+     * 生成随机优惠券代码
+     */
+    public String generateCouponCode() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StringBuilder code = new StringBuilder();
+        Random random = new Random();
+        
+        for (int i = 0; i < 8; i++) {
+            code.append(chars.charAt(random.nextInt(chars.length())));
         }
         
-        // 检查优惠券是否有效
+        // 确保代码唯一
+        if (couponRepository.findByCode(code.toString()) != null) {
+            return generateCouponCode(); // 递归生成新代码
+        }
+        
+        return code.toString();
+    }
+
+    /**
+     * 计算优惠券状态
+     */
+    private String calculateCouponStatus(Coupon coupon) {
+        if (!coupon.getEnabled()) {
+            return "DISABLED";
+        }
+        
         LocalDateTime now = LocalDateTime.now();
-        if (!coupon.getEnabled() || 
-            coupon.getStartTime().isAfter(now) || 
-            coupon.getEndTime().isBefore(now)) {
-            return false;
+        if (now.isAfter(coupon.getEndTime())) {
+            return "EXPIRED";
         }
         
-        // 检查用户是否已经领取过
-        if (userCouponRepository.existsByUserIdAndCouponId(user.getId(), coupon.getId())) {
-            return false;
-        }
-        
-        // 检查优惠券数量
         if (coupon.getUsedCount() >= coupon.getTotalCount()) {
-            return false;
+            return "USED_UP";
         }
         
-        // 处理时间模拟
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        if (now.isBefore(coupon.getStartTime())) {
+            return "NOT_STARTED";
         }
         
-        // 创建用户优惠券记录
-        UserCoupon userCoupon = new UserCoupon();
-        userCoupon.setUserId(user.getId());
-        userCoupon.setCouponId(coupon.getId());
-        userCoupon.setUser(user);
-        userCoupon.setCoupon(coupon);
-        
-        // 从Coupon对象复制必要字段到UserCoupon
-        userCoupon.setCouponName(coupon.getName());
-        userCoupon.setCouponCode(coupon.getCode());
-        userCoupon.setDescription("领取优惠券：" + coupon.getName());
-        
-        // 转换CouponType枚举
-        if (coupon.getType() == Coupon.CouponType.FIXED) {
-            userCoupon.setType(UserCoupon.CouponType.FIXED);
-        } else if (coupon.getType() == Coupon.CouponType.PERCENT) {
-            userCoupon.setType(UserCoupon.CouponType.PERCENT);
-        }
-        
-        userCoupon.setDiscountValue(coupon.getDiscountValue());
-        userCoupon.setMinAmount(coupon.getMinAmount());
-        userCoupon.setExpireTime(coupon.getEndTime());
-        userCoupon.setUsageRestriction("正常领取");
-        userCoupon.setApplicableCategory("All courses");
-        
-        userCoupon.setStatus(UserCoupon.CouponStatus.UNUSED);
-        userCoupon.setReceiveTime(LocalDateTime.now());
-        userCouponRepository.save(userCoupon);
-        
-        // 更新已使用数量
-        coupon.setUsedCount(coupon.getUsedCount() + 1);
-        couponRepository.update(coupon);
-        
-        return true;
+        return "ACTIVE";
     }
-    
+
     /**
-     * 安全的领取优惠券方法（使用synchronized）
+     * 根据状态获取数量
      */
-    public synchronized boolean receiveCouponSafe(Long couponId, User user) {
-        Coupon coupon = couponRepository.findById(couponId);
-        if (coupon == null) {
-            return false;
+    private long getCountByStatus(String status) {
+        switch (status) {
+            case "ACTIVE":
+                return couponRepository.countActive();
+            case "USED_UP":
+                return couponRepository.countUsedUp();
+            case "EXPIRED":
+                return couponRepository.countExpired();
+            case "DISABLED":
+                return couponRepository.countDisabled();
+            default:
+                return couponRepository.countTotal();
         }
-        
-        // 检查优惠券是否有效
-        LocalDateTime now = LocalDateTime.now();
-        if (!coupon.getEnabled() || 
-            coupon.getStartTime().isAfter(now) || 
-            coupon.getEndTime().isBefore(now)) {
-            return false;
-        }
-        
-        // 检查用户是否已经领取过
-        if (userCouponRepository.existsByUserIdAndCouponId(user.getId(), coupon.getId())) {
-            return false;
-        }
-        
-        // 检查数量
-        if (coupon.getUsedCount() >= coupon.getTotalCount()) {
-            return false;
-        }
-        
-        // 创建用户优惠券记录
-        UserCoupon userCoupon = new UserCoupon();
-        userCoupon.setUserId(user.getId());
-        userCoupon.setCouponId(coupon.getId());
-        userCoupon.setUser(user);
-        userCoupon.setCoupon(coupon);
-        userCoupon.setStatus(UserCoupon.CouponStatus.UNUSED);
-        userCoupon.setReceiveTime(LocalDateTime.now());
-        userCouponRepository.save(userCoupon);
-        
-        // 更新已使用数量
-        coupon.setUsedCount(coupon.getUsedCount() + 1);
-        couponRepository.update(coupon);
-        
-        return true;
     }
-    
+
     /**
-     * 获取可用优惠券列表
+     * 优惠券分页结果类
      */
-    public List<Coupon> getAvailableCoupons() {
-        return couponRepository.findAvailableCoupons(LocalDateTime.now());
+    public static class CouponPageResult {
+        private List<Coupon> coupons;
+        private long total;
+        private int currentPage;
+        private int pageSize;
+        private int totalPages;
+
+        public CouponPageResult(List<Coupon> coupons, long total, int currentPage, int pageSize) {
+            this.coupons = coupons;
+            this.total = total;
+            this.currentPage = currentPage;
+            this.pageSize = pageSize;
+            this.totalPages = (int) Math.ceil((double) total / pageSize);
+        }
+
+        // Getters
+        public List<Coupon> getCoupons() { return coupons; }
+        public long getTotal() { return total; }
+        public int getCurrentPage() { return currentPage; }
+        public int getPageSize() { return pageSize; }
+        public int getTotalPages() { return totalPages; }
     }
-    
+
     /**
-     * 获取用户的优惠券
+     * 优惠券统计信息类
      */
-    public List<UserCoupon> getUserCoupons(User user) {
-        return userCouponRepository.findByUserId(user.getId());
-    }
-    
-    /**
-     * 获取用户未使用的优惠券
-     */
-    public List<UserCoupon> getUserUnusedCoupons(User user) {
-        return userCouponRepository.findByUserIdAndStatus(user.getId(), "UNUSED");
-    }
-    
-    public Coupon findById(Long id) {
-        return couponRepository.findById(id);
-    }
-    
-    public List<Coupon> findAll() {
-        return couponRepository.findAll();
-    }
-    
-    public Coupon findByCode(String code) {
-        return couponRepository.findByCode(code);
-    }
-    
-    /**
-     * 通过兑换码兑换优惠券
-     */
-    public boolean exchangeCouponByCode(String code, User user) {
-        // 根据兑换码查找优惠券
-        Coupon coupon = couponRepository.findByCode(code);
-        if (coupon == null) {
-            return false;
+    public static class CouponStatistics {
+        private long total;
+        private long active;
+        private long usedUp;
+        private long expired;
+        private long disabled;
+
+        public CouponStatistics(long total, long active, long usedUp, long expired, long disabled) {
+            this.total = total;
+            this.active = active;
+            this.usedUp = usedUp;
+            this.expired = expired;
+            this.disabled = disabled;
         }
-        
-        // 检查优惠券是否有效
-        LocalDateTime now = LocalDateTime.now();
-        if (!coupon.getEnabled() || 
-            coupon.getStartTime().isAfter(now) || 
-            coupon.getEndTime().isBefore(now)) {
-            return false;
-        }
-        
-        // 检查用户是否已经领取过
-        if (userCouponRepository.existsByUserIdAndCouponId(user.getId(), coupon.getId())) {
-            return false;
-        }
-        
-        // 检查数量
-        if (coupon.getUsedCount() >= coupon.getTotalCount()) {
-            return false;
-        }
-        
-        // 创建用户优惠券记录
-        UserCoupon userCoupon = new UserCoupon();
-        userCoupon.setUserId(user.getId());
-        userCoupon.setCouponId(coupon.getId());
-        userCoupon.setUser(user);
-        userCoupon.setCoupon(coupon);
-        
-        // 从Coupon对象复制必要字段到UserCoupon
-        userCoupon.setCouponName(coupon.getName());
-        userCoupon.setCouponCode(coupon.getCode());
-        userCoupon.setDescription("通过兑换码获得：" + coupon.getName());
-        
-        // 转换CouponType枚举
-        if (coupon.getType() == Coupon.CouponType.FIXED) {
-            userCoupon.setType(UserCoupon.CouponType.FIXED);
-        } else if (coupon.getType() == Coupon.CouponType.PERCENT) {
-            userCoupon.setType(UserCoupon.CouponType.PERCENT);
-        }
-        
-        userCoupon.setDiscountValue(coupon.getDiscountValue());
-        userCoupon.setMinAmount(coupon.getMinAmount());
-        userCoupon.setExpireTime(coupon.getEndTime());
-        userCoupon.setUsageRestriction("通过兑换码获得");
-        userCoupon.setApplicableCategory("All courses");
-        
-        userCoupon.setStatus(UserCoupon.CouponStatus.UNUSED);
-        userCoupon.setReceiveTime(LocalDateTime.now());
-        userCouponRepository.save(userCoupon);
-        
-        // 更新已使用数量
-        coupon.setUsedCount(coupon.getUsedCount() + 1);
-        couponRepository.update(coupon);
-        
-        return true;
+
+        // Getters
+        public long getTotal() { return total; }
+        public long getActive() { return active; }
+        public long getUsedUp() { return usedUp; }
+        public long getExpired() { return expired; }
+        public long getDisabled() { return disabled; }
     }
 }

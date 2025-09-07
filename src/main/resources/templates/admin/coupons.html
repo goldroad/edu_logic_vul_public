@@ -179,7 +179,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2><i class="fas fa-ticket-alt me-2"></i>优惠券管理</h2>
                         <div>
-                            <button class="btn btn-danger me-2">
+                            <button class="btn btn-danger me-2" onclick="showCreateCouponModal()">
                                 <i class="fas fa-plus me-1"></i>创建优惠券
                             </button>
                             <nav aria-label="breadcrumb">
@@ -197,7 +197,7 @@
                             <div class="card text-center">
                                 <div class="card-body">
                                     <i class="fas fa-ticket-alt fa-2x text-primary mb-3"></i>
-                                    <h4>15</h4>
+                                    <h4 th:text="${statistics.total}">0</h4>
                                     <p class="text-muted">总优惠券数</p>
                                 </div>
                             </div>
@@ -206,7 +206,7 @@
                             <div class="card text-center">
                                 <div class="card-body">
                                     <i class="fas fa-check-circle fa-2x text-success mb-3"></i>
-                                    <h4>8</h4>
+                                    <h4 th:text="${statistics.active}">0</h4>
                                     <p class="text-muted">有效</p>
                                 </div>
                             </div>
@@ -215,8 +215,8 @@
                             <div class="card text-center">
                                 <div class="card-body">
                                     <i class="fas fa-clock fa-2x text-warning mb-3"></i>
-                                    <h4>234</h4>
-                                    <p class="text-muted">已使用</p>
+                                    <h4 th:text="${statistics.usedUp}">0</h4>
+                                    <p class="text-muted">已使用完</p>
                                 </div>
                             </div>
                         </div>
@@ -224,7 +224,7 @@
                             <div class="card text-center">
                                 <div class="card-body">
                                     <i class="fas fa-times-circle fa-2x text-danger mb-3"></i>
-                                    <h4>5</h4>
+                                    <h4 th:text="${statistics.expired}">0</h4>
                                     <p class="text-muted">已过期</p>
                                 </div>
                             </div>
@@ -239,270 +239,72 @@
                                     <i class="fas fa-list me-2"></i>优惠券列表
                                 </h5>
                                 <div class="d-flex">
-                                    <select class="form-select form-select-sm me-2" style="width: auto;">
-                                        <option>全部状态</option>
-                                        <option>有效</option>
-                                        <option>已使用</option>
-                                        <option>已过期</option>
+                                    <select class="form-select form-select-sm me-2" style="width: auto;" id="statusFilter" onchange="filterCoupons()">
+                                        <option value="ALL" th:selected="${status == null or status == 'ALL'}">全部状态</option>
+                                        <option value="ACTIVE" th:selected="${status == 'ACTIVE'}">有效</option>
+                                        <option value="USED_UP" th:selected="${status == 'USED_UP'}">已使用完</option>
+                                        <option value="EXPIRED" th:selected="${status == 'EXPIRED'}">已过期</option>
+                                        <option value="DISABLED" th:selected="${status == 'DISABLED'}">已禁用</option>
                                     </select>
-                                    <select class="form-select form-select-sm me-2" style="width: auto;">
-                                        <option>全部类型</option>
-                                        <option>固定金额</option>
-                                        <option>百分比折扣</option>
+                                    <select class="form-select form-select-sm me-2" style="width: auto;" id="typeFilter" onchange="filterCoupons()">
+                                        <option value="ALL">全部类型</option>
+                                        <option value="FIXED">固定金额</option>
+                                        <option value="PERCENT">百分比折扣</option>
                                     </select>
-                                    <input type="text" class="form-control form-control-sm" placeholder="搜索优惠券..." style="width: 200px;">
+                                    <input type="text" class="form-control form-control-sm" placeholder="搜索优惠券..." style="width: 200px;" 
+                                           id="searchInput" th:value="${keyword}" onkeypress="handleSearchKeyPress(event)">
                                 </div>
                             </div>
                         </div>
                         <div class="card-body">
                             <div class="row">
                                 <!-- 优惠券卡片 -->
-                                <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="col-md-6 col-lg-4 mb-4" th:each="coupon : ${coupons}">
                                     <div class="card coupon-card h-100">
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-start mb-3">
-                                                <div class="coupon-code">NEW50</div>
-                                                <span class="badge status-active">有效</span>
+                                                <div class="coupon-code" th:text="${coupon.code}">CODE</div>
+                                                <span class="badge" 
+                                                      th:classappend="${coupon.status == 'ACTIVE' ? 'status-active' : (coupon.status == 'EXPIRED' ? 'status-expired' : (coupon.status == 'USED_UP' ? 'status-used' : 'bg-secondary'))}"
+                                                      th:text="${coupon.status == 'ACTIVE' ? '有效' : (coupon.status == 'EXPIRED' ? '已过期' : (coupon.status == 'USED_UP' ? '已使用完' : '已禁用'))}">状态</span>
                                             </div>
-                                            <h6 class="card-title">新用户专享</h6>
-                                            <p class="card-text text-muted small">
-                                                新用户注册专享优惠券，首次购买课程可享受50元优惠
+                                            <h6 class="card-title" th:text="${coupon.name}">优惠券名称</h6>
+                                            <p class="card-text text-muted small" th:text="${coupon.name}">
+                                                优惠券描述
                                             </p>
                                             <div class="row text-center mb-3">
                                                 <div class="col-6">
-                                                    <div class="discount-amount">¥50</div>
-                                                    <small class="text-muted">优惠金额</small>
+                                                    <div class="discount-amount" 
+                                                         th:text="${coupon.type.name() == 'FIXED' ? '¥' + coupon.discountValue : coupon.discountValue + '%'}">优惠</div>
+                                                    <small class="text-muted" th:text="${coupon.type.name() == 'FIXED' ? '优惠金额' : '折扣比例'}">类型</small>
                                                 </div>
                                                 <div class="col-6">
-                                                    <div class="fw-bold">156</div>
+                                                    <div class="fw-bold" th:text="${coupon.usedCount + '/' + coupon.totalCount}">0/0</div>
                                                     <small class="text-muted">已使用</small>
                                                 </div>
                                             </div>
                                             <div class="mb-3">
                                                 <small class="text-muted">
                                                     <i class="fas fa-calendar me-1"></i>
-                                                    有效期：2024-01-01 至 2024-12-31
+                                                    有效期：<span th:text="${#temporals.format(coupon.startTime, 'yyyy-MM-dd')}">开始</span> 至 <span th:text="${#temporals.format(coupon.endTime, 'yyyy-MM-dd')}">结束</span>
                                                 </small>
                                             </div>
                                             <div class="d-flex justify-content-between">
-                                                <button class="btn btn-outline-primary btn-sm">
+                                                <button class="btn btn-outline-primary btn-sm" th:onclick="'editCoupon(' + ${coupon.id} + ')'">
                                                     <i class="fas fa-edit me-1"></i>编辑
                                                 </button>
-                                                <button class="btn btn-outline-success btn-sm">
+                                                <button class="btn btn-outline-success btn-sm" th:onclick="'viewCouponStats(' + ${coupon.id} + ')'">
                                                     <i class="fas fa-chart-bar me-1"></i>统计
                                                 </button>
-                                                <button class="btn btn-outline-danger btn-sm">
+                                                <button class="btn btn-outline-danger btn-sm" 
+                                                        th:if="${coupon.enabled}"
+                                                        th:onclick="'toggleCouponStatus(' + ${coupon.id} + ', false)'">
                                                     <i class="fas fa-ban me-1"></i>禁用
                                                 </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6 col-lg-4 mb-4">
-                                    <div class="card coupon-card h-100">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                                <div class="coupon-code">STUDENT20</div>
-                                                <span class="badge status-active">有效</span>
-                                            </div>
-                                            <h6 class="card-title">学生专享折扣</h6>
-                                            <p class="card-text text-muted small">
-                                                学生用户专享8折优惠，适用于所有课程
-                                            </p>
-                                            <div class="row text-center mb-3">
-                                                <div class="col-6">
-                                                    <div class="discount-amount">20%</div>
-                                                    <small class="text-muted">折扣比例</small>
-                                                </div>
-                                                <div class="col-6">
-                                                    <div class="fw-bold">89</div>
-                                                    <small class="text-muted">已使用</small>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <small class="text-muted">
-                                                    <i class="fas fa-calendar me-1"></i>
-                                                    有效期：2024-03-01 至 2024-12-31
-                                                </small>
-                                            </div>
-                                            <div class="d-flex justify-content-between">
-                                                <button class="btn btn-outline-primary btn-sm">
-                                                    <i class="fas fa-edit me-1"></i>编辑
-                                                </button>
-                                                <button class="btn btn-outline-success btn-sm">
-                                                    <i class="fas fa-chart-bar me-1"></i>统计
-                                                </button>
-                                                <button class="btn btn-outline-danger btn-sm">
-                                                    <i class="fas fa-ban me-1"></i>禁用
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6 col-lg-4 mb-4">
-                                    <div class="card coupon-card h-100">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                                <div class="coupon-code">SUMMER100</div>
-                                                <span class="badge status-used">已使用完</span>
-                                            </div>
-                                            <h6 class="card-title">暑期特惠</h6>
-                                            <p class="card-text text-muted small">
-                                                暑期活动专享优惠券，满500减100
-                                            </p>
-                                            <div class="row text-center mb-3">
-                                                <div class="col-6">
-                                                    <div class="discount-amount">¥100</div>
-                                                    <small class="text-muted">优惠金额</small>
-                                                </div>
-                                                <div class="col-6">
-                                                    <div class="fw-bold">500/500</div>
-                                                    <small class="text-muted">已使用完</small>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <small class="text-muted">
-                                                    <i class="fas fa-calendar me-1"></i>
-                                                    有效期：2024-06-01 至 2024-08-31
-                                                </small>
-                                            </div>
-                                            <div class="d-flex justify-content-between">
-                                                <button class="btn btn-outline-primary btn-sm">
-                                                    <i class="fas fa-eye me-1"></i>查看
-                                                </button>
-                                                <button class="btn btn-outline-success btn-sm">
-                                                    <i class="fas fa-chart-bar me-1"></i>统计
-                                                </button>
-                                                <button class="btn btn-outline-secondary btn-sm" disabled>
-                                                    <i class="fas fa-check me-1"></i>已完成
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6 col-lg-4 mb-4">
-                                    <div class="card coupon-card h-100">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                                <div class="coupon-code">SPRING30</div>
-                                                <span class="badge status-expired">已过期</span>
-                                            </div>
-                                            <h6 class="card-title">春季促销</h6>
-                                            <p class="card-text text-muted small">
-                                                春季促销活动优惠券，全场课程30元优惠
-                                            </p>
-                                            <div class="row text-center mb-3">
-                                                <div class="col-6">
-                                                    <div class="discount-amount">¥30</div>
-                                                    <small class="text-muted">优惠金额</small>
-                                                </div>
-                                                <div class="col-6">
-                                                    <div class="fw-bold">23</div>
-                                                    <small class="text-muted">已使用</small>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <small class="text-muted">
-                                                    <i class="fas fa-calendar me-1"></i>
-                                                    有效期：2024-03-01 至 2024-05-31
-                                                </small>
-                                            </div>
-                                            <div class="d-flex justify-content-between">
-                                                <button class="btn btn-outline-primary btn-sm">
-                                                    <i class="fas fa-eye me-1"></i>查看
-                                                </button>
-                                                <button class="btn btn-outline-success btn-sm">
-                                                    <i class="fas fa-chart-bar me-1"></i>统计
-                                                </button>
-                                                <button class="btn btn-outline-danger btn-sm">
-                                                    <i class="fas fa-trash me-1"></i>删除
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6 col-lg-4 mb-4">
-                                    <div class="card coupon-card h-100">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                                <div class="coupon-code">VIP15</div>
-                                                <span class="badge status-active">有效</span>
-                                            </div>
-                                            <h6 class="card-title">VIP会员专享</h6>
-                                            <p class="card-text text-muted small">
-                                                VIP会员专享15%折扣，可叠加使用
-                                            </p>
-                                            <div class="row text-center mb-3">
-                                                <div class="col-6">
-                                                    <div class="discount-amount">15%</div>
-                                                    <small class="text-muted">折扣比例</small>
-                                                </div>
-                                                <div class="col-6">
-                                                    <div class="fw-bold">67</div>
-                                                    <small class="text-muted">已使用</small>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <small class="text-muted">
-                                                    <i class="fas fa-calendar me-1"></i>
-                                                    有效期：2024-01-01 至 2024-12-31
-                                                </small>
-                                            </div>
-                                            <div class="d-flex justify-content-between">
-                                                <button class="btn btn-outline-primary btn-sm">
-                                                    <i class="fas fa-edit me-1"></i>编辑
-                                                </button>
-                                                <button class="btn btn-outline-success btn-sm">
-                                                    <i class="fas fa-chart-bar me-1"></i>统计
-                                                </button>
-                                                <button class="btn btn-outline-danger btn-sm">
-                                                    <i class="fas fa-ban me-1"></i>禁用
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6 col-lg-4 mb-4">
-                                    <div class="card coupon-card h-100">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                                <div class="coupon-code">WELCOME</div>
-                                                <span class="badge status-active">有效</span>
-                                            </div>
-                                            <h6 class="card-title">欢迎优惠券</h6>
-                                            <p class="card-text text-muted small">
-                                                新用户注册即可获得的欢迎优惠券
-                                            </p>
-                                            <div class="row text-center mb-3">
-                                                <div class="col-6">
-                                                    <div class="discount-amount">¥20</div>
-                                                    <small class="text-muted">优惠金额</small>
-                                                </div>
-                                                <div class="col-6">
-                                                    <div class="fw-bold">345</div>
-                                                    <small class="text-muted">已使用</small>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <small class="text-muted">
-                                                    <i class="fas fa-calendar me-1"></i>
-                                                    有效期：2024-01-01 至 2024-12-31
-                                                </small>
-                                            </div>
-                                            <div class="d-flex justify-content-between">
-                                                <button class="btn btn-outline-primary btn-sm">
-                                                    <i class="fas fa-edit me-1"></i>编辑
-                                                </button>
-                                                <button class="btn btn-outline-success btn-sm">
-                                                    <i class="fas fa-chart-bar me-1"></i>统计
-                                                </button>
-                                                <button class="btn btn-outline-danger btn-sm">
-                                                    <i class="fas fa-ban me-1"></i>禁用
+                                                <button class="btn btn-outline-success btn-sm" 
+                                                        th:if="${!coupon.enabled}"
+                                                        th:onclick="'toggleCouponStatus(' + ${coupon.id} + ', true)'">
+                                                    <i class="fas fa-check me-1"></i>启用
                                                 </button>
                                             </div>
                                         </div>
@@ -513,22 +315,25 @@
                     </div>
 
                     <!-- 分页 -->
-                    <nav aria-label="优惠券分页">
+                    <nav aria-label="优惠券分页" th:if="${totalPages > 1}">
                         <ul class="pagination justify-content-center">
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1">上一页</a>
+                            <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/coupons(page=${currentPage - 1}, status=${status}, keyword=${keyword})}" 
+                                   th:if="${currentPage > 1}">上一页</a>
+                                <span class="page-link" th:if="${currentPage == 1}">上一页</span>
                             </li>
-                            <li class="page-item active">
-                                <a class="page-link" href="#">1</a>
+                            
+                            <li class="page-item" th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
+                                th:classappend="${pageNum == currentPage ? 'active' : ''}">
+                                <a class="page-link" th:href="@{/admin/coupons(page=${pageNum}, status=${status}, keyword=${keyword})}"
+                                   th:text="${pageNum}" th:if="${pageNum != currentPage}">1</a>
+                                <span class="page-link" th:text="${pageNum}" th:if="${pageNum == currentPage}">1</span>
                             </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">2</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">3</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">下一页</a>
+                            
+                            <li class="page-item" th:classappend="${currentPage == totalPages ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/coupons(page=${currentPage + 1}, status=${status}, keyword=${keyword})}"
+                                   th:if="${currentPage < totalPages}">下一页</a>
+                                <span class="page-link" th:if="${currentPage == totalPages}">下一页</span>
                             </li>
                         </ul>
                     </nav>
@@ -537,6 +342,395 @@
         </div>
     </div>
 
+    <!-- 创建优惠券模态框 -->
+    <div class="modal fade" id="createCouponModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">创建优惠券</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createCouponForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">优惠券名称 *</label>
+                                    <input type="text" class="form-control" id="couponName" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">优惠券代码</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="couponCode" placeholder="留空自动生成">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="generateCouponCode()">
+                                            <i class="fas fa-random"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">优惠类型 *</label>
+                                    <select class="form-select" id="couponType" required onchange="updateDiscountLabel()">
+                                        <option value="">请选择</option>
+                                        <option value="FIXED">固定金额</option>
+                                        <option value="PERCENT">百分比折扣</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label" id="discountLabel">优惠值 *</label>
+                                    <input type="number" class="form-control" id="discountValue" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">最低使用金额</label>
+                                    <input type="number" class="form-control" id="minAmount" step="0.01" min="0" value="0">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">发放数量 *</label>
+                                    <input type="number" class="form-control" id="totalCount" min="1" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">开始时间 *</label>
+                                    <input type="datetime-local" class="form-control" id="startTime" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">结束时间 *</label>
+                                    <input type="datetime-local" class="form-control" id="endTime" required>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" onclick="createCoupon()">创建优惠券</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑优惠券模态框 -->
+    <div class="modal fade" id="editCouponModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">编辑优惠券</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editCouponForm">
+                        <input type="hidden" id="editCouponId">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">优惠券名称 *</label>
+                                    <input type="text" class="form-control" id="editCouponName" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">优惠券代码 *</label>
+                                    <input type="text" class="form-control" id="editCouponCode" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">优惠类型 *</label>
+                                    <select class="form-select" id="editCouponType" required onchange="updateEditDiscountLabel()">
+                                        <option value="FIXED">固定金额</option>
+                                        <option value="PERCENT">百分比折扣</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label" id="editDiscountLabel">优惠值 *</label>
+                                    <input type="number" class="form-control" id="editDiscountValue" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">最低使用金额</label>
+                                    <input type="number" class="form-control" id="editMinAmount" step="0.01" min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">发放数量 *</label>
+                                    <input type="number" class="form-control" id="editTotalCount" min="1" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">开始时间 *</label>
+                                    <input type="datetime-local" class="form-control" id="editStartTime" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">结束时间 *</label>
+                                    <input type="datetime-local" class="form-control" id="editEndTime" required>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" onclick="updateCoupon()">保存修改</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="/edu/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 筛选优惠券
+        function filterCoupons() {
+            const status = document.getElementById('statusFilter').value;
+            const keyword = document.getElementById('searchInput').value;
+            
+            let url = '/edu/admin/coupons?';
+            if (status && status !== 'ALL') {
+                url += 'status=' + status + '&';
+            }
+            if (keyword) {
+                url += 'keyword=' + encodeURIComponent(keyword) + '&';
+            }
+            
+            window.location.href = url;
+        }
+
+        // 搜索框回车事件
+        function handleSearchKeyPress(event) {
+            if (event.key === 'Enter') {
+                filterCoupons();
+            }
+        }
+
+        // 显示创建优惠券模态框
+        function showCreateCouponModal() {
+            // 设置默认时间
+            const now = new Date();
+            const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+            const nextMonth = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+            
+            document.getElementById('startTime').value = formatDateTime(tomorrow);
+            document.getElementById('endTime').value = formatDateTime(nextMonth);
+            
+            new bootstrap.Modal(document.getElementById('createCouponModal')).show();
+        }
+
+        // 格式化日期时间
+        function formatDateTime(date) {
+            return date.getFullYear() + '-' + 
+                   String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                   String(date.getDate()).padStart(2, '0') + 'T' + 
+                   String(date.getHours()).padStart(2, '0') + ':' + 
+                   String(date.getMinutes()).padStart(2, '0');
+        }
+
+        // 更新优惠值标签
+        function updateDiscountLabel() {
+            const type = document.getElementById('couponType').value;
+            const label = document.getElementById('discountLabel');
+            if (type === 'FIXED') {
+                label.textContent = '优惠金额 (元) *';
+            } else if (type === 'PERCENT') {
+                label.textContent = '折扣百分比 (%) *';
+            } else {
+                label.textContent = '优惠值 *';
+            }
+        }
+
+        function updateEditDiscountLabel() {
+            const type = document.getElementById('editCouponType').value;
+            const label = document.getElementById('editDiscountLabel');
+            if (type === 'FIXED') {
+                label.textContent = '优惠金额 (元) *';
+            } else if (type === 'PERCENT') {
+                label.textContent = '折扣百分比 (%) *';
+            }
+        }
+
+        // 生成优惠券代码
+        function generateCouponCode() {
+            fetch('/edu/admin/api/coupons/generate-code')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('couponCode').value = data.code;
+                    } else {
+                        alert('生成代码失败：' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('生成代码失败');
+                });
+        }
+
+        // 创建优惠券
+        function createCoupon() {
+            const formData = {
+                name: document.getElementById('couponName').value,
+                code: document.getElementById('couponCode').value,
+                type: document.getElementById('couponType').value,
+                discountValue: document.getElementById('discountValue').value,
+                minAmount: document.getElementById('minAmount').value || 0,
+                totalCount: document.getElementById('totalCount').value,
+                startTime: document.getElementById('startTime').value.replace('T', ' ') + ':00',
+                endTime: document.getElementById('endTime').value.replace('T', ' ') + ':00'
+            };
+
+            fetch('/edu/admin/api/coupons', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('优惠券创建成功！');
+                    location.reload();
+                } else {
+                    alert('创建失败：' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('创建失败');
+            });
+        }
+
+        // 编辑优惠券
+        function editCoupon(couponId) {
+            fetch('/edu/admin/api/coupons/' + couponId)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const coupon = data.coupon;
+                        document.getElementById('editCouponId').value = coupon.id;
+                        document.getElementById('editCouponName').value = coupon.name;
+                        document.getElementById('editCouponCode').value = coupon.code;
+                        document.getElementById('editCouponType').value = coupon.type;
+                        document.getElementById('editDiscountValue').value = coupon.discountValue;
+                        document.getElementById('editMinAmount').value = coupon.minAmount;
+                        document.getElementById('editTotalCount').value = coupon.totalCount;
+                        document.getElementById('editStartTime').value = coupon.startTime.replace(' ', 'T').substring(0, 16);
+                        document.getElementById('editEndTime').value = coupon.endTime.replace(' ', 'T').substring(0, 16);
+                        
+                        updateEditDiscountLabel();
+                        new bootstrap.Modal(document.getElementById('editCouponModal')).show();
+                    } else {
+                        alert('获取优惠券信息失败：' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('获取优惠券信息失败');
+                });
+        }
+
+        // 更新优惠券
+        function updateCoupon() {
+            const couponId = document.getElementById('editCouponId').value;
+            const formData = {
+                name: document.getElementById('editCouponName').value,
+                code: document.getElementById('editCouponCode').value,
+                type: document.getElementById('editCouponType').value,
+                discountValue: document.getElementById('editDiscountValue').value,
+                minAmount: document.getElementById('editMinAmount').value,
+                totalCount: document.getElementById('editTotalCount').value,
+                startTime: document.getElementById('editStartTime').value.replace('T', ' ') + ':00',
+                endTime: document.getElementById('editEndTime').value.replace('T', ' ') + ':00'
+            };
+
+            fetch('/edu/admin/api/coupons/' + couponId, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('优惠券更新成功！');
+                    location.reload();
+                } else {
+                    alert('更新失败：' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('更新失败');
+            });
+        }
+
+        // 切换优惠券状态
+        function toggleCouponStatus(couponId, enabled) {
+            const action = enabled ? '启用' : '禁用';
+            if (confirm('确定要' + action + '这个优惠券吗？')) {
+                fetch('/edu/admin/api/coupons/' + couponId + '/status', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ enabled: enabled })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('操作失败：' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('操作失败');
+                });
+            }
+        }
+
+        // 查看优惠券统计
+        function viewCouponStats(couponId) {
+            alert('统计功能开发中...');
+        }
+    </script>
 </body>
 </html>

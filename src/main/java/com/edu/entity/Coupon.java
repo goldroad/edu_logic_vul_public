@@ -24,6 +24,9 @@ public class Coupon {
     private Boolean enabled = true;
     private LocalDateTime createTime = LocalDateTime.now();
     
+    // 临时字段，用于前端显示状态
+    private String status;
+    
     public enum CouponType {
         FIXED, // 固定金额
         PERCENT // 百分比折扣

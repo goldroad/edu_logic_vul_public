@@ -9,6 +9,7 @@ import com.edu.service.CourseService;
 import com.edu.service.OrderService;
 import com.edu.service.LoginLogService;
 import com.edu.service.DashboardService;
+import com.edu.service.CouponService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,6 +35,9 @@ public class PageController {
     
     @Autowired
     private DashboardService dashboardService;
+    
+    @Autowired
+    private CouponService couponService;
     
     /**
      * 首页
@@ -334,13 +338,28 @@ public class PageController {
      * 优惠券管理页面
      */
     @GetMapping("/admin/coupons")
-    public String adminCoupons(HttpSession session, Model model) {
+    public String adminCoupons(Model model, HttpSession session,
+                              @RequestParam(defaultValue = "1") int page,
+                              @RequestParam(defaultValue = "6") int size,
+                              @RequestParam(required = false) String status,
+                              @RequestParam(required = false) String keyword) {
         User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/auth/login";
+        if (user == null || user.getRole() != User.Role.ADMIN) {
+            return "redirect:/edu/auth/login";
         }
-        
+
+        CouponService.CouponPageResult result = couponService.getCouponsWithPagination(page, size, status, keyword);
+        CouponService.CouponStatistics statistics = couponService.getCouponStatistics();
+
         model.addAttribute("user", user);
+        model.addAttribute("coupons", result.getCoupons());
+        model.addAttribute("statistics", statistics);
+        model.addAttribute("currentPage", result.getCurrentPage());
+        model.addAttribute("totalPages", result.getTotalPages());
+        model.addAttribute("total", result.getTotal());
+        model.addAttribute("status", status);
+        model.addAttribute("keyword", keyword);
+
         return "admin/coupons";
     }
     
