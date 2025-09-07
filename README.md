@@ -60,7 +60,7 @@ java -jar target/edu-logic-vul-1.0.0.jar
 
 ### 6. 访问系统
 
-打开浏览器访问：http://localhost:8080/edu
+打开浏览器访问：http://localhost:8081/edu
 
 ## 功能特性
 
