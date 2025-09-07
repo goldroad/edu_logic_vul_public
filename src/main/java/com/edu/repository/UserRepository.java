@@ -50,4 +50,10 @@ public interface UserRepository {
     
     @Delete("DELETE FROM users WHERE id = #{id}")
     int deleteById(Long id);
+    
+    /**
+     * 统计总用户数
+     */
+    @Select("SELECT COUNT(*) FROM users")
+    long countTotalUsers();
 }

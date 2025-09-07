@@ -8,6 +8,7 @@ import com.edu.service.UserService;
 import com.edu.service.CourseService;
 import com.edu.service.OrderService;
 import com.edu.service.LoginLogService;
+import com.edu.service.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +31,9 @@ public class PageController {
     
     @Autowired
     private LoginLogService loginLogService;
+    
+    @Autowired
+    private DashboardService dashboardService;
     
     /**
      * 首页
@@ -120,14 +124,19 @@ public class PageController {
             return "redirect:/auth/login";
         }
         
+        // 获取仪表盘统计数据
+        DashboardService.DashboardStatistics statistics = dashboardService.getDashboardStatistics();
+        
         // 如果URL参数中包含role=ADMIN，就允许访问（漏洞）
         if ("ADMIN".equals(role) || (user.getRole() == User.Role.ADMIN)) {
             model.addAttribute("user", user);
+            model.addAttribute("statistics", statistics);
             return "admin/dashboard";
         }
         
         // 显示管理页面
         model.addAttribute("user", user);
+        model.addAttribute("statistics", statistics);
         return "admin/dashboard";
     }
     
@@ -275,15 +284,26 @@ public class PageController {
      * 课程管理页面
      */
     @GetMapping("/admin/courses")
-    public String adminCourses(HttpSession session, Model model) {
+    public String adminCourses(@RequestParam(defaultValue = "1") int page,
+                              @RequestParam(defaultValue = "6") int size,
+                              @RequestParam(required = false) String status,
+                              @RequestParam(required = false) String search,
+                              HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/auth/login";
         }
         
-        List<Course> courses = courseService.findAll();
+        // 获取分页课程数据
+        CourseService.CoursePageResult pageResult = courseService.getCoursesByPage(page, size, status, search);
+        CourseService.CourseStatistics statistics = courseService.getCourseStatistics();
+        
         model.addAttribute("user", user);
-        model.addAttribute("courses", courses);
+        model.addAttribute("courses", pageResult.getCourses());
+        model.addAttribute("pageResult", pageResult);
+        model.addAttribute("statistics", statistics);
+        model.addAttribute("currentStatus", status);
+        model.addAttribute("currentSearch", search);
         return "admin/courses";
     }
     

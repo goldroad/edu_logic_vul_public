@@ -197,7 +197,7 @@
                             <div class="card text-center">
                                 <div class="card-body">
                                     <i class="fas fa-users fa-2x text-danger mb-3"></i>
-                                    <h4>1,234</h4>
+                                    <h4 th:text="${statistics != null ? statistics.totalUsers : '0'}">0</h4>
                                     <p class="text-muted">总用户数</p>
                                 </div>
                             </div>
@@ -206,7 +206,7 @@
                             <div class="card text-center">
                                 <div class="card-body">
                                     <i class="fas fa-book fa-2x text-warning mb-3"></i>
-                                    <h4>89</h4>
+                                    <h4 th:text="${statistics != null ? statistics.totalCourses : '0'}">0</h4>
                                     <p class="text-muted">课程总数</p>
                                 </div>
                             </div>
@@ -215,7 +215,7 @@
                             <div class="card text-center">
                                 <div class="card-body">
                                     <i class="fas fa-shopping-cart fa-2x text-success mb-3"></i>
-                                    <h4>5,678</h4>
+                                    <h4 th:text="${statistics != null ? statistics.totalOrders : '0'}">0</h4>
                                     <p class="text-muted">订单总数</p>
                                 </div>
                             </div>
@@ -224,7 +224,7 @@
                             <div class="card text-center">
                                 <div class="card-body">
                                     <i class="fas fa-dollar-sign fa-2x text-info mb-3"></i>
-                                    <h4>¥123,456</h4>
+                                    <h4 th:text="${statistics != null ? '¥' + #numbers.formatDecimal(statistics.totalRevenue, 1, 2) : '¥0.00'}">¥0.00</h4>
                                     <p class="text-muted">总收入</p>
                                 </div>
                             </div>

@@ -61,4 +61,49 @@ public interface CourseRepository {
     
     @Delete("DELETE FROM course WHERE id = #{id}")
     int deleteById(Long id);
+    
+    /**
+     * 统计总课程数
+     */
+    @Select("SELECT COUNT(*) FROM course")
+    long countTotalCourses();
+    
+    /**
+     * 分页查询课程
+     */
+    @Select("SELECT * FROM course ORDER BY create_time DESC LIMIT #{offset}, #{limit}")
+    @Results({
+        @Result(property = "teacherId", column = "teacher_id"),
+        @Result(property = "teacher", column = "teacher_id", 
+                one = @One(select = "com.edu.repository.UserRepository.findById"))
+    })
+    List<Course> findWithPagination(@Param("offset") int offset, @Param("limit") int limit);
+    
+    /**
+     * 根据状态分页查询课程
+     */
+    @Select("SELECT * FROM course WHERE status = #{status} ORDER BY create_time DESC LIMIT #{offset}, #{limit}")
+    @Results({
+        @Result(property = "teacherId", column = "teacher_id"),
+        @Result(property = "teacher", column = "teacher_id", 
+                one = @One(select = "com.edu.repository.UserRepository.findById"))
+    })
+    List<Course> findByStatusWithPagination(@Param("status") String status, @Param("offset") int offset, @Param("limit") int limit);
+    
+    /**
+     * 根据标题搜索课程（分页）
+     */
+    @Select("SELECT * FROM course WHERE title LIKE CONCAT('%', #{title}, '%') ORDER BY create_time DESC LIMIT #{offset}, #{limit}")
+    @Results({
+        @Result(property = "teacherId", column = "teacher_id"),
+        @Result(property = "teacher", column = "teacher_id", 
+                one = @One(select = "com.edu.repository.UserRepository.findById"))
+    })
+    List<Course> findByTitleContainingWithPagination(@Param("title") String title, @Param("offset") int offset, @Param("limit") int limit);
+    
+    /**
+     * 统计各状态课程数量
+     */
+    @Select("SELECT COUNT(*) FROM course WHERE status = #{status}")
+    long countByStatus(String status);
 }

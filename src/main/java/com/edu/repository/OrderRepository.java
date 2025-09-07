@@ -94,4 +94,16 @@ public interface OrderRepository {
      */
     @Select("SELECT DISTINCT course_id FROM `order` WHERE user_id = #{userId} AND status = 'PAID'")
     List<Long> findPaidCourseIdsByUserId(Long userId);
+    
+    /**
+     * 统计总订单数
+     */
+    @Select("SELECT COUNT(*) FROM `order`")
+    long countTotalOrders();
+    
+    /**
+     * 统计总收入（已支付订单）
+     */
+    @Select("SELECT COALESCE(SUM(final_amount), 0) FROM `order` WHERE status = 'PAID'")
+    double getTotalRevenue();
 }

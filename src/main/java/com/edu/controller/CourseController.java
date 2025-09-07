@@ -3,182 +3,181 @@ package com.edu.controller;
 import com.edu.entity.Course;
 import com.edu.entity.User;
 import com.edu.service.CourseService;
-import com.edu.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/course")
+@RequestMapping("/admin/api/courses")
 public class CourseController {
     
     @Autowired
     private CourseService courseService;
     
-    @Autowired
-    private UserService userService;
-    
     /**
-     * 获取已发布的课程列表
+     * 获取课程列表API（分页）
      */
-    @GetMapping("/published")
-    public Map<String, Object> getPublishedCourses() {
+    @GetMapping
+    public ResponseEntity<Map<String, Object>> getCourses(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String search,
+            HttpSession session) {
+        
+        User admin = (User) session.getAttribute("user");
+        if (admin == null || admin.getRole() != User.Role.ADMIN) {
+            return ResponseEntity.status(403).body(Map.of("error", "无权限访问"));
+        }
+        
+        CourseService.CoursePageResult pageResult = courseService.getCoursesByPage(page, size, status, search);
+        CourseService.CourseStatistics statistics = courseService.getCourseStatistics();
+        
         Map<String, Object> response = new HashMap<>();
-        
-        List<Course> courses = courseService.getPublishedCourses();
-        
         response.put("success", true);
-        response.put("courses", courses);
+        response.put("courses", pageResult.getCourses());
+        response.put("totalCount", pageResult.getTotalCount());
+        response.put("totalPages", pageResult.getTotalPages());
+        response.put("currentPage", pageResult.getCurrentPage());
+        response.put("pageSize", pageResult.getPageSize());
+        response.put("hasPrevious", pageResult.isHasPrevious());
+        response.put("hasNext", pageResult.isHasNext());
+        response.put("statistics", statistics);
         
-        return response;
+        return ResponseEntity.ok(response);
     }
     
     /**
-     * 获取课程详情
+     * 更新课程信息API
      */
-    @GetMapping("/{id}")
-    public Map<String, Object> getCourseDetail(@PathVariable Long id) {
+    @PutMapping("/{courseId}")
+    public ResponseEntity<Map<String, Object>> updateCourse(
+            @PathVariable Long courseId,
+            @RequestBody Map<String, Object> updateData,
+            HttpSession session) {
+        
+        User admin = (User) session.getAttribute("user");
+        if (admin == null || admin.getRole() != User.Role.ADMIN) {
+            return ResponseEntity.status(403).body(Map.of("error", "无权限访问"));
+        }
+        
+        String title = (String) updateData.get("title");
+        String description = (String) updateData.get("description");
+        BigDecimal price = null;
+        
+        if (updateData.get("price") != null) {
+            try {
+                price = new BigDecimal(updateData.get("price").toString());
+            } catch (NumberFormatException e) {
+                return ResponseEntity.badRequest().body(Map.of("error", "价格格式不正确"));
+            }
+        }
+        
+        boolean success = courseService.updateCourse(courseId, title, description, price);
+        
         Map<String, Object> response = new HashMap<>();
-        
-        Course course = courseService.findById(id);
-        
-        if (course != null) {
+        if (success) {
             response.put("success", true);
-            response.put("course", course);
+            response.put("message", "课程信息更新成功");
         } else {
             response.put("success", false);
-            response.put("message", "课程不存在");
+            response.put("message", "课程信息更新失败");
         }
         
-        return response;
+        return ResponseEntity.ok(response);
     }
     
     /**
-     * 创建课程
+     * 更新课程状态API
      */
-    @PostMapping("/create")
-    public Map<String, Object> createCourse(@RequestBody Map<String, Object> request, HttpSession session) {
-        Map<String, Object> response = new HashMap<>();
+    @PostMapping("/{courseId}/status")
+    public ResponseEntity<Map<String, Object>> updateCourseStatus(
+            @PathVariable Long courseId,
+            @RequestBody Map<String, String> statusData,
+            HttpSession session) {
         
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
-            response.put("success", false);
-            response.put("message", "请先登录");
-            return response;
+        User admin = (User) session.getAttribute("user");
+        if (admin == null || admin.getRole() != User.Role.ADMIN) {
+            return ResponseEntity.status(403).body(Map.of("error", "无权限访问"));
         }
         
-        // 简单权限检查（仍有漏洞）
-        if (currentUser.getRole() == User.Role.STUDENT) {
-            response.put("success", false);
-            response.put("message", "学生无权创建课程");
-            return response;
-        }
+        String statusStr = statusData.get("status");
+        Course.CourseStatus status;
         
         try {
-            String title = (String) request.get("title");
-            String description = (String) request.get("description");
-            BigDecimal price = new BigDecimal(request.get("price").toString());
-            
-            Course course = courseService.createCourse(title, description, price, currentUser);
-            
+            status = Course.CourseStatus.valueOf(statusStr);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "状态参数不正确"));
+        }
+        
+        boolean success = courseService.updateCourseStatus(courseId, status);
+        
+        Map<String, Object> response = new HashMap<>();
+        if (success) {
             response.put("success", true);
-            response.put("message", "课程创建成功");
-            response.put("course", course);
-            
-        } catch (Exception e) {
+            response.put("message", "课程状态更新成功");
+        } else {
             response.put("success", false);
-            response.put("message", "创建失败: " + e.getMessage());
+            response.put("message", "课程状态更新失败");
         }
         
-        return response;
+        return ResponseEntity.ok(response);
     }
     
     /**
-     * 获取我的课程
+     * 删除课程API
      */
-    @GetMapping("/my")
-    public Map<String, Object> getMyCourses(HttpSession session) {
-        Map<String, Object> response = new HashMap<>();
+    @DeleteMapping("/{courseId}")
+    public ResponseEntity<Map<String, Object>> deleteCourse(
+            @PathVariable Long courseId,
+            HttpSession session) {
         
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
-            response.put("success", false);
-            response.put("message", "请先登录");
-            return response;
+        User admin = (User) session.getAttribute("user");
+        if (admin == null || admin.getRole() != User.Role.ADMIN) {
+            return ResponseEntity.status(403).body(Map.of("error", "无权限访问"));
         }
         
-        List<Course> courses = courseService.getCoursesByTeacher(currentUser);
+        boolean success = courseService.deleteCourse(courseId);
         
-        response.put("success", true);
-        response.put("courses", courses);
+        Map<String, Object> response = new HashMap<>();
+        if (success) {
+            response.put("success", true);
+            response.put("message", "课程删除成功");
+        } else {
+            response.put("success", false);
+            response.put("message", "课程删除失败");
+        }
         
-        return response;
+        return ResponseEntity.ok(response);
     }
     
     /**
-     * 发布课程
+     * 获取课程详情API
      */
-    @PostMapping("/{id}/publish")
-    public Map<String, Object> publishCourse(@PathVariable Long id, HttpSession session) {
-        Map<String, Object> response = new HashMap<>();
+    @GetMapping("/{courseId}")
+    public ResponseEntity<Map<String, Object>> getCourseDetail(
+            @PathVariable Long courseId,
+            HttpSession session) {
         
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
-            response.put("success", false);
-            response.put("message", "请先登录");
-            return response;
+        User admin = (User) session.getAttribute("user");
+        if (admin == null || admin.getRole() != User.Role.ADMIN) {
+            return ResponseEntity.status(403).body(Map.of("error", "无权限访问"));
         }
         
-        Course course = courseService.findById(id);
+        Course course = courseService.findById(courseId);
         if (course == null) {
-            response.put("success", false);
-            response.put("message", "课程不存在");
-            return response;
+            return ResponseEntity.notFound().build();
         }
         
-        // 漏洞：不验证课程是否属于当前用户
-        courseService.publishCourse(id);
-        
-        response.put("success", true);
-        response.put("message", "课程发布成功");
-        
-        return response;
-    }
-    
-    /**
-     * 搜索课程
-     */
-    @GetMapping("/search")
-    public Map<String, Object> searchCourses(@RequestParam String keyword) {
         Map<String, Object> response = new HashMap<>();
-        
-        List<Course> courses = courseService.searchCourses(keyword);
-        
         response.put("success", true);
-        response.put("courses", courses);
-        response.put("keyword", keyword);
+        response.put("course", course);
         
-        return response;
-    }
-    
-    /**
-     * 获取所有课程 - 未授权访问
-     */
-    @GetMapping("/all")
-    public Map<String, Object> getAllCourses() {
-        Map<String, Object> response = new HashMap<>();
-        
-        // 漏洞：接口未鉴权，可以查看所有课程（包括草稿状态）
-        List<Course> courses = courseService.findAll();
-        
-        response.put("success", true);
-        response.put("courses", courses);
-        
-        return response;
+        return ResponseEntity.ok(response);
     }
 }
