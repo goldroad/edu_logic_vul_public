@@ -39,16 +39,16 @@ CREATE TABLE `course`  (
                             INDEX `FKt4ba5fab1x56tmt4nsypv5lm5`(`teacher_id`) USING BTREE) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 
-INSERT INTO `course` VALUES (1, NULL, '2025-09-04 10:37:53.134427', '从零开始学习Java编程语言，掌握面向对象编程思想', NULL, 199.00, 199.00, 'PUBLISHED', 0, 'Java基础编程', '2025-09-04 10:37:53.147433', 2);
-INSERT INTO `course` VALUES (2, NULL, '2025-09-04 10:37:53.178160', '深入学习Spring Boot框架，快速构建企业级应用', NULL, 299.00, 299.00, 'PUBLISHED', 0, 'Spring Boot实战', '2025-09-04 10:37:53.191081', 2);
-INSERT INTO `course` VALUES (3, NULL, '2025-09-04 10:37:53.206798', '学习数据库设计原理，掌握SQL优化技巧', NULL, 259.00, 259.00, 'PUBLISHED', 0, '数据库设计与优化', '2025-09-04 10:37:53.222169', 2);
-INSERT INTO `course` VALUES (4, NULL, '2025-09-04 10:37:53.238124', '学习HTML、CSS、JavaScript，成为前端开发工程师', NULL, 179.00, 179.00, 'PUBLISHED', 0, '前端开发入门', '2025-09-04 10:37:53.253123', 2);
-INSERT INTO `course` VALUES (5, NULL, '2025-09-04 10:37:53.268334', '了解网络安全基础知识，学习常见攻击防护方法', NULL, 399.00, 399.00, 'PUBLISHED', 0, '网络安全基础', '2025-09-04 10:37:53.284773', 2);
-INSERT INTO `course` VALUES (6, NULL, '2025-09-04 11:00:37.317947', '从零开始学习Java编程语言，掌握面向对象编程思想', NULL, 199.00, 199.00, 'PUBLISHED', 0, 'Java基础编程', '2025-09-04 11:00:37.495868', 2);
-INSERT INTO `course` VALUES (7, NULL, '2025-09-04 11:00:37.522205', '深入学习Spring Boot框架，快速构建企业级应用', NULL, 299.00, 299.00, 'PUBLISHED', 0, 'Spring Boot实战', '2025-09-04 11:00:37.535168', 2);
-INSERT INTO `course` VALUES (8, NULL, '2025-09-04 11:00:37.552123', '学习数据库设计原理，掌握SQL优化技巧', NULL, 259.00, 259.00, 'PUBLISHED', 0, '数据库设计与优化', '2025-09-04 11:00:37.567084', 2);
-INSERT INTO `course` VALUES (9, NULL, '2025-09-04 11:00:37.583052', '学习HTML、CSS、JavaScript，成为前端开发工程师', NULL, 179.00, 179.00, 'PUBLISHED', 0, '前端开发入门', '2025-09-04 11:00:37.598000', 2);
-INSERT INTO `course` VALUES (10, NULL, '2025-09-04 11:00:37.615967', '了解网络安全基础知识，学习常见攻击防护方法', NULL, 399.00, 399.00, 'PUBLISHED', 0, '网络安全基础', '2025-09-04 11:00:37.629915', 2);
+INSERT INTO `course` VALUES (1, 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=300&h=200&fit=crop', '2025-09-04 10:37:53.134427', '从零开始学习Java编程语言，掌握面向对象编程思想', NULL, 199.00, 199.00, 'PUBLISHED', 0, 'Java基础编程', '2025-09-04 10:37:53.147433', 2);
+INSERT INTO `course` VALUES (2, 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=300&h=200&fit=crop', '2025-09-04 10:37:53.178160', '深入学习Spring Boot框架，快速构建企业级应用', NULL, 299.00, 299.00, 'PUBLISHED', 0, 'Spring Boot实战', '2025-09-04 10:37:53.191081', 2);
+INSERT INTO `course` VALUES (3, 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=300&h=200&fit=crop', '2025-09-04 10:37:53.206798', '学习数据库设计原理，掌握SQL优化技巧', NULL, 259.00, 259.00, 'PUBLISHED', 0, '数据库设计与优化', '2025-09-04 10:37:53.222169', 2);
+INSERT INTO `course` VALUES (4, 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=300&h=200&fit=crop', '2025-09-04 10:37:53.238124', '学习HTML、CSS、JavaScript，成为前端开发工程师', NULL, 179.00, 179.00, 'PUBLISHED', 0, '前端开发入门', '2025-09-04 10:37:53.253123', 2);
+INSERT INTO `course` VALUES (5, 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&h=200&fit=crop', '2025-09-04 10:37:53.268334', '了解网络安全基础知识，学习常见攻击防护方法', NULL, 399.00, 399.00, 'PUBLISHED', 0, '网络安全基础', '2025-09-04 10:37:53.284773', 2);
+INSERT INTO `course` VALUES (6, 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=300&h=200&fit=crop', '2025-09-04 11:00:37.317947', '从零开始学习Java编程语言，掌握面向对象编程思想', NULL, 199.00, 199.00, 'PUBLISHED', 0, 'Java基础编程', '2025-09-04 11:00:37.495868', 2);
+INSERT INTO `course` VALUES (7, 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=300&h=200&fit=crop', '2025-09-04 11:00:37.522205', '深入学习Spring Boot框架，快速构建企业级应用', NULL, 299.00, 299.00, 'PUBLISHED', 0, 'Spring Boot实战', '2025-09-04 11:00:37.535168', 2);
+INSERT INTO `course` VALUES (8, 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=300&h=200&fit=crop', '2025-09-04 11:00:37.552123', '学习数据库设计原理，掌握SQL优化技巧', NULL, 259.00, 259.00, 'PUBLISHED', 0, '数据库设计与优化', '2025-09-04 11:00:37.567084', 2);
+INSERT INTO `course` VALUES (9, 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=300&h=200&fit=crop', '2025-09-04 11:00:37.583052', '学习HTML、CSS、JavaScript，成为前端开发工程师', NULL, 179.00, 179.00, 'PUBLISHED', 0, '前端开发入门', '2025-09-04 11:00:37.598000', 2);
+INSERT INTO `course` VALUES (10, 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&h=200&fit=crop', '2025-09-04 11:00:37.615967', '了解网络安全基础知识，学习常见攻击防护方法', NULL, 399.00, 399.00, 'PUBLISHED', 0, '网络安全基础', '2025-09-04 11:00:37.629915', 2);
 INSERT INTO `course` VALUES (11, NULL, '2025-09-04 11:01:16.074000', '从零开始学习Java编程语言，掌握面向对象编程思想', NULL, 199.00, 199.00, 'PUBLISHED', 0, 'Java基础编程', '2025-09-04 11:01:16.223000', 2);
 INSERT INTO `course` VALUES (12, NULL, '2025-09-04 11:01:16.263000', '深入学习Spring Boot框架，快速构建企业级应用', NULL, 299.00, 299.00, 'PUBLISHED', 0, 'Spring Boot实战', '2025-09-04 11:01:16.278000', 2);
 INSERT INTO `course` VALUES (13, NULL, '2025-09-04 11:01:16.294000', '学习数据库设计原理，掌握SQL优化技巧', NULL, 259.00, 259.00, 'PUBLISHED', 0, '数据库设计与优化', '2025-09-04 11:01:16.308000', 2);

@@ -212,7 +212,10 @@
                             <div class="row">
                                 <div class="col-md-4" th:each="course : ${courses}">
                                     <div class="card course-card">
-                                        <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="课程封面">
+                                        <img th:src="${course.coverImage != null ? '/edu/api/files/view/' + course.coverImage : 'https://via.placeholder.com/300x200'}" 
+                                             class="card-img-top" 
+                                             alt="课程封面"
+                                             onerror="this.src='https://via.placeholder.com/300x200'">
                                         <div class="card-body">
                                             <h6 class="card-title" th:text="${course.title}">课程标题</h6>
                                             <p class="card-text text-muted" th:text="${course.description}">课程描述</p>

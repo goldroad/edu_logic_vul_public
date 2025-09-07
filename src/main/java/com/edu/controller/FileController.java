@@ -200,4 +200,55 @@ public class FileController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+    
+    /**
+     * 访问文件（用于显示图片等）
+     */
+    @GetMapping("/view/{fileName}")
+    public ResponseEntity<Resource> viewFile(@PathVariable String fileName) {
+        try {
+            Path filePath = Paths.get("files").resolve(fileName);
+            Resource resource = new UrlResource(filePath.toUri());
+            
+            if (!resource.exists() || !resource.isReadable()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // 根据文件扩展名确定Content-Type
+            String contentType = "application/octet-stream";
+            String extension = "";
+            if (fileName.contains(".")) {
+                extension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+            }
+            
+            switch (extension) {
+                case "jpg":
+                case "jpeg":
+                    contentType = "image/jpeg";
+                    break;
+                case "png":
+                    contentType = "image/png";
+                    break;
+                case "gif":
+                    contentType = "image/gif";
+                    break;
+                case "bmp":
+                    contentType = "image/bmp";
+                    break;
+                case "webp":
+                    contentType = "image/webp";
+                    break;
+                case "jfif":
+                    contentType = "image/jpeg";
+                    break;
+            }
+            
+            return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(resource);
+                
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
