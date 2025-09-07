@@ -201,4 +201,88 @@ public class OrderService {
     public List<Long> getPaidCourseIdsByUserId(Long userId) {
         return orderRepository.findPaidCourseIdsByUserId(userId);
     }
+    
+    /**
+     * 分页查询订单
+     */
+    public List<Order> findOrdersWithPagination(String status, String search, int offset, int limit) {
+        List<Order> allOrders = orderRepository.findAll();
+        
+        return allOrders.stream()
+                .filter(order -> {
+                    boolean statusMatch = status == null || status.trim().isEmpty() || status.equals("ALL") || 
+                            order.getStatus().name().equals(status);
+                    boolean searchMatch = search == null || search.trim().isEmpty() || 
+                            (order.getOrderNo() != null && order.getOrderNo().toLowerCase().contains(search.toLowerCase())) ||
+                            (order.getUser() != null && order.getUser().getRealName() != null && 
+                             order.getUser().getRealName().toLowerCase().contains(search.toLowerCase())) ||
+                            (order.getCourse() != null && order.getCourse().getTitle() != null && 
+                             order.getCourse().getTitle().toLowerCase().contains(search.toLowerCase()));
+                    return statusMatch && searchMatch;
+                })
+                .sorted((o1, o2) -> {
+                    // 按创建时间倒序排列，确保分页结果稳定
+                    return o2.getCreateTime().compareTo(o1.getCreateTime());
+                })
+                .skip(offset)
+                .limit(limit)
+                .collect(java.util.stream.Collectors.toList());
+    }
+    
+    /**
+     * 统计符合条件的订单数量
+     */
+    public int countOrdersByStatusAndSearch(String status, String search) {
+        List<Order> allOrders = orderRepository.findAll();
+        
+        return (int) allOrders.stream()
+                .filter(order -> {
+                    boolean statusMatch = status == null || status.trim().isEmpty() || status.equals("ALL") || 
+                            order.getStatus().name().equals(status);
+                    boolean searchMatch = search == null || search.trim().isEmpty() || 
+                            (order.getOrderNo() != null && order.getOrderNo().toLowerCase().contains(search.toLowerCase())) ||
+                            (order.getUser() != null && order.getUser().getRealName() != null && 
+                             order.getUser().getRealName().toLowerCase().contains(search.toLowerCase())) ||
+                            (order.getCourse() != null && order.getCourse().getTitle() != null && 
+                             order.getCourse().getTitle().toLowerCase().contains(search.toLowerCase()));
+                    return statusMatch && searchMatch;
+                })
+                .count();
+    }
+    
+    /**
+     * 获取订单统计信息
+     */
+    public OrderStatistics getOrderStatistics() {
+        List<Order> allOrders = orderRepository.findAll();
+        
+        long totalOrders = allOrders.size();
+        long paidCount = allOrders.stream().filter(o -> o.getStatus() == Order.OrderStatus.PAID).count();
+        long pendingCount = allOrders.stream().filter(o -> o.getStatus() == Order.OrderStatus.PENDING).count();
+        long cancelledCount = allOrders.stream().filter(o -> o.getStatus() == Order.OrderStatus.CANCELLED).count();
+        
+        return new OrderStatistics(totalOrders, paidCount, pendingCount, cancelledCount);
+    }
+    
+    /**
+     * 订单统计信息类
+     */
+    public static class OrderStatistics {
+        private final long totalOrders;
+        private final long paidCount;
+        private final long pendingCount;
+        private final long cancelledCount;
+        
+        public OrderStatistics(long totalOrders, long paidCount, long pendingCount, long cancelledCount) {
+            this.totalOrders = totalOrders;
+            this.paidCount = paidCount;
+            this.pendingCount = pendingCount;
+            this.cancelledCount = cancelledCount;
+        }
+        
+        public long getTotalOrders() { return totalOrders; }
+        public long getPaidCount() { return paidCount; }
+        public long getPendingCount() { return pendingCount; }
+        public long getCancelledCount() { return cancelledCount; }
+    }
 }

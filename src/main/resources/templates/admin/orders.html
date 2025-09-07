@@ -177,7 +177,7 @@
                             <div class="card text-center">
                                 <div class="card-body">
                                     <i class="fas fa-shopping-cart fa-2x text-primary mb-3"></i>
-                                    <h4>1,234</h4>
+                                    <h4 th:text="${statistics.totalOrders}">0</h4>
                                     <p class="text-muted">总订单数</p>
                                 </div>
                             </div>
@@ -186,7 +186,7 @@
                             <div class="card text-center">
                                 <div class="card-body">
                                     <i class="fas fa-check-circle fa-2x text-success mb-3"></i>
-                                    <h4>1,156</h4>
+                                    <h4 th:text="${statistics.paidCount}">0</h4>
                                     <p class="text-muted">已支付</p>
                                 </div>
                             </div>
@@ -195,7 +195,7 @@
                             <div class="card text-center">
                                 <div class="card-body">
                                     <i class="fas fa-clock fa-2x text-warning mb-3"></i>
-                                    <h4>45</h4>
+                                    <h4 th:text="${statistics.pendingCount}">0</h4>
                                     <p class="text-muted">待支付</p>
                                 </div>
                             </div>
@@ -204,7 +204,7 @@
                             <div class="card text-center">
                                 <div class="card-body">
                                     <i class="fas fa-times-circle fa-2x text-danger mb-3"></i>
-                                    <h4>33</h4>
+                                    <h4 th:text="${statistics.cancelledCount}">0</h4>
                                     <p class="text-muted">已取消</p>
                                 </div>
                             </div>
@@ -219,13 +219,14 @@
                                     <i class="fas fa-list me-2"></i>订单列表
                                 </h5>
                                 <div class="d-flex">
-                                    <select class="form-select form-select-sm me-2" style="width: auto;">
-                                        <option>全部状态</option>
-                                        <option>已支付</option>
-                                        <option>待支付</option>
-                                        <option>已取消</option>
+                                    <select id="statusFilter" class="form-select form-select-sm me-2" style="width: auto;" onchange="filterOrders()">
+                                        <option value="">全部状态</option>
+                                        <option value="PAID" th:selected="${selectedStatus == 'PAID'}">已支付</option>
+                                        <option value="PENDING" th:selected="${selectedStatus == 'PENDING'}">待支付</option>
+                                        <option value="CANCELLED" th:selected="${selectedStatus == 'CANCELLED'}">已取消</option>
                                     </select>
-                                    <input type="text" class="form-control form-control-sm" placeholder="搜索订单..." style="width: 200px;">
+                                    <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="搜索订单..." style="width: 200px;" 
+                                           th:value="${search}" onkeyup="searchOrders()">
                                 </div>
                             </div>
                         </div>
@@ -245,161 +246,72 @@
                                             <th>操作</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><strong>ORD20240904001</strong></td>
+                                    <tbody id="orderTableBody">
+                                        <tr th:each="order : ${orders}">
+                                            <td><strong th:text="${order.orderNo}">订单号</strong></td>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <img src="https://via.placeholder.com/32x32/007bff/ffffff?text=U" 
-                                                         class="rounded-circle me-2" width="32" height="32">
+                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center text-white fw-bold"
+                                                         style="width: 32px; height: 32px; background-color: #007bff;"
+                                                         th:text="${#strings.substring(order.user.realName != null ? order.user.realName : order.user.username, 0, 1)}">
+                                                    </div>
                                                     <div>
-                                                        <div class="fw-bold">张三</div>
-                                                        <small class="text-muted">zhang@example.com</small>
+                                                        <div class="fw-bold" th:text="${order.user.realName != null ? order.user.realName : order.user.username}">用户名</div>
+                                                        <small class="text-muted" th:text="${order.user.email}">email</small>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
                                                 <div>
-                                                    <div class="fw-bold">Java基础编程</div>
-                                                    <small class="text-muted">张老师</small>
+                                                    <div class="fw-bold" th:text="${order.course.title}">课程名称</div>
+                                                    <small class="text-muted" th:text="${order.course.teacher != null ? order.course.teacher.realName : '未知教师'}">教师</small>
                                                 </div>
                                             </td>
-                                            <td>¥199.00</td>
+                                            <td th:text="'¥' + ${order.originalAmount}">¥0.00</td>
                                             <td>
-                                                <span class="badge bg-success">NEW50</span>
-                                                <small class="text-muted d-block">-¥50.00</small>
+                                                <span th:if="${order.discountAmount != null && order.discountAmount > 0}" class="badge bg-success">优惠券</span>
+                                                <span th:if="${order.discountAmount == null || order.discountAmount == 0}" class="text-muted">无</span>
+                                                <small th:if="${order.discountAmount != null && order.discountAmount > 0}" 
+                                                       class="text-muted d-block" th:text="'-¥' + ${order.discountAmount}">-¥0.00</small>
                                             </td>
-                                            <td><strong class="text-danger">¥149.00</strong></td>
-                                            <td><span class="badge status-paid">已支付</span></td>
+                                            <td><strong class="text-danger" th:text="'¥' + ${order.finalAmount}">¥0.00</strong></td>
                                             <td>
-                                                <div>2024-09-04 10:30</div>
-                                                <small class="text-muted">支付时间: 10:32</small>
+                                                <span th:class="'badge status-' + ${#strings.toLowerCase(order.status.name())}" 
+                                                      th:text="${order.status.name() == 'PAID' ? '已支付' : (order.status.name() == 'PENDING' ? '待支付' : '已取消')}">状态</span>
+                                            </td>
+                                            <td>
+                                                <div th:text="${#temporals.format(order.createTime, 'yyyy-MM-dd HH:mm')}">创建时间</div>
+                                                <small th:if="${order.payTime != null}" class="text-muted" 
+                                                       th:text="'支付时间: ' + ${#temporals.format(order.payTime, 'HH:mm')}">支付时间</small>
                                             </td>
                                             <td>
                                                 <div class="btn-group btn-group-sm">
-                                                    <button class="btn btn-outline-primary" title="查看详情">
+                                                    <button class="btn btn-outline-primary" 
+                                                            th:data-order-no="${order.orderNo}" 
+                                                            onclick="viewOrder(this)" 
+                                                            title="查看详情">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
-                                                    <button class="btn btn-outline-success" title="退款">
+                                                    <button th:if="${order.status.name() == 'PAID'}" 
+                                                            class="btn btn-outline-success" 
+                                                            th:data-order-no="${order.orderNo}" 
+                                                            onclick="refundOrder(this)" 
+                                                            title="退款">
                                                         <i class="fas fa-undo"></i>
                                                     </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>ORD20240904002</strong></td>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <img src="https://via.placeholder.com/32x32/28a745/ffffff?text=L" 
-                                                         class="rounded-circle me-2" width="32" height="32">
-                                                    <div>
-                                                        <div class="fw-bold">李四</div>
-                                                        <small class="text-muted">li@example.com</small>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div>
-                                                    <div class="fw-bold">Spring Boot实战</div>
-                                                    <small class="text-muted">张老师</small>
-                                                </div>
-                                            </td>
-                                            <td>¥299.00</td>
-                                            <td>
-                                                <span class="text-muted">无</span>
-                                            </td>
-                                            <td><strong class="text-danger">¥299.00</strong></td>
-                                            <td><span class="badge status-pending">待支付</span></td>
-                                            <td>
-                                                <div>2024-09-04 09:15</div>
-                                                <small class="text-danger">剩余: 23分钟</small>
-                                            </td>
-                                            <td>
-                                                <div class="btn-group btn-group-sm">
-                                                    <button class="btn btn-outline-primary" title="查看详情">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline-warning" title="催付">
+                                                    <button th:if="${order.status.name() == 'PENDING'}" 
+                                                            class="btn btn-outline-warning" 
+                                                            th:data-order-no="${order.orderNo}" 
+                                                            onclick="remindPayment(this)" 
+                                                            title="催付">
                                                         <i class="fas fa-bell"></i>
                                                     </button>
-                                                    <button class="btn btn-outline-danger" title="取消订单">
+                                                    <button th:if="${order.status.name() == 'PENDING'}" 
+                                                            class="btn btn-outline-danger" 
+                                                            th:data-order-no="${order.orderNo}" 
+                                                            onclick="cancelOrder(this)" 
+                                                            title="取消订单">
                                                         <i class="fas fa-times"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>ORD20240903001</strong></td>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <img src="https://via.placeholder.com/32x32/ffc107/ffffff?text=W" 
-                                                         class="rounded-circle me-2" width="32" height="32">
-                                                    <div>
-                                                        <div class="fw-bold">王五</div>
-                                                        <small class="text-muted">wang@example.com</small>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div>
-                                                    <div class="fw-bold">数据库设计与优化</div>
-                                                    <small class="text-muted">张老师</small>
-                                                </div>
-                                            </td>
-                                            <td>¥259.00</td>
-                                            <td>
-                                                <span class="badge bg-info">STUDENT20</span>
-                                                <small class="text-muted d-block">-¥51.80</small>
-                                            </td>
-                                            <td><strong class="text-danger">¥207.20</strong></td>
-                                            <td><span class="badge status-cancelled">已取消</span></td>
-                                            <td>
-                                                <div>2024-09-03 16:45</div>
-                                                <small class="text-muted">取消时间: 17:30</small>
-                                            </td>
-                                            <td>
-                                                <div class="btn-group btn-group-sm">
-                                                    <button class="btn btn-outline-primary" title="查看详情">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>ORD20240903002</strong></td>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <img src="https://via.placeholder.com/32x32/dc3545/ffffff?text=Z" 
-                                                         class="rounded-circle me-2" width="32" height="32">
-                                                    <div>
-                                                        <div class="fw-bold">赵六</div>
-                                                        <small class="text-muted">zhao@example.com</small>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div>
-                                                    <div class="fw-bold">Java基础编程</div>
-                                                    <small class="text-muted">张老师</small>
-                                                </div>
-                                            </td>
-                                            <td>¥199.00</td>
-                                            <td>
-                                                <span class="text-muted">无</span>
-                                            </td>
-                                            <td><strong class="text-danger">¥199.00</strong></td>
-                                            <td><span class="badge status-paid">已支付</span></td>
-                                            <td>
-                                                <div>2024-09-03 14:20</div>
-                                                <small class="text-muted">支付时间: 14:22</small>
-                                            </td>
-                                            <td>
-                                                <div class="btn-group btn-group-sm">
-                                                    <button class="btn btn-outline-primary" title="查看详情">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline-success" title="退款">
-                                                        <i class="fas fa-undo"></i>
                                                     </button>
                                                 </div>
                                             </td>
@@ -411,24 +323,43 @@
                     </div>
 
                     <!-- 分页 -->
-                    <nav aria-label="订单分页">
+                    <nav aria-label="订单分页" th:if="${totalPages > 1}">
                         <ul class="pagination justify-content-center">
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1">上一页</a>
+                            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled' : ''">
+                                <a class="page-link" th:href="@{/edu/admin/orders(page=${currentPage - 1}, status=${selectedStatus}, search=${search})}" 
+                                   th:if="${currentPage > 1}">上一页</a>
+                                <span class="page-link" th:if="${currentPage == 1}">上一页</span>
                             </li>
-                            <li class="page-item active">
-                                <a class="page-link" href="#">1</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">2</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">3</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">下一页</a>
+                            
+                            <!-- 页码显示逻辑 -->
+                            <th:block th:each="pageNum : ${#numbers.sequence(1, totalPages)}">
+                                <li class="page-item" th:if="${pageNum <= 3 || pageNum >= totalPages - 2 || (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)}"
+                                    th:classappend="${pageNum == currentPage} ? 'active' : ''">
+                                    <a class="page-link" th:href="@{/edu/admin/orders(page=${pageNum}, status=${selectedStatus}, search=${search})}" 
+                                       th:text="${pageNum}" th:if="${pageNum != currentPage}">1</a>
+                                    <span class="page-link" th:if="${pageNum == currentPage}" th:text="${pageNum}">1</span>
+                                </li>
+                                <li class="page-item disabled" th:if="${pageNum == 4 && currentPage > 5}">
+                                    <span class="page-link">...</span>
+                                </li>
+                                <li class="page-item disabled" th:if="${pageNum == totalPages - 3 && currentPage < totalPages - 4}">
+                                    <span class="page-link">...</span>
+                                </li>
+                            </th:block>
+                            
+                            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled' : ''">
+                                <a class="page-link" th:href="@{/edu/admin/orders(page=${currentPage + 1}, status=${selectedStatus}, search=${search})}" 
+                                   th:if="${currentPage < totalPages}">下一页</a>
+                                <span class="page-link" th:if="${currentPage == totalPages}">下一页</span>
                             </li>
                         </ul>
+                        
+                        <div class="text-center mt-3">
+                            <small class="text-muted">
+                                第 <span th:text="${currentPage}">1</span> 页，共 <span th:text="${totalPages}">1</span> 页，
+                                总计 <span th:text="${totalOrders}">0</span> 个订单
+                            </small>
+                        </div>
                     </nav>
                 </div>
             </div>
@@ -436,5 +367,61 @@
     </div>
 
     <script src="/edu/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 筛选订单
+        function filterOrders() {
+            const status = document.getElementById('statusFilter').value;
+            const search = document.getElementById('searchInput').value;
+            window.location.href = `/edu/admin/orders?page=1&status=${status}&search=${encodeURIComponent(search)}`;
+        }
+        
+        // 搜索订单（防抖处理）
+        let searchTimeout;
+        function searchOrders() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                filterOrders();
+            }, 500);
+        }
+        
+        // 查看订单详情
+        function viewOrder(button) {
+            const orderNo = button.getAttribute('data-order-no');
+            alert('查看订单详情: ' + orderNo);
+            // 这里可以实现订单详情弹窗或跳转到详情页面
+        }
+        
+        // 退款订单
+        function refundOrder(button) {
+            const orderNo = button.getAttribute('data-order-no');
+            if (confirm('确定要退款订单 ' + orderNo + ' 吗？')) {
+                alert('退款功能待实现');
+                // 这里可以实现退款逻辑
+            }
+        }
+        
+        // 催付
+        function remindPayment(button) {
+            const orderNo = button.getAttribute('data-order-no');
+            if (confirm('确定要催付订单 ' + orderNo + ' 吗？')) {
+                alert('催付功能待实现');
+                // 这里可以实现催付逻辑
+            }
+        }
+        
+        // 取消订单
+        function cancelOrder(button) {
+            const orderNo = button.getAttribute('data-order-no');
+            if (confirm('确定要取消订单 ' + orderNo + ' 吗？')) {
+                alert('取消订单功能待实现');
+                // 这里可以实现取消订单逻辑
+            }
+        }
+        
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 可以在这里添加页面初始化代码
+        });
+    </script>
 </body>
 </html>

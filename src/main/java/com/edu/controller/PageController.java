@@ -324,13 +324,34 @@ public class PageController {
      * 订单管理页面
      */
     @GetMapping("/admin/orders")
-    public String adminOrders(HttpSession session, Model model) {
+    public String adminOrders(@RequestParam(required = false) String status,
+                            @RequestParam(required = false, defaultValue = "1") int page,
+                            @RequestParam(required = false, defaultValue = "10") int size,
+                            @RequestParam(required = false) String search,
+                            HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/auth/login";
         }
         
+        // 获取订单统计信息
+        OrderService.OrderStatistics statistics = orderService.getOrderStatistics();
+        
+        // 分页查询订单
+        int offset = (page - 1) * size;
+        List<Order> orders = orderService.findOrdersWithPagination(status, search, offset, size);
+        int totalOrders = orderService.countOrdersByStatusAndSearch(status, search);
+        int totalPages = (int) Math.ceil((double) totalOrders / size);
+        
         model.addAttribute("user", user);
+        model.addAttribute("statistics", statistics);
+        model.addAttribute("orders", orders);
+        model.addAttribute("selectedStatus", status);
+        model.addAttribute("search", search);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalOrders", totalOrders);
+        model.addAttribute("pageSize", size);
         return "admin/orders";
     }
     
