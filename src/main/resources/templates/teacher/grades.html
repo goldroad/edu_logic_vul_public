@@ -164,36 +164,7 @@
     <div class="container-fluid">
         <div class="row">
             <!-- 侧边栏 -->
-            <div class="col-md-3 col-lg-2 px-0">
-                <div class="sidebar">
-                    <nav class="nav flex-column">
-                        <a class="nav-link" href="/edu/teacher/dashboard">
-                            <i class="fas fa-tachometer-alt me-2"></i>工作台
-                        </a>
-                        <a class="nav-link" href="/edu/teacher/courses">
-                            <i class="fas fa-book me-2"></i>课程管理
-                        </a>
-                        <a class="nav-link" href="/edu/teacher/students">
-                            <i class="fas fa-users me-2"></i>学生管理
-                        </a>
-                        <a class="nav-link" href="/edu/teacher/assignments">
-                            <i class="fas fa-tasks me-2"></i>作业管理
-                        </a>
-                        <a class="nav-link active" href="/edu/teacher/grades">
-                            <i class="fas fa-chart-line me-2"></i>成绩管理
-                        </a>
-                        <a class="nav-link" href="/edu/teacher/resources">
-                            <i class="fas fa-folder-open me-2"></i>教学资源
-                        </a>
-                        <a class="nav-link" href="/edu/teacher/schedule">
-                            <i class="fas fa-calendar me-2"></i>课程安排
-                        </a>
-                        <a class="nav-link" href="/edu/teacher/analytics">
-                            <i class="fas fa-chart-bar me-2"></i>教学分析
-                        </a>
-                    </nav>
-                </div>
-            </div>
+            <div th:replace="~{teacher/sidebar :: sidebar(active='grades')}"></div>
 
             <!-- 主内容区 -->
             <div class="col-md-9 col-lg-10">

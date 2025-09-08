@@ -1,0 +1,48 @@
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="sidebar(active)"
+     th:class="${colClasses} ?: 'col-md-3 col-lg-2 px-0'">
+    <div class="sidebar">
+        <nav class="nav flex-column">
+            <a class="nav-link"
+               th:href="@{/teacher/dashboard}"
+               th:classappend="${active} == 'dashboard' ? ' active' : ''">
+                <i class="fas fa-tachometer-alt me-2"></i>工作台
+            </a>
+            <a class="nav-link"
+               th:href="@{/teacher/courses}"
+               th:classappend="${active} == 'courses' ? ' active' : ''">
+                <i class="fas fa-book me-2"></i>课程管理
+            </a>
+            <a class="nav-link"
+               th:href="@{/teacher/students}"
+               th:classappend="${active} == 'students' ? ' active' : ''">
+                <i class="fas fa-users me-2"></i>学生管理
+            </a>
+            <a class="nav-link"
+               th:href="@{/teacher/assignments}"
+               th:classappend="${active} == 'assignments' ? ' active' : ''">
+                <i class="fas fa-tasks me-2"></i>作业管理
+            </a>
+            <a class="nav-link"
+               th:href="@{/teacher/grades}"
+               th:classappend="${active} == 'grades' ? ' active' : ''">
+                <i class="fas fa-chart-line me-2"></i>成绩管理
+            </a>
+            <a class="nav-link"
+               th:href="@{/teacher/resources}"
+               th:classappend="${active} == 'resources' ? ' active' : ''">
+                <i class="fas fa-folder-open me-2"></i>教学资源
+            </a>
+            <a class="nav-link"
+               th:href="@{/teacher/schedule}"
+               th:classappend="${active} == 'schedule' ? ' active' : ''">
+                <i class="fas fa-calendar me-2"></i>课程安排
+            </a>
+            <a class="nav-link"
+               th:href="@{/teacher/analytics}"
+               th:classappend="${active} == 'analytics' ? ' active' : ''">
+                <i class="fas fa-chart-bar me-2"></i>教学分析
+            </a>
+        </nav>
+    </div>
+</div>
