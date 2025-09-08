@@ -2,12 +2,9 @@ package com.edu.repository;
 
 import com.edu.entity.User;
 import org.apache.ibatis.annotations.*;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 @Mapper
 public interface UserRepository {
     

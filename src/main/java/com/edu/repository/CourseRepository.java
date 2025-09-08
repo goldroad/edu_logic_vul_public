@@ -2,10 +2,8 @@ package com.edu.repository;
 
 import com.edu.entity.Course;
 import org.apache.ibatis.annotations.*;
-import org.springframework.stereotype.Repository;
 import java.util.List;
 
-@Repository
 @Mapper
 public interface CourseRepository {
     
