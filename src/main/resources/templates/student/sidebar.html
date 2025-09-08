@@ -1,0 +1,26 @@
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="sidebar(active)"
+     class="col-md-3 col-lg-2 px-0">
+  <div class="sidebar">
+    <nav class="nav flex-column">
+      <a class="nav-link" th:classappend="${active} == 'dashboard' ? ' active' : ''" href="/edu/student/dashboard">
+        <i class="fas fa-tachometer-alt me-2"></i>仪表盘
+      </a>
+      <a class="nav-link" th:classappend="${active} == 'courses' ? ' active' : ''" href="/edu/student/courses">
+        <i class="fas fa-book me-2"></i>我的课程
+      </a>
+      <a class="nav-link" th:classappend="${active} == 'orders' ? ' active' : ''" href="/edu/student/orders">
+        <i class="fas fa-shopping-cart me-2"></i>订单管理
+      </a>
+      <a class="nav-link" th:classappend="${active} == 'coupons' ? ' active' : ''" href="/edu/student/coupons">
+        <i class="fas fa-ticket-alt me-2"></i>优惠券
+      </a>
+      <a class="nav-link" th:classappend="${active} == 'files' ? ' active' : ''" href="/edu/student/files">
+        <i class="fas fa-folder me-2"></i>文件管理
+      </a>
+      <a class="nav-link" th:classappend="${active} == 'profile' ? ' active' : ''" th:href="@{/student/profile(id=${user.id})}">
+        <i class="fas fa-user me-2"></i>个人资料
+      </a>
+    </nav>
+  </div>
+</div>

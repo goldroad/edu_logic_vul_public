@@ -1,5 +1,7 @@
+com\edu\service\OrderService$OrderStatistics.class
 com\edu\controller\AuthController.class
 com\edu\controller\CourseController.class
+com\edu\service\CourseService$CoursePageResult.class
 com\edu\entity\UserCoupon$CouponStatus.class
 com\edu\controller\PageController$1.class
 com\edu\service\FileService.class
@@ -9,6 +11,7 @@ com\edu\controller\PageController.class
 com\edu\config\DataInitializer.class
 com\edu\repository\LoginLogRepository.class
 com\edu\repository\UserCouponRepository.class
+com\edu\service\DashboardService.class
 com\edu\controller\SystemController.class
 com\edu\repository\CouponRepository.class
 com\edu\repository\OrderRepository.class
@@ -30,10 +33,14 @@ com\edu\repository\UserRepository.class
 com\edu\service\CourseService.class
 com\edu\service\UserService.class
 com\edu\entity\Coupon.class
+com\edu\controller\AdminUserController.class
 com\edu\entity\Order$OrderStatus.class
 com\edu\entity\Coupon$CouponType.class
 com\edu\entity\File.class
+com\edu\service\CourseService$CourseStatistics.class
+com\edu\service\DashboardService$DashboardStatistics.class
 com\edu\service\SimpleCaptchaService$CaptchaData.class
+com\edu\service\CouponService$CouponStatistics.class
 com\edu\EduLogicVulApplication.class
 com\edu\controller\CaptchaController.class
 com\edu\controller\CouponController.class
@@ -44,6 +51,8 @@ com\edu\service\LoginLogService$LoginLogStatistics.class
 com\edu\entity\Course$CourseStatus.class
 com\edu\entity\User$Role.class
 com\edu\service\UserService$UserStatistics.class
+com\edu\controller\CourseFileController.class
+com\edu\service\CouponService$CouponPageResult.class
 com\edu\service\CouponService.class
 com\edu\entity\Order.class
 com\edu\repository\FileRepository.class

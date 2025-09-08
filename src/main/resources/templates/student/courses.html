@@ -199,30 +199,7 @@
     <div class="container-fluid">
         <div class="row">
             <!-- 侧边栏 -->
-            <div class="col-md-3 col-lg-2 px-0">
-                <div class="sidebar">
-                    <nav class="nav flex-column">
-                        <a class="nav-link" href="/edu/student/dashboard">
-                            <i class="fas fa-tachometer-alt me-2"></i>仪表盘
-                        </a>
-                        <a class="nav-link active" href="/edu/student/courses">
-                            <i class="fas fa-book me-2"></i>我的课程
-                        </a>
-                        <a class="nav-link" href="/edu/student/orders">
-                            <i class="fas fa-shopping-cart me-2"></i>订单管理
-                        </a>
-                        <a class="nav-link" href="/edu/student/coupons">
-                            <i class="fas fa-ticket-alt me-2"></i>优惠券
-                        </a>
-                        <a class="nav-link" href="/edu/student/files">
-                            <i class="fas fa-folder me-2"></i>文件管理
-                        </a>
-                        <a class="nav-link" th:href="@{/student/profile(id=${user.id})}">
-                            <i class="fas fa-user me-2"></i>个人资料
-                        </a>
-                    </nav>
-                </div>
-            </div>
+            <div th:replace="~{student/sidebar :: sidebar(active='courses')}"></div>
 
             <!-- 主内容区 -->
             <div class="col-md-9 col-lg-10">
