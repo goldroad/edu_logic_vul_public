@@ -2,7 +2,7 @@
 
 ## 重构概述
 
-本次重构将 `/student` 目录下所有 HTML 文件中重复的 CSS 代码提取到了公共的 `common.css` 文件中，大大减少了代码重复，提高了可维护性。
+本次重构将 `/student` 和 `/admin` 目录下所有 HTML 文件中重复的 CSS 代码提取到了公共的 `common.css` 文件中，大大减少了代码重复，提高了可维护性。
 
 ## 重构内容
 
@@ -12,6 +12,7 @@
 ### 2. 修改的文件
 以下文件已移除重复的 CSS 代码并引用了 `common.css`：
 
+#### Student 模块
 - `src/main/resources/templates/student/dashboard.html`
 - `src/main/resources/templates/student/courses.html`
 - `src/main/resources/templates/student/profile.html`
@@ -20,6 +21,14 @@
 - `src/main/resources/templates/student/course-learn.html`
 - `src/main/resources/templates/student/files.html`
 - `src/main/resources/templates/student/payment.html`
+
+#### Admin 模块
+- `src/main/resources/templates/admin/dashboard.html`
+- `src/main/resources/templates/admin/courses.html`
+- `src/main/resources/templates/admin/users.html`
+- `src/main/resources/templates/admin/orders.html`
+- `src/main/resources/templates/admin/profile.html`
+- `src/main/resources/templates/admin/coupons.html`
 
 ## 提取的公共样式
 
@@ -127,4 +136,37 @@
 ✅ 保持了原有的视觉效果  
 ✅ 提升了页面加载性能  
 
-重构完成后，所有 `/student` 目录下的页面应该保持与之前完全相同的视觉效果，同时代码结构更加清晰和易于维护。
+重构完成后，所有 `/student` 和 `/admin` 目录下的页面应该保持与之前完全相同的视觉效果，同时代码结构更加清晰和易于维护。
+
+## Admin 模块特殊处理
+
+### Admin 特有样式保留
+在 admin 模块的重构中，我们保留了以下 admin 特有的样式：
+
+1. **红色主题色彩**：
+   - 导航栏使用红色渐变背景 (`#dc3545` 到 `#fd7e14`)
+   - 侧边栏激活状态和悬停状态使用红色主题
+   - 卡片头部使用红色渐变背景
+
+2. **Admin 专用组件**：
+   - `.admin-badge` - 管理员徽章样式
+   - `.btn-danger` - 危险操作按钮的红色主题
+   - 各种状态标签的颜色方案
+
+3. **模块特定样式**：
+   - 优惠券管理页面的特殊样式
+   - 用户管理页面的表格样式
+   - 订单管理页面的状态显示
+
+### 样式继承关系
+```
+common.css (基础样式)
+    ↓
+admin 页面内联样式 (模块特有样式)
+```
+
+这种设计确保了：
+- ✅ 基础布局和组件样式统一
+- ✅ 模块特色得以保留
+- ✅ 代码重复最小化
+- ✅ 维护成本降低
