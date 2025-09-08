@@ -6,120 +6,9 @@
     <title>我的优惠券 - 在线教育系统</title>
     <link href="/edu/css/bootstrap.min.css" rel="stylesheet">
     <link href="/edu/css/all.min.css" rel="stylesheet">
+    <link href="/edu/css/common.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .sidebar {
-            background: white;
-            min-height: calc(100vh - 76px);
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-        }
-        .sidebar .nav-link {
-            color: #495057;
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid #e9ecef;
-        }
-        .sidebar .nav-link:hover {
-            background-color: #f8f9fa;
-            color: #667eea;
-        }
-        .sidebar .nav-link.active {
-            background-color: #667eea;
-            color: white;
-        }
-        .main-content {
-            padding: 2rem;
-        }
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            margin-bottom: 2rem;
-        }
-        .card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 15px 15px 0 0 !important;
-            padding: 1.5rem;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 10px;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        .coupon-card {
-            border: 2px dashed #e9ecef;
-            border-radius: 15px;
-            margin-bottom: 1.5rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .coupon-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        .coupon-available {
-            border-color: #28a745;
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-        }
-        .coupon-used {
-            border-color: #6c757d;
-            background: #f8f9fa;
-            opacity: 0.7;
-        }
-        .coupon-expired {
-            border-color: #dc3545;
-            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-            opacity: 0.8;
-        }
-        .coupon-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #dc3545;
-        }
-        .coupon-type {
-            font-size: 0.9rem;
-            color: #6c757d;
-        }
-        .coupon-code {
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            background: #f8f9fa;
-            padding: 0.5rem;
-            border-radius: 5px;
-            border: 1px dashed #dee2e6;
-        }
-        .coupon-status {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-        .status-available {
-            background: #28a745;
-            color: white;
-        }
-        .status-used {
-            background: #6c757d;
-            color: white;
-        }
-        .status-expired {
-            background: #dc3545;
-            color: white;
-        }
+        /* 页面特有样式 */
         .coupon-corner {
             position: absolute;
             top: 0;
@@ -139,17 +28,6 @@
         .corner-expired {
             border-width: 30px 30px 0 0;
             border-color: #dc3545 transparent transparent transparent;
-        }
-        .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 15px;
-        }
-        .exchange-section {
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 2rem;
         }
     </style>
 </head>

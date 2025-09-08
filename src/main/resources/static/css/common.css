@@ -1,0 +1,643 @@
+/* 在线教育系统 - 公共样式文件 */
+/* 适用于 student、admin、teacher 模块的通用样式 */
+
+/* ========== 基础样式 ========== */
+body {
+    background-color: #f8f9fa;
+}
+
+/* ========== 导航栏样式 ========== */
+.navbar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* ========== 侧边栏样式 ========== */
+.sidebar {
+    background: white;
+    min-height: calc(100vh - 76px);
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+
+.sidebar .nav-link {
+    color: #495057;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #f8f9fa;
+    color: #667eea;
+}
+
+.sidebar .nav-link.active {
+    background-color: #667eea;
+    color: white;
+}
+
+/* ========== 主内容区样式 ========== */
+.main-content {
+    padding: 2rem;
+}
+
+/* ========== 卡片样式 ========== */
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px 15px 0 0 !important;
+    padding: 1.5rem;
+}
+
+/* ========== 按钮样式 ========== */
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 10px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* ========== 统计卡片样式 ========== */
+.stats-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+}
+
+/* ========== 课程卡片样式 ========== */
+.course-card {
+    transition: transform 0.3s;
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+/* ========== 表单样式 ========== */
+.form-control {
+    border-radius: 10px;
+}
+
+/* ========== 警告框样式 ========== */
+.alert {
+    border-radius: 10px;
+}
+
+/* ========== 筛选标签页样式 ========== */
+.filter-tabs {
+    background: white;
+    border-radius: 15px;
+    padding: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.filter-tabs .nav-link {
+    border: none;
+    border-radius: 10px;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.filter-tabs .nav-link.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+/* ========== 订单卡片样式 ========== */
+.order-card {
+    transition: transform 0.3s;
+    margin-bottom: 1rem;
+}
+
+.order-card:hover {
+    transform: translateY(-2px);
+}
+
+/* ========== 文件项样式 ========== */
+.file-item {
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.file-item:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+/* ========== 文件图标样式 ========== */
+.file-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.file-pdf {
+    background: #dc3545;
+}
+
+.file-doc {
+    background: #007bff;
+}
+
+.file-ppt {
+    background: #fd7e14;
+}
+
+.file-video {
+    background: #6f42c1;
+}
+
+.file-image {
+    background: #28a745;
+}
+
+.file-zip {
+    background: #6c757d;
+}
+
+.file-code {
+    background: #20c997;
+}
+
+/* ========== 优惠券样式 ========== */
+.coupon-card {
+    border: 2px dashed #e9ecef;
+    border-radius: 15px;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.coupon-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.coupon-available {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+}
+
+.coupon-used {
+    border-color: #6c757d;
+    background: #f8f9fa;
+    opacity: 0.7;
+}
+
+.coupon-expired {
+    border-color: #dc3545;
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    opacity: 0.8;
+}
+
+.coupon-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #dc3545;
+}
+
+.coupon-type {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.coupon-code {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    background: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px dashed #dee2e6;
+}
+
+.coupon-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.status-available {
+    background: #28a745;
+    color: white;
+}
+
+.status-used {
+    background: #6c757d;
+    color: white;
+}
+
+.status-expired {
+    background: #dc3545;
+    color: white;
+}
+
+/* ========== 课程学习页面样式 ========== */
+.course-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem 0;
+}
+
+.course-content {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    margin: 2rem 0;
+    overflow: hidden;
+}
+
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    background: #000;
+}
+
+.video-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    text-align: center;
+}
+
+.course-info {
+    padding: 2rem;
+}
+
+.chapter-list {
+    background: #f8f9fa;
+    border-left: 3px solid #667eea;
+}
+
+.chapter-item {
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.chapter-item:hover {
+    background-color: #e9ecef;
+}
+
+.chapter-item.active {
+    background-color: #667eea;
+    color: white;
+}
+
+.progress-bar {
+    height: 8px;
+    border-radius: 4px;
+}
+
+/* ========== 支付页面样式 ========== */
+.payment-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.order-info {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.payment-method {
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.payment-method:hover {
+    border-color: #667eea;
+    background-color: #f8f9fa;
+}
+
+.payment-method.selected {
+    border-color: #667eea;
+    background-color: #e7f3ff;
+}
+
+.payment-method input[type="radio"] {
+    margin-right: 0.5rem;
+}
+
+.balance-info {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.price-display {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #dc3545;
+}
+
+.countdown {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* ========== 个人资料页面样式 ========== */
+.profile-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px 15px 0 0;
+    text-align: center;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 5px solid white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* ========== 上传区域样式 ========== */
+.upload-area {
+    border: 2px dashed #667eea;
+    border-radius: 15px;
+    padding: 3rem;
+    text-align: center;
+    background: linear-gradient(135deg, #f8f9ff 0%, #e9ecff 100%);
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.upload-area:hover {
+    border-color: #764ba2;
+    background: linear-gradient(135deg, #e9ecff 0%, #d4d8ff 100%);
+}
+
+.upload-area.dragover {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+}
+
+/* ========== 文件夹样式 ========== */
+.folder-item {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    border: 2px dashed #fd7e14;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.folder-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* ========== 兑换区域样式 ========== */
+.exchange-section {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* ========== 面包屑导航样式 ========== */
+.breadcrumb-item a {
+    color: #667eea;
+    text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+    color: #764ba2;
+}
+
+/* ========== 文件大小和日期样式 ========== */
+.file-size {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.file-date {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+/* ========== 漏洞标识样式 ========== */
+.vulnerability-badge {
+    background: #dc3545;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+}
+
+/* ========== 余额显示样式 ========== */
+.balance-display {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* ========== 证书徽章样式 ========== */
+.certificate-badge {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    color: #856404;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+/* ========== 课程进度样式 ========== */
+.course-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 0.5rem;
+}
+
+.progress-bar-custom {
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.3);
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+/* ========== 课程状态样式 ========== */
+.course-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.status-learning {
+    background: #28a745;
+    color: white;
+}
+
+.status-completed {
+    background: #007bff;
+    color: white;
+}
+
+.status-not-started {
+    background: #6c757d;
+    color: white;
+}
+
+/* ========== 课程图片样式 ========== */
+.course-image {
+    height: 200px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.course-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ========== 课程信息样式 ========== */
+.course-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+}
+
+.course-instructor {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.course-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+/* ========== 响应式设计 ========== */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 1rem;
+    }
+    
+    .card-header {
+        padding: 1rem;
+    }
+    
+    .course-card {
+        margin-bottom: 1rem;
+    }
+    
+    .payment-container {
+        margin: 1rem auto;
+        padding: 0 0.5rem;
+    }
+    
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .upload-area {
+        padding: 2rem 1rem;
+    }
+}
+
+/* ========== 动画效果 ========== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* ========== 工具类 ========== */
+.text-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.shadow-custom {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.border-radius-custom {
+    border-radius: 15px;
+}
+
+.hover-lift {
+    transition: transform 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+}
