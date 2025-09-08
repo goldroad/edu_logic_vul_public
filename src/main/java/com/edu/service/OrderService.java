@@ -5,6 +5,7 @@ import com.edu.entity.Order;
 import com.edu.entity.User;
 import com.edu.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -284,5 +285,38 @@ public class OrderService {
         public long getPaidCount() { return paidCount; }
         public long getPendingCount() { return pendingCount; }
         public long getCancelledCount() { return cancelledCount; }
+    }
+    
+    /**
+     * 自动关闭过期订单的定时任务
+     * 每分钟执行一次，关闭15分钟前创建且仍未支付的订单
+     */
+    @Scheduled(fixedRate = 60000) // 每分钟执行一次（60000毫秒）
+    public void autoCloseExpiredOrders() {
+        try {
+            // 计算15分钟前的时间
+            LocalDateTime expireTime = LocalDateTime.now().minusMinutes(15);
+            
+            // 查询过期的待支付订单
+            List<Order> expiredOrders = orderRepository.findPendingOrdersBeforeTime(expireTime);
+            
+            // 批量关闭过期订单
+            for (Order order : expiredOrders) {
+                order.setStatus(Order.OrderStatus.CANCELLED);
+                orderRepository.update(order);
+                System.out.println("自动关闭过期订单: " + order.getOrderNo() + 
+                                 ", 创建时间: " + order.getCreateTime() + 
+                                 ", 课程: " + (order.getCourse() != null ? order.getCourse().getTitle() : "未知"));
+            }
+            
+            // 输出执行结果
+            if (!expiredOrders.isEmpty()) {
+                System.out.println("定时任务执行完成，本次自动关闭了 " + expiredOrders.size() + " 个过期订单");
+            }
+            
+        } catch (Exception e) {
+            System.err.println("自动关闭过期订单失败: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

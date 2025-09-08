@@ -500,4 +500,59 @@ public class StudentController {
         return "student/course-learn";
     }
     
+    /**
+     * 取消订单
+     */
+    @PostMapping("/cancel-order")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> cancelOrder(@RequestBody Map<String, Object> request,
+                                                          HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            response.put("success", false);
+            response.put("message", "请先登录");
+            return ResponseEntity.ok(response);
+        }
+        
+        try {
+            String orderNo = request.get("orderNo").toString();
+            Order order = orderService.findByOrderNo(orderNo);
+            
+            if (order == null) {
+                response.put("success", false);
+                response.put("message", "订单不存在");
+                return ResponseEntity.ok(response);
+            }
+            
+            // 验证订单是否属于当前用户
+            if (!order.getUserId().equals(user.getId())) {
+                response.put("success", false);
+                response.put("message", "无权操作此订单");
+                return ResponseEntity.ok(response);
+            }
+            
+            // 只能取消待支付的订单
+            if (order.getStatus() != Order.OrderStatus.PENDING) {
+                response.put("success", false);
+                response.put("message", "只能取消待支付的订单");
+                return ResponseEntity.ok(response);
+            }
+            
+            // 更新订单状态
+            order.setStatus(Order.OrderStatus.CANCELLED);
+            orderService.save(order);
+            
+            response.put("success", true);
+            response.put("message", "订单取消成功");
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "取消订单失败: " + e.getMessage());
+        }
+        
+        return ResponseEntity.ok(response);
+    }
+    
 }

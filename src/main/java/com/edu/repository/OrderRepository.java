@@ -104,4 +104,18 @@ public interface OrderRepository {
      */
     @Select("SELECT COALESCE(SUM(final_amount), 0) FROM `order` WHERE status = 'PAID'")
     double getTotalRevenue();
+    
+    /**
+     * 查询指定时间之前创建且状态为PENDING的订单（用于自动关闭过期订单）
+     */
+    @Select("SELECT * FROM `order` WHERE status = 'PENDING' AND create_time < #{expireTime}")
+    @Results({
+        @Result(property = "userId", column = "user_id"),
+        @Result(property = "courseId", column = "course_id"),
+        @Result(property = "user", column = "user_id", 
+                one = @One(select = "com.edu.repository.UserRepository.findById")),
+        @Result(property = "course", column = "course_id", 
+                one = @One(select = "com.edu.repository.CourseRepository.findById"))
+    })
+    List<Order> findPendingOrdersBeforeTime(java.time.LocalDateTime expireTime);
 }
