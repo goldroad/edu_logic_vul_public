@@ -7,20 +7,61 @@
     <link href="/edu/css/bootstrap.min.css" rel="stylesheet">
     <link href="/edu/css/all.min.css" rel="stylesheet">
     <style>
+        /* 统一风格（与 student 其他页面一致） */
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            background-color: #f8f9fa;
         }
         .navbar {
-            background: rgba(255,255,255,0.1) !important;
-            backdrop-filter: blur(10px);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        .profile-container {
+        .sidebar {
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            margin: 2rem 0;
+            min-height: calc(100vh - 76px);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
         }
+        .sidebar .nav-link {
+            color: #495057;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .sidebar .nav-link:hover {
+            background-color: #f8f9fa;
+            color: #667eea;
+        }
+        .sidebar .nav-link.active {
+            background-color: #667eea;
+            color: white;
+        }
+        .main-content {
+            padding: 2rem;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 1.5rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .alert {
+            border-radius: 10px;
+        }
+
+        /* 个人资料页专用样式（在统一风格基础上补充） */
         .profile-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -35,18 +76,13 @@
             border: 5px solid white;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 10px;
-        }
         .form-control {
             border-radius: 10px;
         }
     </style>
 </head>
 <body>
-    <!-- 导航栏 -->
+    <!-- 导航栏（统一） -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="/edu/student/dashboard">
@@ -69,102 +105,142 @@
         </div>
     </nav>
 
-    <div class="container mt-4">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="profile-container">
-                    <div class="profile-header">
-                        <img th:src="@{/images/avatar-default.png}" 
-                             src="https://via.placeholder.com/120x120/667eea/ffffff?text=头像" 
-                             alt="用户头像" class="profile-avatar mb-3">
-                        <h3 th:text="${targetUser.realName}">用户姓名</h3>
-                        <p class="mb-0" th:text="'@' + ${targetUser.username}">@username</p>
-                    </div>
-                    
-                    <div class="p-4">
-                        <!-- 基本信息 -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>基本信息</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label"><strong>用户名</strong></label>
-                                        <input type="text" class="form-control" th:value="${targetUser.username}" readonly>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label"><strong>真实姓名</strong></label>
-                                        <input type="text" class="form-control" th:value="${targetUser.realName}" readonly>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label"><strong>邮箱地址</strong></label>
-                                        <input type="email" class="form-control" th:value="${targetUser.email}" readonly>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label"><strong>手机号码</strong></label>
-                                        <input type="tel" class="form-control" th:value="${targetUser.phone}" readonly>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label"><strong>用户角色</strong></label>
-                                        <input type="text" class="form-control" th:value="${targetUser.role}" readonly>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label"><strong>账户余额</strong></label>
-                                        <input type="text" class="form-control" th:value="'¥' + ${targetUser.balance}" readonly>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 账户状态 -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i>账户状态</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label"><strong>账户状态</strong></label>
-                                        <div>
-                                            <span th:if="${targetUser.enabled}" class="badge bg-success">
-                                                <i class="fas fa-check-circle me-1"></i>已启用
-                                            </span>
-                                            <span th:unless="${targetUser.enabled}" class="badge bg-danger">
-                                                <i class="fas fa-times-circle me-1"></i>已禁用
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label"><strong>注册时间</strong></label>
-                                        <input type="text" class="form-control" 
-                                               th:value="${#temporals.format(targetUser.createTime, 'yyyy-MM-dd HH:mm:ss')}" readonly>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 操作按钮 -->
-                        <div class="card" th:if="${isOwnProfile}">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="fas fa-tools me-2"></i>账户操作</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                                    <button type="button" class="btn btn-primary me-md-2" onclick="editProfile()">
-                                        <i class="fas fa-edit me-1"></i>编辑资料
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary me-md-2" onclick="changePassword()">
-                                        <i class="fas fa-key me-1"></i>修改密码
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <!-- 页面布局：左侧菜单 + 主内容（统一） -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 侧边栏 -->
+            <div class="col-md-3 col-lg-2 px-0">
+                <div class="sidebar">
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="/edu/student/dashboard">
+                            <i class="fas fa-tachometer-alt me-2"></i>仪表盘
+                        </a>
+                        <a class="nav-link" href="/edu/student/courses">
+                            <i class="fas fa-book me-2"></i>我的课程
+                        </a>
+                        <a class="nav-link" href="/edu/student/orders">
+                            <i class="fas fa-shopping-cart me-2"></i>订单管理
+                        </a>
+                        <a class="nav-link" href="/edu/student/coupons">
+                            <i class="fas fa-ticket-alt me-2"></i>优惠券
+                        </a>
+                        <a class="nav-link" href="/edu/student/files">
+                            <i class="fas fa-folder me-2"></i>文件管理
+                        </a>
+                        <a class="nav-link active" th:href="@{/student/profile(id=${user.id})}">
+                            <i class="fas fa-user me-2"></i>个人资料
+                        </a>
+                    </nav>
                 </div>
             </div>
-        </div>
-    </div>
+
+            <!-- 主内容区 -->
+            <div class="col-md-9 col-lg-10">
+                <div class="main-content">
+                    <!-- 页面标题与面包屑（与其他页面一致的顶部区块） -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-user me-2"></i>个人资料</h2>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="/edu/student/dashboard">学习中心</a></li>
+                                <li class="breadcrumb-item active">个人资料</li>
+                            </ol>
+                        </nav>
+                    </div>
+
+                    <!-- 头像与基本展示 -->
+                    <div class="card mb-4">
+                        <div class="profile-header">
+                            <img th:src="@{/images/avatar-default.png}"
+                                 src="https://via.placeholder.com/120x120/667eea/ffffff?text=头像"
+                                 alt="用户头像" class="profile-avatar mb-3">
+                            <h3 th:text="${targetUser.realName}">用户姓名</h3>
+                            <p class="mb-0" th:text="'@' + ${targetUser.username}">@username</p>
+                        </div>
+                    </div>
+
+                    <!-- 基本信息 -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>基本信息</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label"><strong>用户名</strong></label>
+                                    <input type="text" class="form-control" th:value="${targetUser.username}" readonly>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label"><strong>真实姓名</strong></label>
+                                    <input type="text" class="form-control" th:value="${targetUser.realName}" readonly>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label"><strong>邮箱地址</strong></label>
+                                    <input type="email" class="form-control" th:value="${targetUser.email}" readonly>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label"><strong>手机号码</strong></label>
+                                    <input type="tel" class="form-control" th:value="${targetUser.phone}" readonly>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label"><strong>用户角色</strong></label>
+                                    <input type="text" class="form-control" th:value="${targetUser.role}" readonly>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label"><strong>账户余额</strong></label>
+                                    <input type="text" class="form-control" th:value="'¥' + ${targetUser.balance}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 账户状态 -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i>账户状态</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label"><strong>账户状态</strong></label>
+                                    <div>
+                                        <span th:if="${targetUser.enabled}" class="badge bg-success">
+                                            <i class="fas fa-check-circle me-1"></i>已启用
+                                        </span>
+                                        <span th:unless="${targetUser.enabled}" class="badge bg-danger">
+                                            <i class="fas fa-times-circle me-1"></i>已禁用
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label"><strong>注册时间</strong></label>
+                                    <input type="text" class="form-control"
+                                           th:value="${#temporals.format(targetUser.createTime, 'yyyy-MM-dd HH:mm:ss')}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮（仅本人可见） -->
+                    <div class="card" th:if="${isOwnProfile}">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-tools me-2"></i>账户操作</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                                <button type="button" class="btn btn-primary me-md-2" onclick="editProfile()">
+                                    <i class="fas fa-edit me-1"></i>编辑资料
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary me-md-2" onclick="changePassword()">
+                                    <i class="fas fa-key me-1"></i>修改密码
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- /main-content -->
+            </div> <!-- /col -->
+        </div> <!-- /row -->
+    </div> <!-- /container-fluid -->
 
     <script src="/edu/js/bootstrap.bundle.min.js"></script>
     <script th:inline="javascript">
