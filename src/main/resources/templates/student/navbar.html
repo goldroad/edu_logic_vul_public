@@ -1,0 +1,50 @@
+<div xmlns:th="http://www.thymeleaf.org">
+    <!-- 学生导航栏公共组件 -->
+    <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/edu/student/dashboard">
+                <i class="fas fa-graduation-cap me-2"></i>在线教育系统
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle me-1"></i>
+                        <span th:text="${user != null ? user.realName : '学生'}">学生</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/edu/auth/logout">
+                            <i class="fas fa-sign-out-alt me-2"></i>退出登录
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 课程学习页面专用导航栏（包含返回仪表盘选项） -->
+    <nav th:fragment="navbar-with-dashboard" class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/edu/student/dashboard">
+                <i class="fas fa-graduation-cap me-2"></i>在线教育系统
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle me-1"></i>
+                        <span th:text="${user != null ? user.realName : '学生'}">学生</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/edu/student/dashboard">
+                            <i class="fas fa-tachometer-alt me-2"></i>返回仪表盘
+                        </a></li>
+                        <li><a class="dropdown-item" href="/edu/auth/logout">
+                            <i class="fas fa-sign-out-alt me-2"></i>退出登录
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>

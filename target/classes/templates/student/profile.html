@@ -9,28 +9,8 @@
     <link href="/edu/css/common.css" rel="stylesheet">
 </head>
 <body>
-    <!-- 导航栏（统一） -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/edu/student/dashboard">
-                <i class="fas fa-graduation-cap me-2"></i>在线教育系统
-            </a>
-            
-            <div class="navbar-nav ms-auto">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-circle me-1"></i>
-                        <span th:text="${user.realName}">用户姓名</span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/edu/auth/logout">
-                            <i class="fas fa-sign-out-alt me-2"></i>退出登录
-                        </a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <!-- 导航栏 -->
+    <div th:replace="~{student/navbar :: navbar}"></div>
 
     <!-- 页面布局：左侧菜单 + 主内容（统一） -->
     <div class="container-fluid">

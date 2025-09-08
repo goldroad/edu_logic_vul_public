@@ -318,7 +318,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('登录成功！');
+                    // lert('登录成功！');
                     // 根据用户角色跳转到不同页面
                     if (data.user && data.user.role) {
                         switch (data.user.role) {
