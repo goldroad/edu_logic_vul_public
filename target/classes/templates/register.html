@@ -166,6 +166,7 @@
     </div>
 
     <script src="/edu/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
     <script>
         // 密码确认验证
         document.getElementById('confirmPassword').addEventListener('blur', function() {
@@ -183,14 +184,59 @@
         
         // 表单提交验证
         document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const realName = document.getElementById('realName').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const role = document.getElementById('role').value;
+            const agreement = document.getElementById('agreement').checked;
             
+            // 前端验证
             if (password !== confirmPassword) {
-                e.preventDefault();
                 alert('密码和确认密码不匹配！');
                 return false;
             }
+            
+            if (!agreement) {
+                alert('请同意用户协议和隐私政策！');
+                return false;
+            }
+            
+            // 对密码进行MD5加密
+            const hashedPassword = md5(password);
+            
+            // 发送注册请求
+            fetch('/edu/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    realName: realName,
+                    password: hashedPassword,
+                    email: email,
+                    phone: phone,
+                    role: role
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('注册成功！请登录。');
+                    window.location.href = '/edu/auth/login';
+                } else {
+                    alert('注册失败：' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('注册失败，请稍后重试');
+            });
         });
         
         // 快速填充测试数据

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -21,6 +23,7 @@ public class DataInitializer implements CommandLineRunner {
         Thread.sleep(2000);
         // 启动时不需要再初始化
         // initializeDataFromSql();
+
     }
     
     private void initializeDataFromSql() {
@@ -54,4 +57,5 @@ public class DataInitializer implements CommandLineRunner {
             throw new RuntimeException("重置数据失败", e);
         }
     }
+    
 }

@@ -298,6 +298,7 @@
     </div>
 
     <script src="/edu/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
     <script>
         // 个人信息表单提交
         document.getElementById('profileForm').addEventListener('submit', function(e) {
@@ -353,13 +354,17 @@
                 return;
             }
             
+            // 对密码进行MD5加密
+            const hashedCurrentPassword = md5(currentPassword);
+            const hashedNewPassword = md5(newPassword);
+            
             const data = {
-                currentPassword: currentPassword,
-                newPassword: newPassword,
-                confirmPassword: confirmPassword
+                currentPassword: hashedCurrentPassword,
+                newPassword: hashedNewPassword,
+                confirmPassword: hashedNewPassword
             };
             
-            fetch('/edu/admin/api/profile/change-password', {
+            fetch('/edu/api/profile/change-password', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

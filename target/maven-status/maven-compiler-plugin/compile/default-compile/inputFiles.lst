@@ -1,6 +1,7 @@
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\controller\PageController.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\service\DashboardService.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\controller\AdminUserController.java
+C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\controller\ProfileController.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\service\OrderService.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\controller\AdminController.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\controller\CourseFileController.java
@@ -26,6 +27,7 @@ C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\entity\File
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\entity\Course.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\repository\CourseRepository.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\repository\UserRepository.java
+C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\util\PasswordUtil.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\controller\WebAuthController.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\controller\StudentController.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\service\UserCouponService.java
@@ -34,6 +36,7 @@ C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\service\Use
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\entity\User.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\controller\SystemController.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\service\CourseService.java
+C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\controller\TestController.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\controller\AuthController.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\entity\Order.java
 C:\Users\Administrator\CodeBuddy\edu_logic_vul\src\main\java\com\edu\repository\UserCouponRepository.java

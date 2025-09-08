@@ -217,6 +217,7 @@
     </div>
 
     <script src="/edu/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
     <script>
         // 验证码相关功能
         function refreshCaptcha() {
@@ -279,7 +280,7 @@
             testAccounts.addEventListener('click', function(e) {
                 const text = e.target.textContent;
                 if (text.includes('admin')) {
-                    fillLogin('admin', '666666');
+                    fillLogin('admin', '123456');
                 } else if (text.includes('teacher')) {
                     fillLogin('teacher', 'teacher123');
                 } else if (text.includes('student')) {
@@ -292,7 +293,59 @@
         
         // 表单提交前的处理
         document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             console.log('登录表单提交');
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const captcha = document.getElementById('captcha').value;
+            
+            // 对密码进行MD5加密
+            const hashedPassword = md5(password);
+            
+            // 发送登录请求
+            fetch('/edu/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: hashedPassword,
+                    captcha: captcha
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('登录成功！');
+                    // 根据用户角色跳转到不同页面
+                    if (data.user && data.user.role) {
+                        switch (data.user.role) {
+                            case 'ADMIN':
+                                window.location.href = '/edu/admin/dashboard';
+                                break;
+                            case 'TEACHER':
+                                window.location.href = '/edu/teacher/dashboard';
+                                break;
+                            case 'STUDENT':
+                            default:
+                                window.location.href = '/edu/student/dashboard';
+                                break;
+                        }
+                    } else {
+                        window.location.href = '/edu/student/dashboard';
+                    }
+                } else {
+                    alert('登录失败：' + data.message);
+                    refreshCaptcha(); // 刷新验证码
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('登录失败，请稍后重试');
+                refreshCaptcha(); // 刷新验证码
+            });
         });
     </script>
 </body>

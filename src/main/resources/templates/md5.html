@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>密码MD5加密测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"], input[type="password"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            border-radius: 5px;
+        }
+        .result h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .hash-result {
+            font-family: monospace;
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 3px;
+            word-break: break-all;
+            margin: 5px 0;
+        }
+    </style>
+    <!-- 引入MD5库 -->
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>密码MD5加密测试</h1>
+        
+        <div class="form-group">
+            <label for="password">输入密码:</label>
+            <input type="password" id="password" placeholder="请输入要加密的密码">
+        </div>
+        
+        <div class="form-group">
+            <label for="caseOption">输出格式:</label>
+            <select id="caseOption">
+                <option value="lowercase">小写字母</option>
+                <option value="uppercase">大写字母</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <button onclick="testMD5()">MD5加密测试</button>
+            <button onclick="clearResults()">清空结果</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // 简化的MD5函数（使用crypto-js库）
+        function md5(string) {
+            return CryptoJS.MD5(string).toString();
+        }
+
+        function testMD5() {
+            const password = document.getElementById('password').value;
+            const caseOption = document.getElementById('caseOption').value;
+            
+            if (!password) {
+                alert('请输入密码！');
+                return;
+            }
+            
+            // 计算MD5哈希
+            let md5Hash = md5(password);
+            
+            // 根据选择转换大小写
+            if (caseOption === 'uppercase') {
+                md5Hash = md5Hash.toUpperCase();
+            } else {
+                md5Hash = md5Hash.toLowerCase();
+            }
+            
+            // 显示结果
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="result">
+                    <h3>MD5加密结果</h3>
+                    <p><strong>原始密码:</strong> ${password}</p>
+                    <p><strong>输出格式:</strong> ${caseOption === 'uppercase' ? '大写字母' : '小写字母'}</p>
+                    <p><strong>MD5哈希值:</strong></p>
+                    <div class="hash-result">${md5Hash}</div>
+                    <p><strong>哈希长度:</strong> ${md5Hash.length} 字符</p>
+                </div>
+            `;
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('password').value = '';
+        }
+        
+        // 回车键触发加密
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                testMD5();
+            }
+        });
+    </script>
+</body>
+</html>

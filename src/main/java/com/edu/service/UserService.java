@@ -2,6 +2,7 @@ package com.edu.service;
 
 import com.edu.entity.User;
 import com.edu.repository.UserRepository;
+import com.edu.util.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ public class UserService {
     private UserRepository userRepository;
     
     /**
-     * 用户登录验证
+     * 用户登录验证（前端已MD5加密）
      */
     public String login(String username, String password) {
         User user = userRepository.findByUsernameOrEmailOrPhone(username);
@@ -24,7 +25,8 @@ public class UserService {
             return "用户名不存在";
         }
         
-        if (!user.getPassword().equals(password)) {
+        // 验证密码（前端已MD5加密，直接比较）
+        if (!PasswordUtil.verifyPassword(password, user.getPassword())) {
             return "密码错误";
         }
         
@@ -33,6 +35,102 @@ public class UserService {
         }
         
         return "登录成功";
+    }
+    
+    /**
+     * 用户注册处理（前端已MD5加密）
+     */
+    public User registerWithoutValidation(String username, String password, String email, String phone) {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password); // 前端已MD5加密，直接存储
+        user.setEmail(email != null && !email.trim().isEmpty() ? email : null);
+        user.setPhone(phone != null && !phone.trim().isEmpty() ? phone : null);
+        user.setRole(User.Role.STUDENT);
+        user.setEnabled(true);
+        userRepository.save(user);
+        return user;
+    }
+    
+    /**
+     * 忘记密码功能（前端已MD5加密）
+     */
+    public String resetPassword(String username, String newPassword) {
+        User user = userRepository.findByUsernameOrEmailOrPhone(username);
+        if (user != null) {
+            user.setPassword(newPassword); // 前端已MD5加密，直接存储
+            user.setUpdateTime(LocalDateTime.now());
+            userRepository.update(user);
+            return "密码重置成功";
+        }
+        return "用户不存在";
+    }
+    
+    /**
+     * 修改用户密码（前端已MD5加密）
+     */
+    public String changePassword(Long userId, String currentPassword, String newPassword) {
+        User user = userRepository.findById(userId);
+        if (user == null) {
+            return "用户不存在";
+        }
+        
+        // 验证当前密码
+        if (!PasswordUtil.verifyPassword(currentPassword, user.getPassword())) {
+            return "当前密码错误";
+        }
+        
+        // 设置新密码
+        user.setPassword(newPassword); // 前端已MD5加密，直接存储
+        user.setUpdateTime(LocalDateTime.now());
+        userRepository.update(user);
+        
+        return "密码修改成功";
+    }
+    
+    /**
+     * 创建新用户
+     */
+    public User createUser(String username, String password, String realName, String email, String phone, String role) {
+        User user = new User();
+        user.setUsername(username);
+        
+        // 对明文密码进行MD5加密
+        user.setPassword(PasswordUtil.hashPassword(password));
+        
+        user.setRealName(realName != null && !realName.trim().isEmpty() ? realName : null);
+        user.setEmail(email != null && !email.trim().isEmpty() ? email : null);
+        user.setPhone(phone != null && !phone.trim().isEmpty() ? phone : null);
+        
+        // 设置角色
+        try {
+            user.setRole(User.Role.valueOf(role));
+        } catch (IllegalArgumentException e) {
+            user.setRole(User.Role.STUDENT); // 默认为学生
+        }
+        
+        user.setEnabled(true);
+        user.setBalance(0.0);
+        user.setCreateTime(LocalDateTime.now());
+        user.setUpdateTime(LocalDateTime.now());
+        
+        userRepository.save(user);
+        return user;
+    }
+    
+    /**
+     * 重置用户密码
+     */
+    public boolean resetUserPassword(Long userId, String newPassword) {
+        User user = userRepository.findById(userId);
+        if (user != null) {
+            // 对明文密码进行MD5加密
+            user.setPassword(PasswordUtil.hashPassword(newPassword));
+            user.setUpdateTime(LocalDateTime.now());
+            userRepository.update(user);
+            return true;
+        }
+        return false;
     }
     
     /**
@@ -47,7 +145,7 @@ public class UserService {
         
         User user = new User();
         user.setUsername(username);
-        user.setPassword("123456"); // 弱口令
+        user.setPassword(PasswordUtil.hashPassword("123456")); // 弱口令MD5加密
         user.setEmail(username + "@example.com");
         user.setPhone("13800000099");
         user.setRealName("弱口令用户");
@@ -58,50 +156,12 @@ public class UserService {
         return user;
     }
     
-    /**
-     * 用户注册处理
-     */
-    public User registerWithoutValidation(String username, String password, String email, String phone) {
-        // 用户注册处理
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setEmail(email != null && !email.trim().isEmpty() ? email : null);
-        user.setPhone(phone != null && !phone.trim().isEmpty() ? phone : null);
-        user.setRole(User.Role.STUDENT);
-        user.setEnabled(true);
-        userRepository.save(user);
-        return user;
-    }
-    
-    /**
-     * 忘记密码功能
-     */
-    public String resetPassword(String username, String newPassword) {
-        // 密码重置处理
-        User user = userRepository.findByUsernameOrEmailOrPhone(username);
-        if (user != null) {
-            user.setPassword(newPassword);
-            user.setUpdateTime(LocalDateTime.now());
-            userRepository.update(user);
-            return "密码重置成功";
-        }
-        return "用户不存在";
-    }
-    
-    /**
-     * 根据ID获取用户信息
-     */
+    // 其他基础方法
     public User getUserById(Long id) {
-        // 获取用户信息
         return userRepository.findById(id);
     }
     
-    /**
-     * 根据角色获取用户列表
-     */
     public List<User> getUsersByRole(String role) {
-        // 获取用户列表
         return userRepository.findAll().stream()
                 .filter(user -> user.getRole().name().equals(role))
                 .collect(java.util.stream.Collectors.toList());
@@ -135,33 +195,6 @@ public class UserService {
     
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
-    }
-    
-    /**
-     * 创建新用户
-     */
-    public User createUser(String username, String password, String realName, String email, String phone, String role) {
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setRealName(realName != null && !realName.trim().isEmpty() ? realName : null);
-        user.setEmail(email != null && !email.trim().isEmpty() ? email : null);
-        user.setPhone(phone != null && !phone.trim().isEmpty() ? phone : null);
-        
-        // 设置角色
-        try {
-            user.setRole(User.Role.valueOf(role));
-        } catch (IllegalArgumentException e) {
-            user.setRole(User.Role.STUDENT); // 默认为学生
-        }
-        
-        user.setEnabled(true);
-        user.setBalance(0.0);
-        user.setCreateTime(LocalDateTime.now());
-        user.setUpdateTime(LocalDateTime.now());
-        
-        userRepository.save(user);
-        return user;
     }
     
     /**
@@ -243,20 +276,6 @@ public class UserService {
                     return false;
                 }
             }
-            user.setUpdateTime(LocalDateTime.now());
-            userRepository.update(user);
-            return true;
-        }
-        return false;
-    }
-    
-    /**
-     * 重置用户密码
-     */
-    public boolean resetUserPassword(Long userId, String newPassword) {
-        User user = userRepository.findById(userId);
-        if (user != null) {
-            user.setPassword(newPassword);
             user.setUpdateTime(LocalDateTime.now());
             userRepository.update(user);
             return true;

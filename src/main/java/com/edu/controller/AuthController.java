@@ -4,6 +4,7 @@ import com.edu.entity.User;
 import com.edu.service.SimpleCaptchaService;
 import com.edu.service.UserService;
 import com.edu.service.LoginLogService;
+import com.edu.util.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,7 +53,7 @@ public class AuthController {
             return response;
         }
         
-        // 用户登录验证
+        // 用户登录验证（前端已MD5加密）
         String result = userService.login(username, password);
         
         if ("登录成功".equals(result)) {
@@ -94,7 +95,7 @@ public class AuthController {
         Map<String, Object> response = new HashMap<>();
         
         try {
-            // 用户注册处理
+            // 用户注册处理（前端已MD5加密）
             User user = userService.registerWithoutValidation(username, password, email, phone);
             response.put("success", true);
             response.put("message", "注册成功");
@@ -117,7 +118,7 @@ public class AuthController {
         
         Map<String, Object> response = new HashMap<>();
         
-        // 密码重置处理
+        // 密码重置处理（前端已MD5加密）
         String result = userService.resetPassword(username, newPassword);
         
         response.put("success", "密码重置成功".equals(result));

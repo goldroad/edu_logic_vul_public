@@ -39,6 +39,8 @@ com\edu\controller\AdminController.class
 com\edu\entity\Course.class
 com\edu\entity\LoginLog.class
 com\edu\service\UserCouponService.class
+com\edu\util\PasswordUtil.class
+com\edu\controller\TestController.class
 com\edu\repository\CourseRepository.class
 com\edu\entity\UserCoupon$CouponType.class
 com\edu\service\CourseService.class
@@ -56,3 +58,4 @@ com\edu\entity\Course$CourseStatus.class
 com\edu\service\UserService$UserStatistics.class
 com\edu\controller\CourseFileController.class
 com\edu\service\CouponService.class
+com\edu\controller\ProfileController.class

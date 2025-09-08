@@ -62,6 +62,14 @@ java -jar target/edu-logic-vul-1.0.0.jar
 
 打开浏览器访问：http://localhost:8081/edu
 
+
+密码自动填充的值在 login.html里面
+
+MD5加密：
+http://localhost:8081/edu/md5
+
+
+
 ## 功能特性
 
 ### 用户管理
