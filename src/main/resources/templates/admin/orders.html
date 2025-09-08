@@ -7,94 +7,17 @@
     <link href="/edu/css/bootstrap.min.css" rel="stylesheet">
     <link href="/edu/css/all.min.css" rel="stylesheet">
     <link href="/edu/css/common.css" rel="stylesheet">
+    <link href="/edu/css/admin-common.css" rel="stylesheet">
     <style>
-        /* Admin 特有样式 - 红色主题 */
-        .navbar {
-            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
-        }
-        .sidebar .nav-link:hover {
-            color: #dc3545;
-        }
-        .sidebar .nav-link.active {
-            background-color: #dc3545;
-            color: white;
-        }
-        .sidebar .nav-link.active:hover {
-            background-color: #dc3545;
-            color: white;
-        }
-        .card-header {
-            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
-        }
-        .admin-badge {
-            background: #dc3545;
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            margin-left: 0.5rem;
-        }
-        .btn-danger {
-            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
-            border: none;
-            border-radius: 10px;
-        }
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
+        /* 订单页面特有样式 */
         .order-table {
             font-size: 0.9rem;
-        }
-        .status-paid {
-            background-color: #28a745;
-            color: white;
-        }
-        .status-pending {
-            background-color: #ffc107;
-            color: #212529;
-        }
-        .status-cancelled {
-            background-color: #dc3545;
-            color: white;
         }
     </style>
 </head>
 <body>
     <!-- 导航栏 -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/edu/admin/dashboard">
-                <i class="fas fa-shield-alt me-2"></i>管理后台
-            </a>
-            
-            <div class="navbar-nav ms-auto">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-shield me-1"></i>
-                        <span th:text="${user != null ? user.realName : '管理员'}">管理员</span>
-                        <span class="admin-badge">ADMIN</span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/edu/admin/profile">
-                            <i class="fas fa-user me-2"></i>管理员资料
-                        </a></li>
-                        <li><a class="dropdown-item" href="/edu/admin/settings">
-                            <i class="fas fa-cog me-2"></i>系统设置
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/edu/student/dashboard">
-                            <i class="fas fa-user me-2"></i>切换到学生视图
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/edu/auth/logout">
-                            <i class="fas fa-sign-out-alt me-2"></i>退出登录
-                        </a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <div th:replace="~{admin/navbar :: navbar}"></div>
 
     <div class="container-fluid">
         <div class="row">

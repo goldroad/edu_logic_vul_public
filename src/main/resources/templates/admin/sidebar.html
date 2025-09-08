@@ -1,56 +1,40 @@
-<div xmlns:th="http://www.thymeleaf.org"
-     th:fragment="sidebar(active)"
-     th:class="${colClasses} ?: 'col-md-3 col-lg-2 px-0'">
-    <div class="sidebar">
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!-- 侧边栏组件 -->
+    <div th:fragment="sidebar(active)" class="col-md-3 col-lg-2 sidebar">
         <nav class="nav flex-column">
-            <a class="nav-link"
-               th:href="@{/admin/dashboard}"
-               th:classappend="${active} == 'dashboard' ? ' active' : ''">
+            <a class="nav-link" th:classappend="${active == 'dashboard'} ? 'active' : ''" href="/edu/admin/dashboard">
                 <i class="fas fa-tachometer-alt me-2"></i>仪表盘
             </a>
-            <a class="nav-link"
-               th:href="@{/admin/users}"
-               th:classappend="${active} == 'users' ? ' active' : ''">
+            <a class="nav-link" th:classappend="${active == 'users'} ? 'active' : ''" href="/edu/admin/users">
                 <i class="fas fa-users me-2"></i>用户管理
             </a>
-            <a class="nav-link"
-               th:href="@{/admin/courses}"
-               th:classappend="${active} == 'courses' ? ' active' : ''">
+            <a class="nav-link" th:classappend="${active == 'courses'} ? 'active' : ''" href="/edu/admin/courses">
                 <i class="fas fa-book me-2"></i>课程管理
             </a>
-            <a class="nav-link"
-               th:href="@{/admin/orders}"
-               th:classappend="${active} == 'orders' ? ' active' : ''">
+            <a class="nav-link" th:classappend="${active == 'orders'} ? 'active' : ''" href="/edu/admin/orders">
                 <i class="fas fa-shopping-cart me-2"></i>订单管理
             </a>
-            <a class="nav-link"
-               th:href="@{/admin/coupons}"
-               th:classappend="${active} == 'coupons' ? ' active' : ''">
+            <a class="nav-link" th:classappend="${active == 'coupons'} ? 'active' : ''" href="/edu/admin/coupons">
                 <i class="fas fa-ticket-alt me-2"></i>优惠券管理
             </a>
-            <a class="nav-link"
-               th:href="@{/admin/profile}"
-               th:classappend="${active} == 'profile' ? ' active' : ''">
-                <i class="fas fa-user me-2"></i>管理员资料
-            </a>
-            <a class="nav-link"
-               th:href="@{/admin/financial}"
-               th:classappend="${active} == 'financial' ? ' active' : ''">
+            <a class="nav-link" th:classappend="${active == 'financial'} ? 'active' : ''" href="/edu/admin/financial">
                 <i class="fas fa-chart-line me-2"></i>财务报表
-                <span class="admin-badge">机密</span>
             </a>
-            <a class="nav-link"
-               th:href="@{/admin/system}"
-               th:classappend="${active} == 'system' ? ' active' : ''">
-                <i class="fas fa-server me-2"></i>系统监控
-                <span class="admin-badge">高危</span>
-            </a>
-            <a class="nav-link"
-               th:href="@{/admin/logs}"
-               th:classappend="${active} == 'logs' ? ' active' : ''">
+            <a class="nav-link" th:classappend="${active == 'logs'} ? 'active' : ''" href="/edu/admin/logs">
                 <i class="fas fa-file-alt me-2"></i>系统日志
-                <span class="admin-badge">敏感</span>
+            </a>
+            <a class="nav-link" th:classappend="${active == 'system'} ? 'active' : ''" href="/edu/admin/system">
+                <i class="fas fa-cog me-2"></i>系统设置
+            </a>
+            <a class="nav-link" th:classappend="${active == 'profile'} ? 'active' : ''" href="/edu/admin/profile">
+                <i class="fas fa-user me-2"></i>个人资料
             </a>
         </nav>
     </div>
-</div>
+</body>
+</html>

@@ -7,67 +7,18 @@
     <link href="/edu/css/bootstrap.min.css" rel="stylesheet">
     <link href="/edu/css/all.min.css" rel="stylesheet">
     <link href="/edu/css/common.css" rel="stylesheet">
+    <link href="/edu/css/admin-common.css" rel="stylesheet">
     <style>
-        /* Admin 特有样式 - 红色主题 */
-        .navbar {
-            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
-        }
-        .sidebar .nav-link:hover {
-            color: #dc3545;
-        }
-        .sidebar .nav-link.active {
-            background-color: #dc3545;
-            color: white;
-        }
-        .sidebar .nav-link.active:hover {
-            background-color: #dc3545;
-            color: white;
-        }
-        .card-header {
-            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
-        }
-        .admin-badge {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.875rem;
-        }
-        .search-box:focus {
-            border-color: #dc3545;
-            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
-        }
-        .pagination .page-link {
-            color: #dc3545;
-        }
-        .pagination .page-item.active .page-link {
-            background-color: #dc3545;
-            border-color: #dc3545;
+        /* 课程页面特有样式 */
+        .course-image {
+            height: 200px;
+            object-fit: cover;
         }
     </style>
 </head>
 <body>
     <!-- 导航栏 -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="/edu/">
-                <i class="fas fa-graduation-cap me-2"></i>在线教育系统
-            </a>
-            <div class="navbar-nav ms-auto">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle admin-badge" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-shield me-1"></i>
-                        <span th:text="${session.user != null ? session.user.realName : '管理员'}">管理员</span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/edu/admin/profile"><i class="fas fa-user me-2"></i>个人资料</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/edu/logout"><i class="fas fa-sign-out-alt me-2"></i>退出登录</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <div th:replace="~{admin/navbar :: navbar}"></div>
 
     <div class="container-fluid">
         <div class="row">

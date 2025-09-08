@@ -6,6 +6,8 @@
     <title>财务报表 - 在线教育系统</title>
     <link href="/edu/css/bootstrap.min.css" rel="stylesheet">
     <link href="/edu/css/all.min.css" rel="stylesheet">
+    <link href="/edu/css/common.css" rel="stylesheet">
+    <link href="/edu/css/admin-common.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
@@ -112,39 +114,7 @@
 </head>
 <body>
     <!-- 导航栏 -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/edu/admin/dashboard">
-                <i class="fas fa-shield-alt me-2"></i>管理后台
-            </a>
-            
-            <div class="navbar-nav ms-auto">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-shield me-1"></i>
-                        <span th:text="${user != null ? user.realName : '管理员'}">管理员</span>
-                        <span class="admin-badge">ADMIN</span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/edu/admin/profile">
-                            <i class="fas fa-user me-2"></i>管理员资料
-                        </a></li>
-                        <li><a class="dropdown-item" href="/edu/admin/settings">
-                            <i class="fas fa-cog me-2"></i>系统设置
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/edu/student/dashboard">
-                            <i class="fas fa-user me-2"></i>切换到学生视图
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/edu/auth/logout">
-                            <i class="fas fa-sign-out-alt me-2"></i>退出登录
-                        </a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <div th:replace="~{admin/navbar :: navbar}"></div>
 
     <div class="container-fluid">
         <div class="row">
