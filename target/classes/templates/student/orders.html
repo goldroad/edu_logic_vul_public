@@ -66,11 +66,11 @@
                             <!-- 订单列表 -->
                             <div class="row" id="ordersList">
                                 <div class="col-12" th:each="order : ${orders}">
-                                    <div class="card order-card" th:data-status="${order.status}">
+                                    <div class="card order-card" th:data-status="${order.status.name()}">
                                         <div class="card-body">
                                             <div class="row align-items-center">
                                                 <div class="col-md-2">
-                                                    <img src="https://via.placeholder.com/120x80" class="img-fluid rounded" alt="课程封面">
+                                                    <img th:src="'/edu/files/' + ${order.course.coverImage != null ? order.course.coverImage : 'https://via.placeholder.com/120x80'}" class="img-fluid rounded" alt="课程封面">
                                                 </div>
                                                 <div class="col-md-4">
                                                     <h6 th:text="${order.course.title}">课程标题</h6>
@@ -78,8 +78,8 @@
                                                     <small class="text-muted">下单时间：<span th:text="${#temporals.format(order.createTime, 'yyyy-MM-dd HH:mm:ss')}">2024-09-05 10:30:00</span></small>
                                                 </div>
                                                 <div class="col-md-2 text-center">
-                                                    <span th:class="'badge ' + ${order.status == 'PAID' ? 'bg-success' : (order.status == 'PENDING' ? 'bg-warning' : (order.status == 'CANCELLED' ? 'bg-danger' : 'bg-info'))}"
-                                                          th:text="${order.status == 'PAID' ? '已完成' : (order.status == 'PENDING' ? '待支付' : (order.status == 'CANCELLED' ? '已取消' : '处理中'))}">
+                                                    <span th:class="'badge ' + ${order.status.name() == 'PAID' ? 'bg-success' : (order.status.name() == 'PENDING' ? 'bg-warning' : (order.status.name() == 'CANCELLED' ? 'bg-danger' : 'bg-info'))}"
+                                                          th:text="${order.status.name() == 'PAID' ? '已支付' : (order.status.name() == 'PENDING' ? '待支付' : (order.status.name() == 'CANCELLED' ? '已取消' : '处理中'))}">
                                                         订单状态
                                                     </span>
                                                 </div>
@@ -91,16 +91,16 @@
                                                     </small>
                                                 </div>
                                                 <div class="col-md-2 text-end">
-                                                    <div th:if="${order.status == 'PENDING'}">
-                                                        <a th:href="@{'/edu/student/payment/' + ${order.orderNo}}" class="btn btn-success btn-sm me-2">立即支付</a>
-                                                        <button class="btn btn-outline-secondary btn-sm" th:onclick="'cancelOrder(\'' + ${order.orderNo} + '\')'">取消订单</button>
+                                                    <div th:if="${order.status.name() == 'PENDING'}">
+                                                        <a th:href="@{'/student/payment/' + ${order.orderNo}}" class="btn btn-success btn-sm me-2">立即支付</a>
+                                                        <button class="btn btn-outline-secondary btn-sm" th:data-order-no="${order.orderNo}" onclick="cancelOrder(this.dataset.orderNo)">取消订单</button>
                                                     </div>
-                                                    <div th:if="${order.status == 'PAID'}">
+                                                    <div th:if="${order.status.name() == 'PAID'}">
                                                         <button class="btn btn-primary btn-sm me-2">继续学习</button>
-                                                        <button class="btn btn-outline-primary btn-sm" th:onclick="'viewOrderDetail(\'' + ${order.orderNo} + '\')'">查看详情</button>
+                                                        <button class="btn btn-outline-primary btn-sm" th:data-order-no="${order.orderNo}" onclick="viewOrderDetail(this.dataset.orderNo)">查看详情</button>
                                                     </div>
-                                                    <div th:if="${order.status == 'CANCELLED'}">
-                                                        <button class="btn btn-outline-primary btn-sm" th:onclick="'reorder(' + ${order.course.id} + ')'">再次购买</button>
+                                                    <div th:if="${order.status.name() == 'CANCELLED'}">
+                                                        <button class="btn btn-outline-primary btn-sm" th:data-course-id="${order.course.id}" onclick="reorder(this.dataset.courseId)">再次购买</button>
                                                     </div>
                                                 </div>
                                             </div>
