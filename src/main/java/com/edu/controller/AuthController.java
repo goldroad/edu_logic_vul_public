@@ -4,6 +4,7 @@ import com.edu.entity.User;
 import com.edu.service.SimpleCaptchaService;
 import com.edu.service.UserService;
 import com.edu.service.LoginLogService;
+import com.edu.service.SmsService;
 import com.edu.util.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,9 @@ public class AuthController {
     
     @Autowired
     private LoginLogService loginLogService;
+    
+    @Autowired
+    private SmsService smsService;
     
     /**
      * 登录接口
@@ -91,10 +95,24 @@ public class AuthController {
         String password = request.get("password");
         String email = request.get("email");
         String phone = request.get("phone");
+        String smsCode = request.get("smsCode");
         
         Map<String, Object> response = new HashMap<>();
         
         try {
+            // 验证短信验证码
+            if (smsCode == null || smsCode.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "请输入短信验证码");
+                return response;
+            }
+            
+            if (!smsService.verifyCode(phone, smsCode)) {
+                response.put("success", false);
+                response.put("message", "短信验证码错误或已过期");
+                return response;
+            }
+            
             // 用户注册处理（前端已MD5加密）
             User user = userService.registerWithoutValidation(username, password, email, phone);
             response.put("success", true);

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>短信发送记录 - 在线教育系统</title>
+    <link href="/edu/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/edu/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .stats-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .table thead th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        .badge-used {
+            background-color: #dc3545;
+        }
+        .badge-unused {
+            background-color: #28a745;
+        }
+        .btn-back {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        .btn-back:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/edu/" class="btn-back">
+            <i class="fas fa-arrow-left me-2"></i>返回首页
+        </a>
+        
+        <div class="header">
+            <h2><i class="fas fa-sms me-2"></i>短信发送记录</h2>
+            <p class="mb-0">系统短信验证码发送统计与记录</p>
+        </div>
+        
+        <!-- 统计信息 -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">今日发送</h6>
+                            <div class="stats-number" th:text="${todayCount}">0</div>
+                        </div>
+                        <i class="fas fa-calendar-day fa-2x text-primary"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">本月发送</h6>
+                            <div class="stats-number" th:text="${monthCount}">0</div>
+                        </div>
+                        <i class="fas fa-calendar-alt fa-2x text-success"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">总发送量</h6>
+                            <div class="stats-number" th:text="${totalCount}">0</div>
+                        </div>
+                        <i class="fas fa-chart-line fa-2x text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 短信记录表格 -->
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>手机号</th>
+                        <th>验证码</th>
+                        <th>短信内容</th>
+                        <th>发送时间</th>
+                        <th>过期时间</th>
+                        <th>状态</th>
+                        <th>类型</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="record : ${records}">
+                        <td th:text="${record.id}"></td>
+                        <td>
+                            <span th:text="${#strings.substring(record.phone, 0, 3)}"></span>****<span th:text="${#strings.substring(record.phone, 7, 11)}"></span>
+                        </td>
+                        <td>
+                            <code th:text="${record.code}"></code>
+                        </td>
+                        <td th:text="${record.content}"></td>
+                        <td th:text="${#temporals.format(record.sendTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                        <td th:text="${#temporals.format(record.expireTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                        <td>
+                            <span th:if="${record.isUsed}" class="badge badge-used">已使用</span>
+                            <span th:unless="${record.isUsed}" class="badge badge-unused">未使用</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-info" th:text="${record.type}"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(records)}">
+                        <td colspan="8" class="text-center text-muted">
+                            <i class="fas fa-inbox fa-2x mb-2"></i>
+                            <br>暂无短信发送记录
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="text-center mt-4">
+            <small class="text-muted">
+                <i class="fas fa-info-circle me-1"></i>
+                此页面用于测试和调试，显示系统发送的所有短信验证码记录
+            </small>
+        </div>
+    </div>
+
+    <script src="/edu/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 自动刷新页面
+        setInterval(function() {
+            location.reload();
+        }, 30000); // 30秒刷新一次
+    </script>
+</body>
+</html>

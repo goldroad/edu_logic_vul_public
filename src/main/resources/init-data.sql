@@ -246,3 +246,28 @@ INSERT INTO `learn` VALUES
 (10, 9, 4, 100, 'COMPLETED', '2025-07-15 08:30:00.000000', '2025-08-05 14:20:00.000000', '2025-08-05 14:20:00.000000', '2025-07-15 08:30:00.000000', '2025-08-05 14:20:00.000000'),
 (11, 10, 1, 25, 'LEARNING', '2025-09-01 15:45:00.000000', '2025-09-08 09:30:00.000000', NULL, '2025-09-01 15:45:00.000000', '2025-09-08 09:30:00.000000'),
 (12, 11, 5, 90, 'LEARNING', '2025-08-05 12:15:00.000000', '2025-09-08 13:45:00.000000', NULL, '2025-08-05 12:15:00.000000', '2025-09-08 13:45:00.000000');
+
+-- 创建短信记录表
+DROP TABLE IF EXISTS `sms_records`;
+CREATE TABLE `sms_records` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '手机号',
+  `code` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '验证码',
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '短信内容',
+  `send_time` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '发送时间',
+  `is_used` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否已使用',
+  `expire_time` datetime(6) NOT NULL COMMENT '过期时间',
+  `type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'REGISTER' COMMENT '短信类型',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_phone` (`phone`) USING BTREE,
+  INDEX `idx_send_time` (`send_time`) USING BTREE,
+  INDEX `idx_expire_time` (`expire_time`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '短信记录表' ROW_FORMAT = Dynamic;
+
+-- 插入一些测试短信记录
+INSERT INTO `sms_records` VALUES 
+(1, '13800000001', '123456', '您的验证码是：123456，有效期1分钟，请勿泄露给他人。', '2025-09-09 10:30:00.000000', 1, '2025-09-09 10:31:00.000000', 'REGISTER'),
+(2, '13800000002', '654321', '您的验证码是：654321，有效期1分钟，请勿泄露给他人。', '2025-09-09 11:15:00.000000', 0, '2025-09-09 11:16:00.000000', 'REGISTER'),
+(3, '13800000003', '789012', '您的验证码是：789012，有效期1分钟，请勿泄露给他人。', '2025-09-09 12:00:00.000000', 1, '2025-09-09 12:01:00.000000', 'REGISTER'),
+(4, '13800000001', '345678', '您的验证码是：345678，有效期1分钟，请勿泄露给他人。', '2025-09-08 14:20:00.000000', 0, '2025-09-08 14:21:00.000000', 'REGISTER'),
+(5, '13800000004', '901234', '您的验证码是：901234，有效期1分钟，请勿泄露给他人。', '2025-09-08 16:45:00.000000', 1, '2025-09-08 16:46:00.000000', 'REGISTER');
