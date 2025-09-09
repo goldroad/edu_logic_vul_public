@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>密码MD5加密测试</title>
+    <title>MD5哈希值生成</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -82,15 +82,18 @@
         
         <div class="form-group">
             <label for="password">输入密码:</label>
-            <input type="password" id="password" placeholder="请输入要加密的密码">
+            <input id="password" placeholder="请输入要加密的密码">
         </div>
         
         <div class="form-group">
-            <label for="caseOption">输出格式:</label>
-            <select id="caseOption">
-                <option value="lowercase">小写字母</option>
-                <option value="uppercase">大写字母</option>
-            </select>
+            <label>输出格式:</label>
+            <div style="margin-top: 10px;">
+                <input type="radio" id="lowercase" name="caseOption" value="lowercase" checked>
+                <label for="lowercase" style="display: inline; margin-left: 5px; margin-right: 20px; font-weight: normal;">小写字母</label>
+                
+                <input type="radio" id="uppercase" name="caseOption" value="uppercase">
+                <label for="uppercase" style="display: inline; margin-left: 5px; font-weight: normal;">大写字母</label>
+            </div>
         </div>
         
         <div class="form-group">
@@ -109,7 +112,7 @@
 
         function testMD5() {
             const password = document.getElementById('password').value;
-            const caseOption = document.getElementById('caseOption').value;
+            const caseOption = document.querySelector('input[name="caseOption"]:checked').value;
             
             if (!password) {
                 alert('请输入密码！');
@@ -131,8 +134,6 @@
             resultsDiv.innerHTML = `
                 <div class="result">
                     <h3>MD5加密结果</h3>
-                    <p><strong>原始密码:</strong> ${password}</p>
-                    <p><strong>输出格式:</strong> ${caseOption === 'uppercase' ? '大写字母' : '小写字母'}</p>
                     <p><strong>MD5哈希值:</strong></p>
                     <div class="hash-result">${md5Hash}</div>
                     <p><strong>哈希长度:</strong> ${md5Hash.length} 字符</p>
