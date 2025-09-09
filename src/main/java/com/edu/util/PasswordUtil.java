@@ -4,7 +4,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * 密码工具类
+ * Copyright © 2025 八方网域-无涯老师. All rights reserved.
+ * 作者：八方网域-无涯老师
+ * 创建时间：2024-09
+ * 描述：密码工具类
  * 提供MD5哈希功能（简化版，不使用盐值）
  */
 public class PasswordUtil {

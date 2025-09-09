@@ -5,6 +5,11 @@ import org.apache.ibatis.annotations.*;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Copyright © 2025 八方网域-无涯老师. All rights reserved.
+ * 作者：八方网域-无涯老师
+ * 创建时间：2024-09
+ */
 @Mapper
 public interface UserRepository {
     

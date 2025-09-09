@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,6 +14,11 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Copyright © 2025 八方网域-无涯老师. All rights reserved.
+ * 作者：八方网域-无涯老师
+ * 创建时间：2024-09
+ */
 @Repository
 public class LearnRepository {
     

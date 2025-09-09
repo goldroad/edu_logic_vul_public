@@ -16,7 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Copyright © 2025 八方网域-无涯老师. All rights reserved.
+ * 作者：八方网域-无涯老师
+ * 创建时间：2024-09
+ */
 @Controller
 @RequestMapping("/student")
 public class StudentController {

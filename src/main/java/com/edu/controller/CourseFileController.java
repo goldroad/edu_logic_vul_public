@@ -7,11 +7,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Copyright © 2025 八方网域-无涯老师. All rights reserved.
+ * 作者：八方网域-无涯老师
+ * 创建时间：2024-09
+ */
 @RestController
 @RequestMapping("/admin/api/course-files")
 public class CourseFileController {

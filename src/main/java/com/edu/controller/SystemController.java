@@ -3,10 +3,14 @@ package com.edu.controller;
 import com.edu.config.DataInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Copyright © 2025 八方网域-无涯老师. All rights reserved.
+ * 作者：八方网域-无涯老师
+ * 创建时间：2024-09
+ */
 @RestController
 @RequestMapping("/api/system")
 public class SystemController {

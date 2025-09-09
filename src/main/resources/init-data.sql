@@ -1,4 +1,3 @@
-
 DROP TABLE IF EXISTS `coupon`;
 CREATE TABLE `coupon`  (
                             `id` bigint(20) NOT NULL AUTO_INCREMENT,

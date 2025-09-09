@@ -1,3 +1,8 @@
+/**
+ * Copyright © 2023-2024 八方网域-无涯老师. All rights reserved.
+ * 作者：八方网域-无涯老师
+ * 创建时间：2024-03-22
+ */
 package com.edu.entity;
 
 import lombok.Data;
