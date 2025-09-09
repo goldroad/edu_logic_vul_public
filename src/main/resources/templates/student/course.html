@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${course.title + ' - 课程详情'}">课程详情 - 在线教育系统</title>
+    <link href="/edu/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/edu/css/all.min.css" rel="stylesheet">
+    <link href="/edu/css/common.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <div th:replace="~{student/navbar :: navbar}"></div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 侧边栏 -->
+            <div th:replace="~{student/sidebar :: sidebar(active='courses')}"></div>
+
+            <!-- 主内容区 -->
+            <div class="col-md-9 col-lg-10">
+                <div class="main-content">
+                    <!-- 返回按钮 -->
+                    <div class="mb-3">
+                        <a href="/edu/student/courses" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>返回课程列表
+                        </a>
+                    </div>
+
+                    <!-- 课程封面和基本信息 -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="course-cover">
+                                <img th:src="${course.coverImage != null ? '/edu/api/files/view/' + course.coverImage : 'https://via.placeholder.com/400x300/667eea/ffffff?text=Course'}" 
+                                     th:alt="${course.title}" 
+                                     class="img-fluid rounded shadow"
+                                     onerror="this.src='https://via.placeholder.com/400x300/667eea/ffffff?text=Course'">
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="course-info">
+                                <h1 th:text="${course.title}">课程标题</h1>
+                                <p class="lead text-muted" th:text="${course.description}">课程描述</p>
+                                
+                                <!-- 讲师信息 -->
+                                <div class="instructor-info mb-3" th:if="${course.teacherInfo != null}">
+                                    <h6><i class="fas fa-user me-2"></i>讲师信息</h6>
+                                    <div class="d-flex align-items-center">
+                                        <div class="instructor-avatar me-3">
+                                            <i class="fas fa-user-circle fa-3x text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1" th:text="${course.teacherInfo.name}">讲师姓名</h6>
+                                            <p class="mb-0 text-muted" th:text="${course.teacherInfo.title}">讲师职称</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 课程统计 -->
+                                <div class="course-stats mb-3">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="stat-item text-center">
+                                                <i class="fas fa-users text-primary d-block mb-1"></i>
+                                                <span class="d-block fw-bold" th:text="${course.studentCount}">0</span>
+                                                <small class="text-muted">学习人数</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="stat-item text-center">
+                                                <i class="fas fa-clock text-success d-block mb-1"></i>
+                                                <span class="d-block fw-bold" th:text="${course.duration != null ? course.duration + '分钟' : '待定'}">0分钟</span>
+                                                <small class="text-muted">课程时长</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="stat-item text-center">
+                                                <i class="fas fa-star text-warning d-block mb-1"></i>
+                                                <span class="d-block fw-bold">4.8</span>
+                                                <small class="text-muted">课程评分</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="stat-item text-center">
+                                                <i class="fas fa-certificate text-info d-block mb-1"></i>
+                                                <span class="d-block fw-bold">有</span>
+                                                <small class="text-muted">结业证书</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 价格和操作 -->
+                                <div class="course-actions">
+                                    <div class="price-info mb-3">
+                                        <span class="current-price h3 text-danger">¥<span th:text="${course.price}">199</span></span>
+                                        <span class="original-price text-muted text-decoration-line-through ms-2">
+                                            ¥<span th:text="${course.originalPrice}">299</span>
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- 根据是否已购买显示不同按钮 -->
+                                    <div th:if="${isPurchased}">
+                                        <button class="btn btn-success btn-lg me-2" 
+                                                onclick="startLearning(this)" 
+                                                th:data-course-id="${course.id}">
+                                            <i class="fas fa-play me-2"></i>开始学习
+                                        </button>
+                                        <div class="mt-2">
+                                            <small class="text-success">
+                                                <i class="fas fa-check-circle me-1"></i>您已购买此课程
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div th:unless="${isPurchased}">
+                                        <button class="btn btn-primary btn-lg me-2" 
+                                                onclick="buyCourse(this)" 
+                                                th:data-course-id="${course.id}"
+                                                th:data-course-price="${course.price}">
+                                            <i class="fas fa-shopping-cart me-2"></i>立即购买
+                                        </button>
+                                        <button class="btn btn-outline-secondary btn-lg">
+                                            <i class="fas fa-heart me-2"></i>收藏
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 课程详情标签页 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <ul class="nav nav-tabs card-header-tabs" id="courseDetailTabs">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#course-intro">
+                                        <i class="fas fa-info-circle me-1"></i>课程介绍
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#course-outline">
+                                        <i class="fas fa-list me-1"></i>课程大纲
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#course-reviews">
+                                        <i class="fas fa-comments me-1"></i>学员评价
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content">
+                                <!-- 课程介绍 -->
+                                <div class="tab-pane fade show active" id="course-intro">
+                                    <h5>课程简介</h5>
+                                    <p th:text="${course.description}">
+                                        这是一门优秀的课程，将帮助您掌握相关技能和知识。课程内容丰富，实用性强，适合不同层次的学员学习。
+                                    </p>
+                                    
+                                    <h6 class="mt-4">学习目标</h6>
+                                    <ul>
+                                        <li>掌握核心概念和基础知识</li>
+                                        <li>学会实际应用和操作技巧</li>
+                                        <li>培养解决问题的能力</li>
+                                        <li>获得实战经验和项目经历</li>
+                                    </ul>
+                                    
+                                    <h6 class="mt-4">适合人群</h6>
+                                    <ul>
+                                        <li>初学者和入门学员</li>
+                                        <li>希望提升技能的从业者</li>
+                                        <li>对相关领域感兴趣的学习者</li>
+                                    </ul>
+                                </div>
+
+                                <!-- 课程大纲 -->
+                                <div class="tab-pane fade" id="course-outline">
+                                    <h5>课程大纲</h5>
+                                    <div class="course-chapters">
+                                        <div class="chapter-item border-bottom py-3">
+                                            <h6><i class="fas fa-play-circle me-2 text-primary"></i>第1章：课程介绍</h6>
+                                            <p class="text-muted mb-1">了解课程内容和学习目标</p>
+                                            <small class="text-muted">时长：15分钟</small>
+                                        </div>
+                                        <div class="chapter-item border-bottom py-3">
+                                            <h6><i class="fas fa-play-circle me-2 text-primary"></i>第2章：基础概念</h6>
+                                            <p class="text-muted mb-1">学习基础理论和核心概念</p>
+                                            <small class="text-muted">时长：25分钟</small>
+                                        </div>
+                                        <div class="chapter-item border-bottom py-3">
+                                            <h6><i class="fas fa-play-circle me-2 text-primary"></i>第3章：实践操作</h6>
+                                            <p class="text-muted mb-1">通过实际操作加深理解</p>
+                                            <small class="text-muted">时长：30分钟</small>
+                                        </div>
+                                        <div class="chapter-item border-bottom py-3">
+                                            <h6><i class="fas fa-play-circle me-2 text-primary"></i>第4章：高级应用</h6>
+                                            <p class="text-muted mb-1">学习高级技巧和应用方法</p>
+                                            <small class="text-muted">时长：40分钟</small>
+                                        </div>
+                                        <div class="chapter-item border-bottom py-3">
+                                            <h6><i class="fas fa-play-circle me-2 text-primary"></i>第5章：项目实战</h6>
+                                            <p class="text-muted mb-1">完成实际项目，巩固所学知识</p>
+                                            <small class="text-muted">时长：50分钟</small>
+                                        </div>
+                                        <div class="chapter-item py-3">
+                                            <h6><i class="fas fa-play-circle me-2 text-primary"></i>第6章：总结与考试</h6>
+                                            <p class="text-muted mb-1">课程总结和结业考试</p>
+                                            <small class="text-muted">时长：20分钟</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 学员评价 -->
+                                <div class="tab-pane fade" id="course-reviews">
+                                    <h5>学员评价</h5>
+                                    <div class="reviews-summary mb-4">
+                                        <div class="row">
+                                            <div class="col-md-3 text-center">
+                                                <h2 class="text-warning">4.8</h2>
+                                                <div class="stars mb-2">
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="fas fa-star text-warning"></i>
+                                                </div>
+                                                <small class="text-muted">基于128条评价</small>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="rating-breakdown">
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <span class="me-2">5星</span>
+                                                        <div class="progress flex-grow-1 me-2">
+                                                            <div class="progress-bar bg-warning" style="width: 75%"></div>
+                                                        </div>
+                                                        <span class="text-muted">75%</span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <span class="me-2">4星</span>
+                                                        <div class="progress flex-grow-1 me-2">
+                                                            <div class="progress-bar bg-warning" style="width: 20%"></div>
+                                                        </div>
+                                                        <span class="text-muted">20%</span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <span class="me-2">3星</span>
+                                                        <div class="progress flex-grow-1 me-2">
+                                                            <div class="progress-bar bg-warning" style="width: 3%"></div>
+                                                        </div>
+                                                        <span class="text-muted">3%</span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <span class="me-2">2星</span>
+                                                        <div class="progress flex-grow-1 me-2">
+                                                            <div class="progress-bar bg-warning" style="width: 1%"></div>
+                                                        </div>
+                                                        <span class="text-muted">1%</span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="me-2">1星</span>
+                                                        <div class="progress flex-grow-1 me-2">
+                                                            <div class="progress-bar bg-warning" style="width: 1%"></div>
+                                                        </div>
+                                                        <span class="text-muted">1%</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 评价列表 -->
+                                    <div class="reviews-list">
+                                        <div class="review-item border-bottom py-3">
+                                            <div class="d-flex align-items-start">
+                                                <div class="reviewer-avatar me-3">
+                                                    <i class="fas fa-user-circle fa-2x text-secondary"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <h6 class="mb-0">张同学</h6>
+                                                        <div class="stars">
+                                                            <i class="fas fa-star text-warning"></i>
+                                                            <i class="fas fa-star text-warning"></i>
+                                                            <i class="fas fa-star text-warning"></i>
+                                                            <i class="fas fa-star text-warning"></i>
+                                                            <i class="fas fa-star text-warning"></i>
+                                                        </div>
+                                                    </div>
+                                                    <p class="mb-1">课程内容很实用，老师讲解清晰，学到了很多实用的技能。推荐给大家！</p>
+                                                    <small class="text-muted">2024年1月15日</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="review-item border-bottom py-3">
+                                            <div class="d-flex align-items-start">
+                                                <div class="reviewer-avatar me-3">
+                                                    <i class="fas fa-user-circle fa-2x text-secondary"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <h6 class="mb-0">李同学</h6>
+                                                        <div class="stars">
+                                                            <i class="fas fa-star text-warning"></i>
+                                                            <i class="fas fa-star text-warning"></i>
+                                                            <i class="fas fa-star text-warning"></i>
+                                                            <i class="fas fa-star text-warning"></i>
+                                                            <i class="far fa-star text-warning"></i>
+                                                        </div>
+                                                    </div>
+                                                    <p class="mb-1">整体不错，内容丰富，就是有些地方讲得有点快，需要反复看几遍。</p>
+                                                    <small class="text-muted">2024年1月10日</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/edu/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 开始学习课程
+        function startLearning(button) {
+            const courseId = button.getAttribute('data-course-id');
+            
+            // 显示加载状态
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>加载中...';
+            button.disabled = true;
+            
+            // 跳转到课程学习页面
+            setTimeout(() => {
+                window.location.href = `/edu/student/course/learn/${courseId}`;
+            }, 500);
+        }
+
+        // 购买课程
+        function buyCourse(button) {
+            const courseId = button.getAttribute('data-course-id');
+            const originalPrice = button.getAttribute('data-course-price');
+            
+            // 显示加载状态
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>处理中...';
+            button.disabled = true;
+            
+            // 发送购买请求
+            fetch('/edu/api/order/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    courseId: parseInt(courseId),
+                    price: parseFloat(originalPrice),
+                    quantity: 1,
+                    discount: 0.0,
+                    shippingFee: 0.0
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 跳转到支付页面
+                    window.location.href = `/edu/student/payment/${data.order.orderNo}`;
+                } else {
+                    alert(data.message || '订单创建失败');
+                }
+            })
+            .catch(error => {
+                console.error('请求错误:', error);
+                alert('创建订单过程中发生错误');
+            })
+            .finally(() => {
+                // 恢复按钮状态
+                button.innerHTML = originalText;
+                button.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>

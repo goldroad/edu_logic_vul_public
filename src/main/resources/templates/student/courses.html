@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -128,7 +128,8 @@
                                 <div th:each="learn : ${learns}" class="col-md-6 col-lg-4">
                                     <div class="card course-card">
                                         <div class="course-image">
-                                            <img th:src="${learn.course.coverImage}" th:alt="${learn.course.title}" 
+                                            <img th:src="${learn.course.coverImage != null ? '/edu/api/files/view/' + learn.course.coverImage : 'https://via.placeholder.com/300x200/667eea/ffffff?text=Course'}" 
+                                                 th:alt="${learn.course.title}" 
                                                  onerror="this.src='https://via.placeholder.com/300x200/667eea/ffffff?text=Course'">
                                             <div class="course-status" 
                                                  th:classappend="${learn.status.name() == 'LEARNING'} ? 'status-learning' : 
@@ -228,6 +229,31 @@
         </div>
     </div>
 
+    <!-- 学习弹窗 -->
+    <div class="modal fade" id="learningModal" tabindex="-1" aria-labelledby="learningModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="learningModalLabel">
+                        <i class="fas fa-play me-2"></i>课程学习
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <iframe id="learningFrame" src="" style="width: 100%; height: 600px; border: none;"></iframe>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>关闭
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="openFullScreen()">
+                        <i class="fas fa-expand me-1"></i>全屏学习
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="/edu/js/bootstrap.bundle.min.js"></script>
     <script>
         // 课程筛选功能
@@ -314,7 +340,7 @@
                     <div class="col-md-6 col-lg-4">
                         <div class="card course-card">
                             <div class="course-image">
-                                <img src="${learn.course.coverImage}" alt="${learn.course.title}" 
+                                <img src="${learn.course.coverImage ? '/edu/api/files/view/' + learn.course.coverImage : 'https://via.placeholder.com/300x200/667eea/ffffff?text=Course'}" alt="${learn.course.title}" 
                                      onerror="this.src='https://via.placeholder.com/300x200/667eea/ffffff?text=Course'">
                                 <div class="course-status ${statusClass}">${statusText}</div>
                                 <div class="course-progress">
@@ -362,28 +388,80 @@
 
         // 开始/继续学习
         function startLearning(courseId) {
-            fetch('/edu/student/start-learning', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    courseId: courseId
+            // 显示加载状态
+            const button = document.querySelector(`[data-course-id="${courseId}"]`);
+            if (button) {
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>加载中...';
+                button.disabled = true;
+                
+                // 恢复按钮状态的函数
+                const restoreButton = () => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                };
+                
+                // 发送请求验证学习权限
+                fetch('/edu/student/start-learning', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        courseId: courseId
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // 跳转到学习页面
-                    window.location.href = data.redirectUrl;
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(error => {
-                console.error('开始学习出错:', error);
-                alert('开始学习失败，请稍后重试');
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 显示学习弹窗
+                        showLearningModal(courseId);
+                        restoreButton();
+                    } else {
+                        restoreButton();
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('开始学习出错:', error);
+                    restoreButton();
+                    alert('开始学习失败，请稍后重试');
+                });
+            } else {
+                // 如果找不到按钮，显示弹窗
+                showLearningModal(courseId);
+            }
+        }
+
+        // 显示学习弹窗
+        function showLearningModal(courseId) {
+            const modal = new bootstrap.Modal(document.getElementById('learningModal'));
+            const iframe = document.getElementById('learningFrame');
+            const modalTitle = document.getElementById('learningModalLabel');
+            
+            // 设置iframe源
+            iframe.src = `/edu/student/course/learn/${courseId}`;
+            
+            // 更新标题
+            const courseCard = document.querySelector(`[data-course-id="${courseId}"]`).closest('.course-card');
+            const courseTitle = courseCard.querySelector('.course-title').textContent;
+            modalTitle.innerHTML = `<i class="fas fa-play me-2"></i>${courseTitle} - 课程学习`;
+            
+            // 显示弹窗
+            modal.show();
+        }
+
+        // 全屏学习
+        function openFullScreen() {
+            const iframe = document.getElementById('learningFrame');
+            const courseUrl = iframe.src;
+            
+            // 关闭弹窗
+            const modal = bootstrap.Modal.getInstance(document.getElementById('learningModal'));
+            modal.hide();
+            
+            // 跳转到全屏学习页面
+            window.location.href = courseUrl;
         }
 
         // 搜索功能

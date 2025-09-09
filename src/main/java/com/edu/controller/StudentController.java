@@ -840,4 +840,31 @@ public class StudentController {
         return ResponseEntity.ok(response);
     }
     
+    /**
+     * 课程详情页面
+     */
+    @GetMapping("/course/{courseId}")
+    public String courseDetail(@PathVariable Long courseId, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/auth/login";
+        }
+        
+        // 获取课程信息
+        Course course = courseService.findById(courseId);
+        if (course == null) {
+            model.addAttribute("error", "课程不存在");
+            return "student/courses";
+        }
+        
+        // 检查用户是否已购买该课程
+        List<Long> paidCourseIds = orderService.getPaidCourseIdsByUserId(user.getId());
+        boolean isPurchased = paidCourseIds.contains(courseId);
+        
+        model.addAttribute("user", user);
+        model.addAttribute("course", course);
+        model.addAttribute("isPurchased", isPurchased);
+        return "student/course";
+    }
+    
 }
