@@ -16,7 +16,7 @@ public class SmsController {
     private SmsService smsService;
     
     /**
-     * 发送验证码接口 - 故意设计的漏洞：无限制调用
+     * 发送验证码接口
      */
     @PostMapping("/api/sms/send")
     @ResponseBody
@@ -27,7 +27,7 @@ public class SmsController {
         Map<String, Object> response = new HashMap<>();
         
         try {
-            // 直接发送验证码，无任何限制
+            // 直接发送验证码
             String code = smsService.sendVerificationCode(phone);
             
             response.put("success", true);

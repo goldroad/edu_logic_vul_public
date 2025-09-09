@@ -180,15 +180,18 @@
             <h1>🎓 在线教育系统</h1>
             <p>业务逻辑漏洞靶场 - 用于安全测试和学习</p>
             <div style="margin-top: 20px;">
-                <a href="/edu/auth/login" style="background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-size: 16px; display: inline-block; transition: background 0.3s;">
+                <a href="/edu/auth/login" style="background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-size: 16px; display: inline-block; transition: background 0.3s; margin: 5px;">
                     🔐 登录系统
                 </a>
-                <a href="/edu/md5" style="background: lab(71.13% 26.48 75.45); color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-size: 16px; display: inline-block; transition: background 0.3s;">
+                <a href="/edu/md5" style="background: lab(71.13% 26.48 75.45); color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-size: 16px; display: inline-block; transition: background 0.3s; margin: 5px;">
                     🗝️ 生成md5密码
                 </a>
-                <a href="/edu/sms/records" style="background: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-size: 16px; display: inline-block; transition: background 0.3s;">
+                <a href="/edu/sms/records" style="background: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-size: 16px; display: inline-block; transition: background 0.3s; margin: 5px;">
                     📱 查看验证码发送记录
                 </a>
+                <button onclick="resetData()" style="background: #dc3545; color: white; padding: 12px 30px; border: none; border-radius: 5px; font-size: 16px; display: inline-block; transition: background 0.3s; margin: 5px; cursor: pointer;">
+                    🔄 恢复数据到初始状态
+                </button>
             </div>
         </div>
         
@@ -340,5 +343,52 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // 恢复数据功能 - 需要二次确认
+        function resetData() {
+            // 第一次确认
+            var firstMessage = "警告：确定要恢复数据到初始状态吗？\n\n这将清空所有用户数据、订单、优惠券等信息，此操作不可逆！";
+            if (confirm(firstMessage)) {
+                // 第二次确认
+                var secondMessage = "最后确认：您真的要执行数据恢复操作吗？\n\n请再次确认您了解此操作的后果：\n• 所有用户数据将被清空\n• 所有订单记录将被删除\n• 所有优惠券将被重置\n• 系统将恢复到初始状态\n\n点击确定继续执行，点击取消放弃操作。";
+                if (confirm(secondMessage)) {
+                    // 显示加载提示
+                    var button = event.target;
+                    var originalText = button.innerHTML;
+                    button.innerHTML = '正在恢复数据...';
+                    button.disabled = true;
+                    
+                    fetch('/edu/api/system/reset-data', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(data) {
+                        if (data.success) {
+                            alert('数据恢复成功！\n\n系统已恢复到初始状态，所有数据已重置。');
+                            location.reload();
+                        } else {
+                            alert('数据恢复失败：' + data.message);
+                            // 恢复按钮状态
+                            button.innerHTML = originalText;
+                            button.disabled = false;
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Error:', error);
+                        alert('数据恢复失败，请稍后重试\n\n错误信息：网络连接异常');
+                        // 恢复按钮状态
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                    });
+                }
+            }
+        }
+    </script>
 </body>
 </html>

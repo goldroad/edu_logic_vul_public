@@ -76,12 +76,12 @@ public class SmsService {
     }
     
     /**
-     * 生成6位验证码
+     * 生成4位验证码
      */
     private String generateVerificationCode() {
         Random random = new Random();
         StringBuilder code = new StringBuilder();
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 4; i++) {
             code.append(random.nextInt(10));
         }
         return code.toString();
