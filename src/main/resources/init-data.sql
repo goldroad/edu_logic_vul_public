@@ -156,7 +156,7 @@ CREATE TABLE `users`  (
 INSERT INTO `users` VALUES (1, NULL, 10000.00, '2025-09-04 10:35:29.870634', 'admin@edu.com', 1, '666666', '13800000001', '系统管理员', 'ADMIN', '2025-09-05 14:49:32.868000', 'admin');
 INSERT INTO `users` VALUES (2, NULL, 5000.00, '2025-09-04 10:35:29.917526', 'teacher@edu.com', 1, 'teacher123', '13800000002', '张老师', 'TEACHER', '2025-09-04 10:35:29.917526', 'teacher');
 INSERT INTO `users` VALUES (3, NULL, 10.00, '2025-09-04 10:35:29.937387', 'student@edu.com', 1, '1', '13800000003', '李同学', 'STUDENT', '2025-09-04 21:11:04.853467', 'student');
-INSERT INTO `users` VALUES (4, NULL, 0.00, '2025-09-04 10:35:29.949279', 'weakuser@example.com', 1, '123456', NULL, NULL, 'STUDENT', '2025-09-04 10:35:29.949279', 'weakuser');
+INSERT INTO `users` VALUES (4, NULL, 1000.00, '2025-09-04 10:35:29.949279', 'weakuser@example.com', 1, '123456', '13800000004', '弱密码用户', 'STUDENT', '2025-09-04 10:35:29.949279', 'weakuser');
 INSERT INTO `users` VALUES (8, NULL, 500.00, '2025-09-04 10:37:53.000765', 'user1@test.com', 1, '123456', '13800000101', '测试用户1', 'STUDENT', '2025-09-04 10:37:53.000765', 'user1');
 INSERT INTO `users` VALUES (9, NULL, 500.00, '2025-09-04 10:37:53.072906', 'user2@test.com', 1, '123456', '13800000102', '测试用户2', 'STUDENT', '2025-09-04 10:37:53.072906', 'user2');
 INSERT INTO `users` VALUES (10, NULL, 500.00, '2025-09-04 10:37:53.087709', 'user3@test.com', 1, '123456', '13800000103', '测试用户3', 'STUDENT', '2025-09-04 10:37:53.087709', 'user3');

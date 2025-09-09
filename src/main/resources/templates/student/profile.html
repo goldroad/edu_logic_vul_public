@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -35,11 +35,17 @@
                     <!-- 头像与基本展示 -->
                     <div class="card mb-4">
                         <div class="profile-header">
-                            <img th:src="@{/images/avatar-default.png}"
+                            <img th:src="${targetUser.avatar != null ? '/edu/' + targetUser.avatar : 'https://via.placeholder.com/120x120/667eea/ffffff?text=头像'}"
                                  src="https://via.placeholder.com/120x120/667eea/ffffff?text=头像"
-                                 alt="用户头像" class="profile-avatar mb-3">
-                            <h3 th:text="${targetUser.realName}">用户姓名</h3>
+                                 alt="用户头像" class="profile-avatar mb-3" id="profileAvatar">
+                            <h3 th:text="${targetUser.realName != null ? targetUser.realName : '未设置姓名'}">用户姓名</h3>
                             <p class="mb-0" th:text="'@' + ${targetUser.username}">@username</p>
+                            <!-- 头像上传按钮（仅本人可见） -->
+                            <div th:if="${isOwnProfile}" class="mt-2">
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="changeAvatar()">
+                                    <i class="fas fa-camera me-1"></i>更换头像
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -56,15 +62,15 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label"><strong>真实姓名</strong></label>
-                                    <input type="text" class="form-control" th:value="${targetUser.realName}" readonly>
+                                    <input type="text" class="form-control" th:value="${targetUser.realName != null ? targetUser.realName : '未设置'}" readonly>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label"><strong>邮箱地址</strong></label>
-                                    <input type="email" class="form-control" th:value="${targetUser.email}" readonly>
+                                    <input type="email" class="form-control" th:value="${targetUser.email != null ? targetUser.email : '未设置'}" readonly>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label"><strong>手机号码</strong></label>
-                                    <input type="tel" class="form-control" th:value="${targetUser.phone}" readonly>
+                                    <input type="tel" class="form-control" th:value="${targetUser.phone != null ? targetUser.phone : '未设置'}" readonly>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label"><strong>用户角色</strong></label>
@@ -72,7 +78,7 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label"><strong>账户余额</strong></label>
-                                    <input type="text" class="form-control" th:value="'¥' + ${targetUser.balance}" readonly>
+                                    <input type="text" class="form-control" th:value="'¥' + ${targetUser.balance != null ? targetUser.balance : 0.00}" readonly>
                                 </div>
                             </div>
                         </div>
@@ -133,9 +139,9 @@
         const targetUserId = /*[[${targetUser.id}]]*/ 1;
 
         // 获取用户信息变量
-        const targetUserRealName = /*[[${targetUser.realName}]]*/ '用户姓名';
-        const targetUserEmail = /*[[${targetUser.email}]]*/ 'user@example.com';
-        const targetUserPhone = /*[[${targetUser.phone}]]*/ '13800000000';
+        const targetUserRealName = /*[[${targetUser.realName != null ? targetUser.realName : ''}]]*/ '';
+        const targetUserEmail = /*[[${targetUser.email != null ? targetUser.email : ''}]]*/ '';
+        const targetUserPhone = /*[[${targetUser.phone != null ? targetUser.phone : ''}]]*/ '';
 
         // 编辑资料
         function editProfile() {
@@ -348,6 +354,136 @@
             .catch(error => {
                 console.error('Error:', error);
                 alert('网络错误，请稍后重试');
+            });
+        }
+
+        // 更换头像
+        function changeAvatar() {
+            // 创建头像上传模态框
+            const modalHtml = `
+                <div class="modal fade" id="changeAvatarModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">更换头像</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="avatarUploadForm" enctype="multipart/form-data">
+                                    <div class="mb-3">
+                                        <label for="avatarFile" class="form-label">选择头像文件</label>
+                                        <input type="file" class="form-control" id="avatarFile" 
+                                               accept="image/*" onchange="previewAvatar(this)" required>
+                                        <div class="form-text">支持JPG、PNG格式，文件大小不超过2MB</div>
+                                    </div>
+                                    <div class="mb-3" id="avatarPreview" style="display: none;">
+                                        <label class="form-label">预览</label>
+                                        <div class="text-center">
+                                            <img id="previewImg" src="" alt="头像预览" 
+                                                 style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 2px solid #dee2e6;">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                                <button type="button" class="btn btn-primary" onclick="uploadAvatar()">上传头像</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 移除已存在的模态框
+            const existingModal = document.getElementById('changeAvatarModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // 添加模态框到页面
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            // 显示模态框
+            const modal = new bootstrap.Modal(document.getElementById('changeAvatarModal'));
+            modal.show();
+        }
+
+        // 预览头像
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                
+                // 检查文件类型
+                if (!file.type.startsWith('image/')) {
+                    alert('请选择图片文件');
+                    input.value = '';
+                    return;
+                }
+                
+                // 检查文件大小（2MB）
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('文件大小不能超过2MB');
+                    input.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewImg').src = e.target.result;
+                    document.getElementById('avatarPreview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // 上传头像
+        function uploadAvatar() {
+            const fileInput = document.getElementById('avatarFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('请选择要上传的头像文件');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('avatar', file);
+            
+            // 显示上传进度
+            const uploadButton = document.querySelector('#changeAvatarModal .btn-primary');
+            const originalText = uploadButton.textContent;
+            uploadButton.textContent = '上传中...';
+            uploadButton.disabled = true;
+            
+            fetch('/edu/student/upload-avatar', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('头像上传成功！');
+                    // 关闭模态框
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('changeAvatarModal'));
+                    modal.hide();
+                    // 更新页面头像显示
+                    if (result.avatarUrl) {
+                        document.getElementById('profileAvatar').src = result.avatarUrl;
+                    }
+                    // 刷新页面显示最新信息
+                    location.reload();
+                } else {
+                    alert('上传失败：' + result.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('网络错误，请稍后重试');
+            })
+            .finally(() => {
+                // 恢复按钮状态
+                uploadButton.textContent = originalText;
+                uploadButton.disabled = false;
             });
         }
 
