@@ -414,9 +414,8 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // 显示学习弹窗
-                        showLearningModal(courseId);
-                        restoreButton();
+                        // 直接跳转到学习页面
+                        window.location.href = `/edu/student/course/learn/${courseId}`;
                     } else {
                         restoreButton();
                         alert(data.message);
@@ -428,8 +427,8 @@
                     alert('开始学习失败，请稍后重试');
                 });
             } else {
-                // 如果找不到按钮，显示弹窗
-                showLearningModal(courseId);
+                // 如果找不到按钮，直接跳转到学习页面
+                window.location.href = `/edu/student/course/learn/${courseId}`;
             }
         }
 
