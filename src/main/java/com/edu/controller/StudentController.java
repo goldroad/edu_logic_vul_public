@@ -1,10 +1,12 @@
 package com.edu.controller;
 
 import com.edu.entity.Course;
+import com.edu.entity.Learn;
 import com.edu.entity.Order;
 import com.edu.entity.User;
 import com.edu.entity.UserCoupon;
 import com.edu.service.CourseService;
+import com.edu.service.LearnService;
 import com.edu.service.OrderService;
 import com.edu.service.UserService;
 import com.edu.service.UserCouponService;
@@ -42,6 +44,9 @@ public class StudentController {
     
     @Autowired
     private UserCouponService userCouponService;
+    
+    @Autowired
+    private LearnService learnService;
     
     /**
      * 个人资料页面 - 支持通过ID查询用户信息
@@ -577,6 +582,133 @@ public class StudentController {
     }
     
     /**
+     * 我的课程页面
+     */
+    @GetMapping("/courses")
+    public String courses(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/auth/login";
+        }
+        
+        // 获取用户的学习记录
+        List<Learn> learns = learnService.findByUserId(user.getId());
+        
+        // 获取学习统计信息
+        Map<String, Integer> stats = learnService.getUserLearnStats(user.getId());
+        
+        model.addAttribute("user", user);
+        model.addAttribute("learns", learns);
+        model.addAttribute("stats", stats);
+        return "student/courses";
+    }
+    
+    /**
+     * 获取课程数据API
+     */
+    @GetMapping("/courses/data")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getCoursesData(HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            response.put("success", false);
+            response.put("message", "请先登录");
+            return ResponseEntity.ok(response);
+        }
+        
+        try {
+            // 获取用户的学习记录
+            List<Learn> learns = learnService.findByUserId(user.getId());
+            
+            // 获取学习统计信息
+            Map<String, Integer> stats = learnService.getUserLearnStats(user.getId());
+            
+            response.put("success", true);
+            response.put("learns", learns);
+            response.put("stats", stats);
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "获取课程数据失败: " + e.getMessage());
+        }
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    /**
+     * 根据状态筛选课程
+     */
+    @GetMapping("/courses/filter")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> filterCourses(@RequestParam String status, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            response.put("success", false);
+            response.put("message", "请先登录");
+            return ResponseEntity.ok(response);
+        }
+        
+        try {
+            List<Learn> learns = learnService.filterByStatus(user.getId(), status);
+            
+            response.put("success", true);
+            response.put("learns", learns);
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "筛选课程失败: " + e.getMessage());
+        }
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    /**
+     * 开始/继续学习课程
+     */
+    @PostMapping("/start-learning")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> startLearning(@RequestBody Map<String, Object> request,
+                                                            HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            response.put("success", false);
+            response.put("message", "请先登录");
+            return ResponseEntity.ok(response);
+        }
+        
+        try {
+            Long courseId = Long.valueOf(request.get("courseId").toString());
+            
+            // 检查用户是否已购买该课程
+            List<Long> paidCourseIds = orderService.getPaidCourseIdsByUserId(user.getId());
+            if (!paidCourseIds.contains(courseId)) {
+                response.put("success", false);
+                response.put("message", "您尚未购买此课程，请先购买后再学习");
+                return ResponseEntity.ok(response);
+            }
+            
+            // 开始学习
+            Learn learn = learnService.startLearning(user.getId(), courseId);
+            
+            response.put("success", true);
+            response.put("message", "开始学习成功");
+            response.put("redirectUrl", "/edu/student/course/learn/" + courseId);
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "开始学习失败: " + e.getMessage());
+        }
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    /**
      * 课程学习页面
      */
     @GetMapping("/course/learn/{courseId}")
@@ -600,9 +732,57 @@ public class StudentController {
             return "student/dashboard";
         }
         
+        // 获取学习记录
+        Learn learn = learnService.findByUserIdAndCourseId(user.getId(), courseId);
+        if (learn == null) {
+            // 如果没有学习记录，创建一个
+            learn = learnService.startLearning(user.getId(), courseId);
+        }
+        
         model.addAttribute("user", user);
         model.addAttribute("course", course);
+        model.addAttribute("learn", learn);
         return "student/course-learn";
+    }
+    
+    /**
+     * 更新学习进度
+     */
+    @PostMapping("/update-progress")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateProgress(@RequestBody Map<String, Object> request,
+                                                             HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            response.put("success", false);
+            response.put("message", "请先登录");
+            return ResponseEntity.ok(response);
+        }
+        
+        try {
+            Long courseId = Long.valueOf(request.get("courseId").toString());
+            Integer progress = Integer.valueOf(request.get("progress").toString());
+            
+            // 更新学习进度
+            Learn learn = learnService.updateProgress(user.getId(), courseId, progress);
+            
+            if (learn != null) {
+                response.put("success", true);
+                response.put("message", "学习进度更新成功");
+                response.put("learn", learn);
+            } else {
+                response.put("success", false);
+                response.put("message", "学习记录不存在");
+            }
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "更新进度失败: " + e.getMessage());
+        }
+        
+        return ResponseEntity.ok(response);
     }
     
     /**

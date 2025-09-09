@@ -167,21 +167,7 @@ public class PageController {
         return "teacher/dashboard";
     }
     
-    /**
-     * 学生课程页面
-     */
-    @GetMapping("/student/courses")
-    public String studentCourses(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/auth/login";
-        }
-        
-        List<Course> courses = courseService.getPublishedCourses();
-        model.addAttribute("user", user);
-        model.addAttribute("courses", courses);
-        return "student/courses";
-    }
+
     
     /**
      * 学生订单页面

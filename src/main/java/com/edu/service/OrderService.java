@@ -25,6 +25,9 @@ public class OrderService {
     @Autowired
     private CourseService courseService;
     
+    @Autowired
+    private LearnService learnService;
+    
     /**
      * 创建订单 - 包含支付逻辑漏洞
      */
@@ -142,6 +145,14 @@ public class OrderService {
                 // 确保订单数据更新到数据库
                 orderRepository.update(order);
                 
+                // 支付成功后创建学习记录
+                try {
+                    learnService.createLearnRecord(order.getUserId(), order.getCourseId());
+                } catch (Exception e) {
+                    System.err.println("创建学习记录失败: " + e.getMessage());
+                    // 不影响支付流程，只记录错误
+                }
+                
                 return true;
             }
             return false;
@@ -155,6 +166,14 @@ public class OrderService {
         
         // 确保订单数据更新到数据库
         orderRepository.update(order);
+        
+        // 支付成功后创建学习记录
+        try {
+            learnService.createLearnRecord(order.getUserId(), order.getCourseId());
+        } catch (Exception e) {
+            System.err.println("创建学习记录失败: " + e.getMessage());
+            // 不影响支付流程，只记录错误
+        }
         
         return true;
     }

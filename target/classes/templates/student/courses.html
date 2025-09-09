@@ -33,39 +33,30 @@
 
                     <!-- 学习统计 -->
                     <div class="row mb-4">
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <div class="card stats-card text-center">
                                 <div class="card-body">
                                     <i class="fas fa-book fa-2x mb-2"></i>
-                                    <h4>12</h4>
+                                    <h4 th:text="${stats.total}">0</h4>
                                     <small>已购课程</small>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <div class="card text-center" style="background: #28a745; color: white;">
                                 <div class="card-body">
                                     <i class="fas fa-play fa-2x mb-2"></i>
-                                    <h4>8</h4>
+                                    <h4 th:text="${stats.learning}">0</h4>
                                     <small>学习中</small>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <div class="card text-center" style="background: #007bff; color: white;">
                                 <div class="card-body">
                                     <i class="fas fa-check-circle fa-2x mb-2"></i>
-                                    <h4>3</h4>
+                                    <h4 th:text="${stats.completed}">0</h4>
                                     <small>已完成</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card text-center" style="background: #ffc107; color: #212529;">
-                                <div class="card-body">
-                                    <i class="fas fa-certificate fa-2x mb-2"></i>
-                                    <h4>2</h4>
-                                    <small>获得证书</small>
                                 </div>
                             </div>
                         </div>
@@ -75,23 +66,23 @@
                     <div class="filter-tabs">
                         <ul class="nav nav-pills" id="courseFilter">
                             <li class="nav-item">
-                                <a class="nav-link active" data-bs-toggle="pill" href="#all-courses">
-                                    <i class="fas fa-list me-1"></i>全部课程 (12)
+                                <a class="nav-link active" data-bs-toggle="pill" href="#all-courses" data-status="all">
+                                    <i class="fas fa-list me-1"></i>全部课程 (<span th:text="${stats.total}">0</span>)
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="pill" href="#learning-courses">
-                                    <i class="fas fa-play me-1"></i>学习中 (8)
+                                <a class="nav-link" data-bs-toggle="pill" href="#learning-courses" data-status="learning">
+                                    <i class="fas fa-play me-1"></i>学习中 (<span th:text="${stats.learning}">0</span>)
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="pill" href="#completed-courses">
-                                    <i class="fas fa-check-circle me-1"></i>已完成 (3)
+                                <a class="nav-link" data-bs-toggle="pill" href="#completed-courses" data-status="completed">
+                                    <i class="fas fa-check-circle me-1"></i>已完成 (<span th:text="${stats.completed}">0</span>)
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="pill" href="#not-started-courses">
-                                    <i class="fas fa-pause me-1"></i>未开始 (1)
+                                <a class="nav-link" data-bs-toggle="pill" href="#not-started-courses" data-status="not_started">
+                                    <i class="fas fa-pause me-1"></i>未开始 (<span th:text="${stats.notStarted}">0</span>)
                                 </a>
                             </li>
                         </ul>
@@ -132,137 +123,55 @@
                     <div class="tab-content" id="courseContent">
                         <!-- 全部课程 -->
                         <div class="tab-pane fade show active" id="all-courses">
-                            <div class="row">
-                                <!-- 课程卡片1 -->
-                                <div class="col-md-6 col-lg-4">
+                            <div class="row" id="courseList">
+                                <!-- 动态生成课程卡片 -->
+                                <div th:each="learn : ${learns}" class="col-md-6 col-lg-4">
                                     <div class="card course-card">
                                         <div class="course-image">
-                                            <img src="https://via.placeholder.com/300x200/667eea/ffffff?text=Java" alt="Java课程">
-                                            <div class="course-status status-learning">学习中</div>
+                                            <img th:src="${learn.course.coverImage}" th:alt="${learn.course.title}" 
+                                                 onerror="this.src='https://via.placeholder.com/300x200/667eea/ffffff?text=Course'">
+                                            <div class="course-status" 
+                                                 th:classappend="${learn.status.name() == 'LEARNING'} ? 'status-learning' : 
+                                                                 (${learn.status.name() == 'COMPLETED'} ? 'status-completed' : 'status-not-started')"
+                                                 th:text="${learn.status.description}">学习状态</div>
                                             <div class="course-progress">
                                                 <div class="d-flex justify-content-between mb-1">
                                                     <small>学习进度</small>
-                                                    <small>75%</small>
+                                                    <small th:text="${learn.progress} + '%'">0%</small>
                                                 </div>
                                                 <div class="progress-bar-custom">
-                                                    <div class="progress-fill" style="width: 75%"></div>
+                                                    <div class="progress-fill" th:style="'width: ' + ${learn.progress} + '%'"></div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="course-info">
-                                            <h5 class="course-title">Java从入门到精通</h5>
+                                            <h5 class="course-title" th:text="${learn.course.title}">课程标题</h5>
                                             <div class="course-instructor">
-                                                <i class="fas fa-user me-1"></i>张老师
+                                                <i class="fas fa-user me-1"></i>
+                                                <span th:text="${learn.course.teacherInfo != null ? learn.course.teacherInfo.name : '讲师'}">讲师</span>
                                                 <div style="display: none;" 
-                                                     data-teacher-id="1"
-                                                     data-teacher-idcard="110101198001011234"
-                                                     data-teacher-phone="13800000001"
-                                                     data-teacher-email="zhangwei@edu.com"
-                                                     data-teacher-address="北京市朝阳区建国路88号">
+                                                     th:if="${learn.course.teacherInfo != null}"
+                                                     th:attr="data-teacher-id=${learn.course.teacherInfo.id},
+                                                             data-teacher-idcard=${learn.course.teacherInfo.idCard},
+                                                             data-teacher-phone=${learn.course.teacherInfo.phone},
+                                                             data-teacher-email=${learn.course.teacherInfo.email},
+                                                             data-teacher-address=${learn.course.teacherInfo.address}">
                                                 </div>
                                             </div>
                                             <div class="course-stats">
-                                                <span><i class="fas fa-clock me-1"></i>120课时</span>
-                                                <span><i class="fas fa-users me-1"></i>1.2万人学习</span>
-                                            </div>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <button class="btn btn-primary btn-sm">
-                                                    <i class="fas fa-play me-1"></i>继续学习
-                                                </button>
-                                                <div class="dropdown">
-                                                    <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="dropdown">
-                                                        <i class="fas fa-ellipsis-v"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu">
-                                                        <li><a class="dropdown-item" href="#"><i class="fas fa-info me-2"></i>课程详情</a></li>
-                                                        <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i>下载资料</a></li>
-                                                        <li><a class="dropdown-item" href="#"><i class="fas fa-comments me-2"></i>课程讨论</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 课程卡片2 -->
-                                <div class="col-md-6 col-lg-4">
-                                    <div class="card course-card">
-                                        <div class="course-image">
-                                            <img src="https://via.placeholder.com/300x200/764ba2/ffffff?text=Python" alt="Python课程">
-                                            <div class="course-status status-completed">已完成</div>
-                                            <div class="course-progress">
-                                                <div class="d-flex justify-content-between mb-1">
-                                                    <small>学习进度</small>
-                                                    <small>100%</small>
-                                                </div>
-                                                <div class="progress-bar-custom">
-                                                    <div class="progress-fill" style="width: 100%"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="course-info">
-                                            <h5 class="course-title">Python数据分析实战</h5>
-                                            <div class="course-instructor">
-                                                <i class="fas fa-user me-1"></i>李老师
-                                                <div style="display: none;" 
-                                                     data-teacher-id="2"
-                                                     data-teacher-idcard="110101198502022345"
-                                                     data-teacher-phone="13800000002"
-                                                     data-teacher-email="liming@edu.com"
-                                                     data-teacher-address="北京市海淀区中关村大街123号">
-                                                </div>
-                                            </div>
-                                            <div class="course-stats">
-                                                <span><i class="fas fa-clock me-1"></i>80课时</span>
-                                                <span><i class="fas fa-users me-1"></i>8500人学习</span>
-                                            </div>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <button class="btn btn-success btn-sm">
-                                                    <i class="fas fa-certificate me-1"></i>查看证书
-                                                </button>
-                                                <span class="certificate-badge">
-                                                    <i class="fas fa-award me-1"></i>已获证书
+                                                <span><i class="fas fa-clock me-1"></i>
+                                                    <span th:text="${learn.course.duration != null ? learn.course.duration + '分钟' : '课时待定'}">课时</span>
+                                                </span>
+                                                <span><i class="fas fa-users me-1"></i>
+                                                    <span th:text="${learn.course.studentCount} + '人学习'">学习人数</span>
                                                 </span>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 课程卡片3 -->
-                                <div class="col-md-6 col-lg-4">
-                                    <div class="card course-card">
-                                        <div class="course-image">
-                                            <img src="https://via.placeholder.com/300x200/28a745/ffffff?text=Spring" alt="Spring课程">
-                                            <div class="course-status status-learning">学习中</div>
-                                            <div class="course-progress">
-                                                <div class="d-flex justify-content-between mb-1">
-                                                    <small>学习进度</small>
-                                                    <small>45%</small>
-                                                </div>
-                                                <div class="progress-bar-custom">
-                                                    <div class="progress-fill" style="width: 45%"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="course-info">
-                                            <h5 class="course-title">Spring Boot微服务架构</h5>
-                                            <div class="course-instructor">
-                                                <i class="fas fa-user me-1"></i>王老师
-                                                <div style="display: none;" 
-                                                     data-teacher-id="3"
-                                                     data-teacher-idcard="110101198703033456"
-                                                     data-teacher-phone="13800000003"
-                                                     data-teacher-email="wangfang@edu.com"
-                                                     data-teacher-address="上海市浦东新区陆家嘴金融区">
-                                                </div>
-                                            </div>
-                                            <div class="course-stats">
-                                                <span><i class="fas fa-clock me-1"></i>150课时</span>
-                                                <span><i class="fas fa-users me-1"></i>6800人学习</span>
-                                            </div>
                                             <div class="d-flex justify-content-between align-items-center">
-                                                <button class="btn btn-primary btn-sm">
-                                                    <i class="fas fa-play me-1"></i>继续学习
+                                                <button class="btn btn-sm continue-learning-btn" 
+                                                        th:classappend="${learn.status.name() == 'NOT_STARTED'} ? 'btn-outline-primary' : 'btn-primary'"
+                                                        th:attr="data-course-id=${learn.courseId}">
+                                                    <i class="fas fa-play me-1"></i>
+                                                    <span th:text="${learn.status.name() == 'NOT_STARTED'} ? '开始学习' : '继续学习'">继续学习</span>
                                                 </button>
                                                 <div class="dropdown">
                                                     <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="dropdown">
@@ -274,171 +183,19 @@
                                                         <li><a class="dropdown-item" href="#"><i class="fas fa-comments me-2"></i>课程讨论</a></li>
                                                     </ul>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 课程卡片4 -->
-                                <div class="col-md-6 col-lg-4">
-                                    <div class="card course-card">
-                                        <div class="course-image">
-                                            <img src="https://via.placeholder.com/300x200/dc3545/ffffff?text=Vue" alt="Vue课程">
-                                            <div class="course-status status-not-started">未开始</div>
-                                            <div class="course-progress">
-                                                <div class="d-flex justify-content-between mb-1">
-                                                    <small>学习进度</small>
-                                                    <small>0%</small>
-                                                </div>
-                                                <div class="progress-bar-custom">
-                                                    <div class="progress-fill" style="width: 0%"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="course-info">
-                                            <h5 class="course-title">Vue.js前端开发实战</h5>
-                                            <div class="course-instructor">
-                                                <i class="fas fa-user me-1"></i>陈老师
-                                                <div style="display: none;" 
-                                                     data-teacher-id="4"
-                                                     data-teacher-idcard="110101198904044567"
-                                                     data-teacher-phone="13800000004"
-                                                     data-teacher-email="chenqiang@edu.com"
-                                                     data-teacher-address="深圳市南山区科技园">
-                                                </div>
-                                            </div>
-                                            <div class="course-stats">
-                                                <span><i class="fas fa-clock me-1"></i>90课时</span>
-                                                <span><i class="fas fa-users me-1"></i>5200人学习</span>
-                                            </div>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <button class="btn btn-outline-primary btn-sm">
-                                                    <i class="fas fa-play me-1"></i>开始学习
-                                                </button>
-                                                <div class="dropdown">
-                                                    <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="dropdown">
-                                                        <i class="fas fa-ellipsis-v"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu">
-                                                        <li><a class="dropdown-item" href="#"><i class="fas fa-info me-2"></i>课程详情</a></li>
-                                                        <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i>下载资料</a></li>
-                                                        <li><a class="dropdown-item" href="#"><i class="fas fa-comments me-2"></i>课程讨论</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 课程卡片5 -->
-                                <div class="col-md-6 col-lg-4">
-                                    <div class="card course-card">
-                                        <div class="course-image">
-                                            <img src="https://via.placeholder.com/300x200/ffc107/ffffff?text=React" alt="React课程">
-                                            <div class="course-status status-learning">学习中</div>
-                                            <div class="course-progress">
-                                                <div class="d-flex justify-content-between mb-1">
-                                                    <small>学习进度</small>
-                                                    <small>30%</small>
-                                                </div>
-                                                <div class="progress-bar-custom">
-                                                    <div class="progress-fill" style="width: 30%"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="course-info">
-                                            <h5 class="course-title">React全栈开发教程</h5>
-                                            <div class="course-instructor">
-                                                <i class="fas fa-user me-1"></i>刘老师
-                                                <div style="display: none;" 
-                                                     data-teacher-id="5"
-                                                     data-teacher-idcard="110101199005055678"
-                                                     data-teacher-phone="13800000005"
-                                                     data-teacher-email="liuna@edu.com"
-                                                     data-teacher-address="广州市天河区珠江新城">
-                                                </div>
-                                            </div>
-                                            <div class="course-stats">
-                                                <span><i class="fas fa-clock me-1"></i>110课时</span>
-                                                <span><i class="fas fa-users me-1"></i>4300人学习</span>
-                                            </div>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <button class="btn btn-primary btn-sm">
-                                                    <i class="fas fa-play me-1"></i>继续学习
-                                                </button>
-                                                <div class="dropdown">
-                                                    <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="dropdown">
-                                                        <i class="fas fa-ellipsis-v"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu">
-                                                        <li><a class="dropdown-item" href="#"><i class="fas fa-info me-2"></i>课程详情</a></li>
-                                                        <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i>下载资料</a></li>
-                                                        <li><a class="dropdown-item" href="#"><i class="fas fa-comments me-2"></i>课程讨论</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 课程卡片6 -->
-                                <div class="col-md-6 col-lg-4">
-                                    <div class="card course-card">
-                                        <div class="course-image">
-                                            <img src="https://via.placeholder.com/300x200/6f42c1/ffffff?text=Node" alt="Node课程">
-                                            <div class="course-status status-completed">已完成</div>
-                                            <div class="course-progress">
-                                                <div class="d-flex justify-content-between mb-1">
-                                                    <small>学习进度</small>
-                                                    <small>100%</small>
-                                                </div>
-                                                <div class="progress-bar-custom">
-                                                    <div class="progress-fill" style="width: 100%"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="course-info">
-                                            <h5 class="course-title">Node.js后端开发</h5>
-                                            <div class="course-instructor">
-                                                <i class="fas fa-user me-1"></i>赵老师
-                                                <div style="display: none;" 
-                                                     data-teacher-id="1"
-                                                     data-teacher-idcard="110101198001011234"
-                                                     data-teacher-phone="13800000001"
-                                                     data-teacher-email="zhangwei@edu.com"
-                                                     data-teacher-address="北京市朝阳区建国路88号">
-                                                </div>
-                                            </div>
-                                            <div class="course-stats">
-                                                <span><i class="fas fa-clock me-1"></i>95课时</span>
-                                                <span><i class="fas fa-users me-1"></i>3800人学习</span>
-                                            </div>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <button class="btn btn-success btn-sm">
-                                                    <i class="fas fa-certificate me-1"></i>查看证书
-                                                </button>
-                                                <span class="certificate-badge">
-                                                    <i class="fas fa-award me-1"></i>已获证书
-                                                </span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- 分页 -->
-                            <nav aria-label="课程分页">
-                                <ul class="pagination justify-content-center">
-                                    <li class="page-item disabled">
-                                        <a class="page-link" href="#" tabindex="-1">上一页</a>
-                                    </li>
-                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="#">下一页</a>
-                                    </li>
-                                </ul>
-                            </nav>
+                            <!-- 空状态提示 -->
+                            <div th:if="${#lists.isEmpty(learns)}" class="text-center py-5">
+                                <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                                <h5>暂无课程</h5>
+                                <p class="text-muted">您还没有购买任何课程，快去选购吧！</p>
+                                <a href="/edu/courses" class="btn btn-primary">浏览课程</a>
+                            </div>
                         </div>
 
                         <!-- 其他标签页内容可以根据需要添加 -->
@@ -472,5 +229,183 @@
     </div>
 
     <script src="/edu/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 课程筛选功能
+        document.addEventListener('DOMContentLoaded', function() {
+            // 筛选标签点击事件
+            const filterTabs = document.querySelectorAll('#courseFilter .nav-link');
+            filterTabs.forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const status = this.getAttribute('data-status');
+                    filterCourses(status);
+                });
+            });
+
+            // 继续学习按钮点击事件
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.continue-learning-btn')) {
+                    const btn = e.target.closest('.continue-learning-btn');
+                    const courseId = btn.getAttribute('data-course-id');
+                    startLearning(courseId);
+                }
+            });
+        });
+
+        // 筛选课程
+        function filterCourses(status) {
+            if (status === 'all') {
+                // 显示所有课程
+                showAllCourses();
+                return;
+            }
+
+            fetch(`/edu/student/courses/filter?status=${status}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderCourses(data.learns);
+                    } else {
+                        console.error('筛选课程失败:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('筛选课程出错:', error);
+                });
+        }
+
+        // 显示所有课程
+        function showAllCourses() {
+            const allCourses = document.querySelectorAll('#courseList .col-md-6');
+            allCourses.forEach(course => {
+                course.style.display = 'block';
+            });
+        }
+
+        // 渲染课程列表
+        function renderCourses(learns) {
+            const courseList = document.getElementById('courseList');
+            
+            if (learns.length === 0) {
+                courseList.innerHTML = `
+                    <div class="col-12">
+                        <div class="text-center py-5">
+                            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                            <h5>没有找到相关课程</h5>
+                            <p class="text-muted">请尝试其他筛选条件</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            learns.forEach(learn => {
+                const statusClass = learn.status === 'LEARNING' ? 'status-learning' : 
+                                  (learn.status === 'COMPLETED' ? 'status-completed' : 'status-not-started');
+                const statusText = learn.status === 'LEARNING' ? '学习中' : 
+                                 (learn.status === 'COMPLETED' ? '已完成' : '未开始');
+                const btnClass = learn.status === 'NOT_STARTED' ? 'btn-outline-primary' : 'btn-primary';
+                const btnText = learn.status === 'NOT_STARTED' ? '开始学习' : '继续学习';
+                const teacherName = learn.course.teacherInfo ? learn.course.teacherInfo.name : '讲师';
+                const duration = learn.course.duration ? learn.course.duration + '分钟' : '课时待定';
+
+                html += `
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card course-card">
+                            <div class="course-image">
+                                <img src="${learn.course.coverImage}" alt="${learn.course.title}" 
+                                     onerror="this.src='https://via.placeholder.com/300x200/667eea/ffffff?text=Course'">
+                                <div class="course-status ${statusClass}">${statusText}</div>
+                                <div class="course-progress">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <small>学习进度</small>
+                                        <small>${learn.progress}%</small>
+                                    </div>
+                                    <div class="progress-bar-custom">
+                                        <div class="progress-fill" style="width: ${learn.progress}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="course-info">
+                                <h5 class="course-title">${learn.course.title}</h5>
+                                <div class="course-instructor">
+                                    <i class="fas fa-user me-1"></i>${teacherName}
+                                </div>
+                                <div class="course-stats">
+                                    <span><i class="fas fa-clock me-1"></i>${duration}</span>
+                                    <span><i class="fas fa-users me-1"></i>${learn.course.studentCount}人学习</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <button class="btn btn-sm continue-learning-btn ${btnClass}" data-course-id="${learn.courseId}">
+                                        <i class="fas fa-play me-1"></i>${btnText}
+                                    </button>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="dropdown">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-info me-2"></i>课程详情</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i>下载资料</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-comments me-2"></i>课程讨论</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            courseList.innerHTML = html;
+        }
+
+        // 开始/继续学习
+        function startLearning(courseId) {
+            fetch('/edu/student/start-learning', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    courseId: courseId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 跳转到学习页面
+                    window.location.href = data.redirectUrl;
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('开始学习出错:', error);
+                alert('开始学习失败，请稍后重试');
+            });
+        }
+
+        // 搜索功能
+        const searchInput = document.querySelector('input[placeholder*="搜索课程"]');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const courseCards = document.querySelectorAll('#courseList .course-card');
+                
+                courseCards.forEach(card => {
+                    const title = card.querySelector('.course-title').textContent.toLowerCase();
+                    const instructor = card.querySelector('.course-instructor').textContent.toLowerCase();
+                    const container = card.closest('.col-md-6');
+                    
+                    if (title.includes(searchTerm) || instructor.includes(searchTerm)) {
+                        container.style.display = 'block';
+                    } else {
+                        container.style.display = 'none';
+                    }
+                });
+            });
+        }
+    </script>
 </body>
 </html>
