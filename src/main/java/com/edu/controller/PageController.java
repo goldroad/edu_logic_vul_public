@@ -351,9 +351,10 @@ public class PageController {
                               @RequestParam(required = false) String status,
                               @RequestParam(required = false) String keyword) {
         User user = (User) session.getAttribute("user");
-        if (user == null || user.getRole() != User.Role.ADMIN) {
-            return "redirect:/edu/auth/login";
-        }
+        // 这里注释了权限校验，存在垂直越权漏洞
+        // if (user == null || user.getRole() != User.Role.ADMIN) {
+            // return "redirect:/auth/login";
+        // }
 
         CouponService.CouponPageResult result = couponService.getCouponsWithPagination(page, size, status, keyword);
         CouponService.CouponStatistics statistics = couponService.getCouponStatistics();

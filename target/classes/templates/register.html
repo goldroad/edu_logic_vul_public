@@ -319,14 +319,37 @@
             });
         });
         
+        // 生成随机字母字符串
+        function generateRandomLetters(length) {
+            const letters = 'abcdefghijklmnopqrstuvwxyz';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += letters.charAt(Math.floor(Math.random() * letters.length));
+            }
+            return result;
+        }
+        
+        // 生成随机数字字符串
+        function generateRandomNumbers(length) {
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += Math.floor(Math.random() * 10);
+            }
+            return result;
+        }
+        
         // 快速填充测试数据
         function fillTestData() {
-            document.getElementById('username').value = 'testuser';
+            const randomUsername = generateRandomLetters(8);
+            const randomEmail = generateRandomLetters(8) + '@qq.com';
+            const randomPhone = '13899' + generateRandomNumbers(6);
+            
+            document.getElementById('username').value = randomUsername;
             document.getElementById('realName').value = '测试用户';
             document.getElementById('password').value = '123456';
             document.getElementById('confirmPassword').value = '123456';
-            document.getElementById('email').value = 'testuser@edu.com';
-            document.getElementById('phone').value = '13800000999';
+            document.getElementById('email').value = randomEmail;
+            document.getElementById('phone').value = randomPhone;
             document.getElementById('role').value = 'STUDENT';
             document.getElementById('agreement').checked = true;
         }
