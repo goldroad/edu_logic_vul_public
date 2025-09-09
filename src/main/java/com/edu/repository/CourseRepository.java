@@ -11,7 +11,9 @@ public interface CourseRepository {
     @Results({
         @Result(property = "teacherId", column = "teacher_id"),
         @Result(property = "teacher", column = "teacher_id", 
-                one = @One(select = "com.edu.repository.UserRepository.findById"))
+                one = @One(select = "com.edu.repository.UserRepository.findById")),
+        @Result(property = "teacherInfo", column = "teacher_id", 
+                one = @One(select = "com.edu.repository.TeacherRepository.findById"))
     })
     Course findById(Long id);
     
@@ -19,7 +21,9 @@ public interface CourseRepository {
     @Results({
         @Result(property = "teacherId", column = "teacher_id"),
         @Result(property = "teacher", column = "teacher_id", 
-                one = @One(select = "com.edu.repository.UserRepository.findById"))
+                one = @One(select = "com.edu.repository.UserRepository.findById")),
+        @Result(property = "teacherInfo", column = "teacher_id", 
+                one = @One(select = "com.edu.repository.TeacherRepository.findById"))
     })
     List<Course> findByStatus(String status);
     
@@ -27,7 +31,9 @@ public interface CourseRepository {
     @Results({
         @Result(property = "teacherId", column = "teacher_id"),
         @Result(property = "teacher", column = "teacher_id", 
-                one = @One(select = "com.edu.repository.UserRepository.findById"))
+                one = @One(select = "com.edu.repository.UserRepository.findById")),
+        @Result(property = "teacherInfo", column = "teacher_id", 
+                one = @One(select = "com.edu.repository.TeacherRepository.findById"))
     })
     List<Course> findByTeacherId(Long teacherId);
     
@@ -35,7 +41,9 @@ public interface CourseRepository {
     @Results({
         @Result(property = "teacherId", column = "teacher_id"),
         @Result(property = "teacher", column = "teacher_id", 
-                one = @One(select = "com.edu.repository.UserRepository.findById"))
+                one = @One(select = "com.edu.repository.UserRepository.findById")),
+        @Result(property = "teacherInfo", column = "teacher_id", 
+                one = @One(select = "com.edu.repository.TeacherRepository.findById"))
     })
     List<Course> findByTitleContaining(String title);
     
@@ -43,7 +51,9 @@ public interface CourseRepository {
     @Results({
         @Result(property = "teacherId", column = "teacher_id"),
         @Result(property = "teacher", column = "teacher_id", 
-                one = @One(select = "com.edu.repository.UserRepository.findById"))
+                one = @One(select = "com.edu.repository.UserRepository.findById")),
+        @Result(property = "teacherInfo", column = "teacher_id", 
+                one = @One(select = "com.edu.repository.TeacherRepository.findById"))
     })
     List<Course> findAll();
     
@@ -73,7 +83,9 @@ public interface CourseRepository {
     @Results({
         @Result(property = "teacherId", column = "teacher_id"),
         @Result(property = "teacher", column = "teacher_id", 
-                one = @One(select = "com.edu.repository.UserRepository.findById"))
+                one = @One(select = "com.edu.repository.UserRepository.findById")),
+        @Result(property = "teacherInfo", column = "teacher_id", 
+                one = @One(select = "com.edu.repository.TeacherRepository.findById"))
     })
     List<Course> findWithPagination(@Param("offset") int offset, @Param("limit") int limit);
     
@@ -84,7 +96,9 @@ public interface CourseRepository {
     @Results({
         @Result(property = "teacherId", column = "teacher_id"),
         @Result(property = "teacher", column = "teacher_id", 
-                one = @One(select = "com.edu.repository.UserRepository.findById"))
+                one = @One(select = "com.edu.repository.UserRepository.findById")),
+        @Result(property = "teacherInfo", column = "teacher_id", 
+                one = @One(select = "com.edu.repository.TeacherRepository.findById"))
     })
     List<Course> findByStatusWithPagination(@Param("status") String status, @Param("offset") int offset, @Param("limit") int limit);
     
@@ -95,7 +109,9 @@ public interface CourseRepository {
     @Results({
         @Result(property = "teacherId", column = "teacher_id"),
         @Result(property = "teacher", column = "teacher_id", 
-                one = @One(select = "com.edu.repository.UserRepository.findById"))
+                one = @One(select = "com.edu.repository.UserRepository.findById")),
+        @Result(property = "teacherInfo", column = "teacher_id", 
+                one = @One(select = "com.edu.repository.TeacherRepository.findById"))
     })
     List<Course> findByTitleContainingWithPagination(@Param("title") String title, @Param("offset") int offset, @Param("limit") int limit);
     

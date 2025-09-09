@@ -129,6 +129,22 @@
                                         <div class="card-body">
                                             <h6 class="card-title fw-bold" th:text="${course.title}">课程标题</h6>
                                             <p class="card-text text-muted small" th:text="${course.description}">课程描述</p>
+                                            <!-- 老师信息 -->
+                                            <div class="teacher-info mb-2" th:if="${course.teacherInfo != null}">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-user me-1"></i>
+                                                    <span th:text="${course.teacherInfo.name}">老师姓名</span>
+                                                    <span th:if="${course.teacherInfo.title != null}" 
+                                                          th:text="' (' + ${course.teacherInfo.title} + ')'" class="ms-1"></span>
+                                                </small>
+                                                <div style="display: none;" 
+                                                     th:attr="data-teacher-id=${course.teacherInfo.id},
+                                                              data-teacher-idcard=${course.teacherInfo.idCard},
+                                                              data-teacher-phone=${course.teacherInfo.phone},
+                                                              data-teacher-email=${course.teacherInfo.email},
+                                                              data-teacher-address=${course.teacherInfo.address}">
+                                                </div>
+                                            </div>
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div>
                                                     <span class="text-danger fw-bold">¥<span th:text="${course.price}">199</span></span>
