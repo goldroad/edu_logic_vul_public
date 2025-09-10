@@ -1,8 +1,5 @@
 # Spring Boot .gitignore
 
-# File
-files/
-
 # Compiled class file
 *.class
 
