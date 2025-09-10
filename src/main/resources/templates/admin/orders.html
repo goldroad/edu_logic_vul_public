@@ -119,18 +119,18 @@
                                                 <div class="d-flex align-items-center">
                                                     <div class="rounded-circle me-2 d-flex align-items-center justify-content-center text-white fw-bold"
                                                          style="width: 32px; height: 32px; background-color: #007bff;"
-                                                         th:text="${#strings.substring(order.user.realName != null ? order.user.realName : order.user.username, 0, 1)}">
+                                                         th:text="${#strings.substring(order.user != null && order.user.realName != null ? order.user.realName : (order.user != null && order.user.username != null ? order.user.username : '无'), 0, 1)}">
                                                     </div>
                                                     <div>
-                                                        <div class="fw-bold" th:text="${order.user.realName != null ? order.user.realName : order.user.username}">用户名</div>
-                                                        <small class="text-muted" th:text="${order.user.email}">email</small>
+                                                        <div class="fw-bold" th:text="${order.user != null && order.user.realName != null ? order.user.realName : (order.user != null && order.user.username != null ? order.user.username : '未知用户')}">用户名</div>
+                                                        <small class="text-muted" th:text="${order.user != null ? order.user.email : ''}">email</small>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
                                                 <div>
                                                     <div class="fw-bold" th:text="${order.course.title}">课程名称</div>
-                                                    <small class="text-muted" th:text="${order.course.teacher != null ? order.course.teacher.realName : '未知教师'}">教师</small>
+                                                    <small class="text-muted" th:text="${order.course.teacherInfo != null ? order.course.teacherInfo.name : '未知教师'}">教师</small>
                                                 </div>
                                             </td>
                                             <td th:text="'¥' + ${order.originalAmount}">¥0.00</td>

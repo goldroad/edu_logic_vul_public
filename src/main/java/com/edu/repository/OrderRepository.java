@@ -16,8 +16,6 @@ public interface OrderRepository {
     @Results({
         @Result(property = "userId", column = "user_id"),
         @Result(property = "courseId", column = "course_id"),
-        @Result(property = "user", column = "user_id", 
-                one = @One(select = "com.edu.repository.UserRepository.findById")),
         @Result(property = "course", column = "course_id", 
                 one = @One(select = "com.edu.repository.CourseRepository.findById"))
     })
@@ -27,8 +25,6 @@ public interface OrderRepository {
     @Results({
         @Result(property = "userId", column = "user_id"),
         @Result(property = "courseId", column = "course_id"),
-        @Result(property = "user", column = "user_id", 
-                one = @One(select = "com.edu.repository.UserRepository.findById")),
         @Result(property = "course", column = "course_id", 
                 one = @One(select = "com.edu.repository.CourseRepository.findById"))
     })
@@ -38,8 +34,6 @@ public interface OrderRepository {
     @Results({
         @Result(property = "userId", column = "user_id"),
         @Result(property = "courseId", column = "course_id"),
-        @Result(property = "user", column = "user_id", 
-                one = @One(select = "com.edu.repository.UserRepository.findById")),
         @Result(property = "course", column = "course_id", 
                 one = @One(select = "com.edu.repository.CourseRepository.findById"))
     })
@@ -49,8 +43,6 @@ public interface OrderRepository {
     @Results({
         @Result(property = "userId", column = "user_id"),
         @Result(property = "courseId", column = "course_id"),
-        @Result(property = "user", column = "user_id", 
-                one = @One(select = "com.edu.repository.UserRepository.findById")),
         @Result(property = "course", column = "course_id", 
                 one = @One(select = "com.edu.repository.CourseRepository.findById"))
     })
@@ -60,8 +52,6 @@ public interface OrderRepository {
     @Results({
         @Result(property = "userId", column = "user_id"),
         @Result(property = "courseId", column = "course_id"),
-        @Result(property = "user", column = "user_id", 
-                one = @One(select = "com.edu.repository.UserRepository.findById")),
         @Result(property = "course", column = "course_id", 
                 one = @One(select = "com.edu.repository.CourseRepository.findById"))
     })

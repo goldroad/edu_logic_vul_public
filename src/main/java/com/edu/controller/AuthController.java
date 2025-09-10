@@ -5,7 +5,6 @@ import com.edu.service.SimpleCaptchaService;
 import com.edu.service.UserService;
 import com.edu.service.LoginLogService;
 import com.edu.service.SmsService;
-import com.edu.util.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
