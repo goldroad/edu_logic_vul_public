@@ -190,7 +190,7 @@
                     📱 查看验证码发送记录
                 </a>
                 <a href="/edu/api/admin/file-cleanup/manual" style="background: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-size: 16px; display: inline-block; transition: background 0.3s; margin: 5px;">
-                    🧹 清理数据库未登记的文件（头像、附件等）
+                    🧹 清理文件
                 </a>
                 <button onclick="resetData()" style="background: #dc3545; color: white; padding: 12px 30px; border: none; border-radius: 5px; font-size: 16px; display: inline-block; transition: background 0.3s; margin: 5px; cursor: pointer;">
                     🔄 恢复数据到初始状态
@@ -214,7 +214,7 @@
                     <li>（注册界面）任意用户注册</li>
                     <li>（注册界面）短信轰炸</li>
                     <li>（注册界面）短信验证码暴破</li>
-                    <li>（密码重置界面）任意密码重置</li>
+                    <li>（密码重置界面）验证码暴破、任意密码重置</li>
                 </ul>
             </div>
 
@@ -353,10 +353,10 @@
         // 恢复数据功能 - 需要二次确认
         function resetData() {
             // 第一次确认
-            var firstMessage = "警告：确定要恢复数据到初始状态吗？\n\n这将清空所有用户数据、订单、优惠券等信息，此操作不可逆！";
+            var firstMessage = "警告：确定要恢复数据到初始状态吗？\n\n这将把用户数据、订单、优惠券等信息恢复到初始状态，此操作不可逆！";
             if (confirm(firstMessage)) {
                 // 第二次确认
-                var secondMessage = "最后确认：您真的要执行数据恢复操作吗？\n\n请再次确认您了解此操作的后果：\n• 所有用户数据将被清空\n• 所有订单记录将被删除\n• 所有优惠券将被重置\n• 系统将恢复到初始状态\n\n点击确定继续执行，点击取消放弃操作。";
+                var secondMessage = "最后确认：您真的要执行数据恢复操作吗？\n\n请再次确认您了解此操作的后果：\n• 系统将恢复到初始状态，只有少数几条测试数据 \n\n点击确定继续执行，点击取消放弃操作。";
                 if (confirm(secondMessage)) {
                     // 显示加载提示
                     var button = event.target;

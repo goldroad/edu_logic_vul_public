@@ -34,8 +34,8 @@ public class DataInitializer implements CommandLineRunner {
             byte[] bdata = FileCopyUtils.copyToByteArray(resource.getInputStream());
             String sql = new String(bdata, StandardCharsets.UTF_8);
             
-            // 分割SQL语句并执行
-            String[] statements = sql.split(";");
+            // 使用更智能的SQL语句分割方法
+            String[] statements = splitSqlStatements(sql);
             for (String statement : statements) {
                 statement = statement.trim();
                 if (!statement.isEmpty() && !statement.startsWith("--")) {
@@ -45,6 +45,57 @@ public class DataInitializer implements CommandLineRunner {
         } catch (Exception e) {
             System.err.println("初始化数据失败: " + e.getMessage());
         }
+    }
+    
+    /**
+     * 智能分割SQL语句，正确处理字符串中的分号
+     */
+    private String[] splitSqlStatements(String sql) {
+        java.util.List<String> statements = new java.util.ArrayList<>();
+        StringBuilder currentStatement = new StringBuilder();
+        boolean inSingleQuote = false;
+        boolean inDoubleQuote = false;
+        boolean inBacktick = false;
+        
+        for (int i = 0; i < sql.length(); i++) {
+            char c = sql.charAt(i);
+            
+            // 处理转义字符
+            if (c == '\\' && i + 1 < sql.length()) {
+                currentStatement.append(c);
+                currentStatement.append(sql.charAt(i + 1));
+                i++; // 跳过下一个字符
+                continue;
+            }
+            
+            // 处理引号状态
+            if (c == '\'' && !inDoubleQuote && !inBacktick) {
+                inSingleQuote = !inSingleQuote;
+            } else if (c == '"' && !inSingleQuote && !inBacktick) {
+                inDoubleQuote = !inDoubleQuote;
+            } else if (c == '`' && !inSingleQuote && !inDoubleQuote) {
+                inBacktick = !inBacktick;
+            }
+            
+            // 如果遇到分号且不在引号内，则认为是语句结束
+            if (c == ';' && !inSingleQuote && !inDoubleQuote && !inBacktick) {
+                String statement = currentStatement.toString().trim();
+                if (!statement.isEmpty()) {
+                    statements.add(statement);
+                }
+                currentStatement = new StringBuilder();
+            } else {
+                currentStatement.append(c);
+            }
+        }
+        
+        // 添加最后一个语句（如果有的话）
+        String lastStatement = currentStatement.toString().trim();
+        if (!lastStatement.isEmpty()) {
+            statements.add(lastStatement);
+        }
+        
+        return statements.toArray(new String[0]);
     }
     
     /**

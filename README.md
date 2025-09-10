@@ -1,6 +1,6 @@
 # 在线教育系统
 
-## 项目简介
+## 一、项目简介
 
 这是一个基于Spring Boot + MySQL开发的在线教育系统，包含学员端和教师/管理员端功能。
 
@@ -8,15 +8,15 @@
 
 作者：无涯老师，版权归属于 [八方网域教育](https://www.bafangwy.com/)。
 
-## 技术栈
+## 二、技术栈
 
-- **后端**: Spring Boot 2.7.14, MyBatis 2.3.1, MySQL 8.0
+- **后端**: Spring Boot 2.7.14, MyBatis 2.3.1, MySQL 5.7
 - **前端**: Thymeleaf, HTML5, CSS3, JavaScript
 - **数据库**: MySQL 5.7 或者8.0
 - **构建工具**: Maven
 - **Java版本**: JDK 11+，在JDK11中测试通过
 
-## 快速开始
+## 三、快速开始
 
 ### 1. 环境准备
 
@@ -31,14 +31,8 @@
 CREATE DATABASE edu_logic_vul CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-### 3. 克隆项目
 
-```bash
-git clone https://github.com/goldroad/edu_logic_vul.git
-cd edu_logic_vul
-```
-
-### 4. 配置数据库连接
+### 3. 配置数据库连接
 
 编辑 `src/main/resources/application.yml`，确认数据库连接信息：
 ```yaml
@@ -50,7 +44,7 @@ spring:
 ```
 
 
-### 5. 运行项目
+### 4. 运行项目
 1、启动项目之前需要:
 
 1）配置好JDK
@@ -81,7 +75,7 @@ mvn clean package
 java -jar target/bafangwy-logic-vul-1.0.0.jar
 ```
 
-### 6. 访问系统
+### 5. 访问系统
 
 打开浏览器访问：http://localhost:8081/edu ，首页有漏洞描述
 
@@ -91,7 +85,7 @@ java -jar target/bafangwy-logic-vul-1.0.0.jar
 http://localhost:8081/edu/md5
 
 
-## 功能特性
+## 四、功能特性
 
 ### 用户管理
 - 用户注册和登录
@@ -136,7 +130,7 @@ http://localhost:8081/edu/md5
 2. 确认操作后，系统将清空所有用户数据、订单、优惠券等信息
 3. 重新初始化默认的测试数据
 
-## 项目结构
+## 五、项目结构
 
 ```
 src/
@@ -154,7 +148,8 @@ src/
 │       └── application.yml      # 配置文件
 ```
 
-# FIXED
+## 六、项目管理
+### FIXED
 - 管理员：课程管理，封面显示不完整
 - 用户表最后登录时间，和login_logs表重复
 - √ 管理员：更换头像功能
@@ -172,9 +167,10 @@ src/
 - √ 隐藏了注册时的角色选择
 - √ 前端JS对密码增加密码MD5加密（不加盐）
 - √ 注册：模拟发送短信验证码（增加短信表），提供一个短信倒序查询页面
+- √ 数据初始化：login_logs包含分号被截断
 
 
-## TODO
+### TODO
 - 错误处理：当后端报错500的时候，例如表不存在，前端页面打不开
 - 配置开发模式和测试模式（测试模式不自动填充登录数据）
 - 增加swagger API
@@ -186,7 +182,7 @@ src/
 - 实现模拟扫码支付充值功能（好像扫不了局域网）
 - 制作Docker容器配置文件
 
-##  发布前整理
+### 发布前整理
 - 修改包名为bafangwy，添加ico 、 logo，修改类注释
 - 自动填充默认密码检查
 - 整理数据库脚本
