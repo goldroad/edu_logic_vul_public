@@ -4,6 +4,7 @@ import com.bafangwy.entity.User;
 import com.bafangwy.service.UserService;
 import com.bafangwy.service.SimpleCaptchaService;
 import com.bafangwy.service.LoginLogService;
+import com.bafangwy.service.SmsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -31,6 +32,9 @@ public class WebAuthController {
     
     @Autowired
     private LoginLogService loginLogService;
+    
+    @Autowired
+    private SmsService smsService;
     
     /**
      * 用户登录处理 - 包含用户名枚举漏洞
@@ -93,17 +97,15 @@ public class WebAuthController {
     }
     
     /**
-     * 身份验证（忘记密码第一步）
+     * 检查用户名和手机号是否匹配（发送短信前验证）
      */
-    @PostMapping("/verify-identity")
+    @PostMapping("/check-user-phone")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> verifyIdentity(@RequestParam String username,
-                                                            @RequestParam(required = false) String email,
-                                                            @RequestParam(required = false) String phone,
-                                                            HttpSession session) {
+    public ResponseEntity<Map<String, Object>> checkUserPhone(@RequestParam String username,
+                                                            @RequestParam String phone) {
         Map<String, Object> response = new HashMap<>();
         
-        // 修复：验证用户名和邮箱是否匹配
+        // 验证用户名是否存在
         User user = userService.findByUsername(username);
         if (user == null) {
             response.put("success", false);
@@ -111,10 +113,55 @@ public class WebAuthController {
             return ResponseEntity.ok(response);
         }
         
-        // 验证邮箱是否匹配
-        if (email != null && !email.isEmpty() && !user.getEmail().equals(email)) {
+        // 验证手机号是否匹配
+        if (phone == null || phone.isEmpty() || !user.getPhone().equals(phone)) {
             response.put("success", false);
-            response.put("message", "邮箱与用户名不匹配");
+            response.put("message", "手机号与用户名不匹配");
+            return ResponseEntity.ok(response);
+        }
+        
+        response.put("success", true);
+        response.put("message", "用户名和手机号匹配");
+        return ResponseEntity.ok(response);
+    }
+    
+    /**
+     * 身份验证（忘记密码第一步）
+     */
+    @PostMapping("/verify-identity")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> verifyIdentity(@RequestParam String username,
+                                                            @RequestParam(required = false) String phone,
+                                                            @RequestParam(required = false) String smsCode,
+                                                            HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        // 验证用户名是否存在
+        User user = userService.findByUsername(username);
+        if (user == null) {
+            response.put("success", false);
+            response.put("message", "用户名不存在");
+            return ResponseEntity.ok(response);
+        }
+        
+        // 验证手机号是否匹配
+        if (phone != null && !phone.isEmpty() && !user.getPhone().equals(phone)) {
+            response.put("success", false);
+            response.put("message", "手机号与用户名不匹配");
+            return ResponseEntity.ok(response);
+        }
+        
+        // 验证短信验证码
+        if (smsCode == null || smsCode.trim().isEmpty()) {
+            response.put("success", false);
+            response.put("message", "请输入短信验证码");
+            return ResponseEntity.ok(response);
+        }
+        
+        // 验证短信验证码
+        if (!smsService.verifyCode(phone, smsCode)) {
+            response.put("success", false);
+            response.put("message", "短信验证码错误或已过期");
             return ResponseEntity.ok(response);
         }
         
