@@ -225,11 +225,11 @@ CREATE TABLE `teacher`  (
   UNIQUE INDEX `UK_teacher_email`(`email`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
-INSERT INTO `teacher` VALUES (1, '张伟', '110101198001011234', '13800000001', 'zhangwei@edu.com', '北京市朝阳区建国路88号', '高级讲师', 'Java后端开发', '10年Java开发经验，精通Spring Boot、微服务架构', NULL, 10, 1, '2025-09-04 10:35:29.000000', '2025-09-04 10:35:29.000000');
-INSERT INTO `teacher` VALUES (2, '李明', '110101198502022345', '13800000002', 'liming@edu.com', '北京市海淀区中关村大街123号', '副教授', 'Python数据分析', '8年Python开发经验，专注数据科学和机器学习', NULL, 8, 1, '2025-09-04 10:35:30.000000', '2025-09-04 10:35:30.000000');
-INSERT INTO `teacher` VALUES (3, '王芳', '110101198703033456', '13800000003', 'wangfang@edu.com', '上海市浦东新区陆家嘴金融区', '讲师', '前端开发', '6年前端开发经验，精通Vue.js、React等框架', NULL, 6, 1, '2025-09-04 10:35:31.000000', '2025-09-04 10:35:31.000000');
-INSERT INTO `teacher` VALUES (4, '无涯', '110101198904044567', '13800000004', 'wuya@edu.com', '深圳市南山区科技园', '安全研究院院长', '网络安全', '15年网络安全经验，CISSP认证专家', NULL, 15, 1, '2025-09-04 10:35:32.000000', '2025-09-04 10:35:32.000000');
-INSERT INTO `teacher` VALUES (5, '刘娜', '110101199005055678', '13800000005', 'liuna@edu.com', '广州市天河区珠江新城', '助理教授', '数据库技术', '7年数据库管理经验，Oracle、MySQL专家', NULL, 7, 1, '2025-09-04 10:35:33.000000', '2025-09-04 10:35:33.000000');
+INSERT INTO `teacher` VALUES (1, '张伟', '110101198001011234', '13800000001', 'zhangwei@bafangwy.com', '北京市朝阳区建国路88号', '高级讲师', 'Java后端开发', '10年Java开发经验，精通Spring Boot、微服务架构', NULL, 10, 1, '2025-09-04 10:35:29.000000', '2025-09-04 10:35:29.000000');
+INSERT INTO `teacher` VALUES (2, '李明', '110101198502022345', '13800000002', 'liming@bafangwy.com', '北京市海淀区中关村大街123号', '副教授', 'Python数据分析', '8年Python开发经验，专注数据科学和机器学习', NULL, 8, 1, '2025-09-04 10:35:30.000000', '2025-09-04 10:35:30.000000');
+INSERT INTO `teacher` VALUES (3, '王芳', '110101198703033456', '13800000003', 'wangfang@bafangwy.com', '上海市浦东新区陆家嘴金融区', '讲师', '前端开发', '6年前端开发经验，精通Vue.js、React等框架', NULL, 6, 1, '2025-09-04 10:35:31.000000', '2025-09-04 10:35:31.000000');
+INSERT INTO `teacher` VALUES (4, '无涯', '110101198904044567', '13800000004', 'wuya@bafangwy.com', '深圳市南山区科技园', '安全研究院院长', '网络安全', '15年网络安全经验，CISSP认证专家', NULL, 15, 1, '2025-09-04 10:35:32.000000', '2025-09-04 10:35:32.000000');
+INSERT INTO `teacher` VALUES (5, '刘娜', '110101199005055678', '13800000005', 'liuna@bafangwy.com', '广州市天河区珠江新城', '助理教授', '数据库技术', '7年数据库管理经验，Oracle、MySQL专家', NULL, 7, 1, '2025-09-04 10:35:33.000000', '2025-09-04 10:35:33.000000');
 
 DROP TABLE IF EXISTS `user_coupon`;
 CREATE TABLE `user_coupon`  (
@@ -293,9 +293,9 @@ CREATE TABLE `users`  (
   UNIQUE INDEX `UK_du5v5sr43g5bfnji4vb8hg5s3`(`phone`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
-INSERT INTO `users` VALUES (1, 'uploads/avatars/d04a82c5-1f57-4e8c-9f3c-9dc7d0214f77.jpeg', 10000.00, '2025-09-04 10:35:29.870634', 'admin@edu.com', 1, 'e10adc3949ba59abbe56e057f20f883e', '13800000001', '系统管理员', 'ADMIN', '2025-09-10 14:46:02.828697', 'admin', '2025-09-10 14:45:54');
-INSERT INTO `users` VALUES (2, NULL, 5000.00, '2025-09-04 10:35:29.917526', 'teacher@edu.com', 1, 'a426dcf72ba25d046591f81a5495eab7', '13800000002', '张老师', 'TEACHER', '2025-09-04 10:35:29.917526', 'teacher', '2025-09-04 10:35:30');
-INSERT INTO `users` VALUES (3, 'uploads/avatars/41451d53-4253-4d0b-ac3f-b8274e3a9e0d.jpg', 8702.00, '2025-09-04 10:35:29.937387', 'student@edu.com', 1, 'c4ca4238a0b923820dcc509a6f75849b', '13800000006', '无同学', 'STUDENT', '2025-09-10 14:38:51.686293', 'student', '2025-09-10 14:38:52');
+INSERT INTO `users` VALUES (1, 'uploads/avatars/d04a82c5-1f57-4e8c-9f3c-9dc7d0214f77.jpeg', 10000.00, '2025-09-04 10:35:29.870634', 'admin@bafangwy.com', 1, 'e10adc3949ba59abbe56e057f20f883e', '13800000001', '系统管理员', 'ADMIN', '2025-09-10 14:46:02.828697', 'admin', '2025-09-10 14:45:54');
+INSERT INTO `users` VALUES (2, NULL, 5000.00, '2025-09-04 10:35:29.917526', 'teacher@bafangwy.com', 1, 'a426dcf72ba25d046591f81a5495eab7', '13800000002', '张老师', 'TEACHER', '2025-09-04 10:35:29.917526', 'teacher', '2025-09-04 10:35:30');
+INSERT INTO `users` VALUES (3, 'uploads/avatars/41451d53-4253-4d0b-ac3f-b8274e3a9e0d.jpg', 8702.00, '2025-09-04 10:35:29.937387', 'student@bafangwy.com', 1, 'c4ca4238a0b923820dcc509a6f75849b', '13800000006', '无同学', 'STUDENT', '2025-09-10 14:38:51.686293', 'student', '2025-09-10 14:38:52');
 INSERT INTO `users` VALUES (4, NULL, 666.00, '2025-09-04 10:35:29.949279', 'weakuser@example.com', 1, 'e10adc3949ba59abbe56e057f20f883e', '13800000007', '弱口令', 'STUDENT', '2025-09-04 10:35:29.949279', 'weakuser', '2025-09-04 10:35:30');
 INSERT INTO `users` VALUES (8, NULL, 500.00, '2025-09-04 10:37:53.000765', 'user1@test.com', 1, 'e10adc3949ba59abbe56e057f20f883e', '13800000101', '测试用户1', 'STUDENT', '2025-09-04 10:37:53.000765', 'user1', '2025-09-04 10:37:53');
 INSERT INTO `users` VALUES (9, NULL, 500.00, '2025-09-04 10:37:53.072906', 'user2@test.com', 1, 'e10adc3949ba59abbe56e057f20f883e', '13800000102', '测试用户2', 'STUDENT', '2025-09-04 10:37:53.072906', 'user2', '2025-09-04 10:37:53');
