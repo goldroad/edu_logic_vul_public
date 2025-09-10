@@ -2,6 +2,7 @@ package com.edu.repository;
 
 import com.edu.entity.User;
 import org.apache.ibatis.annotations.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,13 +41,13 @@ public interface UserRepository {
     @Select("SELECT * FROM users")
     List<User> findAll();
     
-    @Insert("INSERT INTO users(username, password, email, phone, real_name, role, avatar, balance, create_time, update_time, enabled) " +
-            "VALUES(#{username}, #{password}, #{email}, #{phone}, #{realName}, #{role}, #{avatar}, #{balance}, #{createTime}, #{updateTime}, #{enabled})")
+    @Insert("INSERT INTO users(username, password, email, phone, real_name, role, avatar, balance, create_time, update_time, last_log, enabled) " +
+            "VALUES(#{username}, #{password}, #{email}, #{phone}, #{realName}, #{role}, #{avatar}, #{balance}, #{createTime}, #{updateTime}, #{lastLog}, #{enabled})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int save(User user);
     
     @Update("UPDATE users SET username=#{username}, password=#{password}, email=#{email}, phone=#{phone}, " +
-            "real_name=#{realName}, role=#{role}, avatar=#{avatar}, balance=#{balance}, update_time=#{updateTime}, enabled=#{enabled} " +
+            "real_name=#{realName}, role=#{role}, avatar=#{avatar}, balance=#{balance}, update_time=#{updateTime}, last_log=#{lastLog}, enabled=#{enabled} " +
             "WHERE id=#{id}")
     int update(User user);
     
@@ -58,4 +59,10 @@ public interface UserRepository {
      */
     @Select("SELECT COUNT(*) FROM users")
     long countTotalUsers();
+    
+    /**
+     * 更新用户最后登录时间
+     */
+    @Update("UPDATE users SET last_log = #{lastLog}, update_time = #{updateTime} WHERE id = #{id}")
+    int updateLastLog(@Param("id") Long id, @Param("lastLog") LocalDateTime lastLog, @Param("updateTime") LocalDateTime updateTime);
 }

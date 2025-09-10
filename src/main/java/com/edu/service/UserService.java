@@ -43,6 +43,10 @@ public class UserService {
             return "账户已被禁用";
         }
         
+        // 登录成功，更新最后登录时间
+        LocalDateTime now = LocalDateTime.now();
+        userRepository.updateLastLog(user.getId(), now, now);
+        
         return "登录成功";
     }
     

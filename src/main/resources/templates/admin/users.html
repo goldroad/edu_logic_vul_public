@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -146,8 +146,8 @@
                                                 <span th:class="'badge ' + (${user.enabled} ? 'status-active' : 'status-banned')" 
                                                       th:text="${user.enabled} ? '活跃' : '已封禁'">状态</span>
                                             </td>
-                                            <td th:text="${#temporals.format(user.createTime, 'yyyy-MM-dd')}">2024-01-01</td>
-                                            <td th:text="${#temporals.format(user.updateTime, 'yyyy-MM-dd HH:mm')}">2024-09-04 10:30</td>
+                                            <td th:text="${#temporals.format(user.createTime, 'yyyy-MM-dd')}">2026-01-01</td>
+                                            <td th:text="${user.lastLog != null ? #temporals.format(user.lastLog, 'yyyy-MM-dd HH:mm') : '从未登录'}">2026-09-04 10:30</td>
                                             <td>-</td>
                                             <td>
                                                 <div class="btn-group btn-group-sm">

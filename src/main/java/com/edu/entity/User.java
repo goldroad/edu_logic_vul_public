@@ -26,6 +26,7 @@ public class User {
     private Double balance = 0.0;
     private LocalDateTime createTime = LocalDateTime.now();
     private LocalDateTime updateTime = LocalDateTime.now();
+    private LocalDateTime lastLog;
     private Boolean enabled = true;
     
     public enum Role {
