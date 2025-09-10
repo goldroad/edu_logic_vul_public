@@ -161,4 +161,10 @@ public interface FileRepository {
     
     @Select("SELECT COUNT(*) FROM files WHERE user_id = #{userId} AND file_type = #{type} AND is_deleted = 0")
     int countUserFilesByType(@Param("userId") Long userId, @Param("type") String type);
+    
+    /**
+     * 获取所有文件的存储名称
+     */
+    @Select("SELECT stored_name FROM files WHERE stored_name IS NOT NULL AND stored_name != '' AND is_deleted = 0")
+    List<String> findAllStoredNames();
 }

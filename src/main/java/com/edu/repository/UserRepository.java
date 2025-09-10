@@ -65,4 +65,10 @@ public interface UserRepository {
      */
     @Update("UPDATE users SET last_log = #{lastLog}, update_time = #{updateTime} WHERE id = #{id}")
     int updateLastLog(@Param("id") Long id, @Param("lastLog") LocalDateTime lastLog, @Param("updateTime") LocalDateTime updateTime);
+    
+    /**
+     * 获取所有用户的头像文件名
+     */
+    @Select("SELECT avatar FROM users WHERE avatar IS NOT NULL AND avatar != ''")
+    List<String> findAllAvatars();
 }

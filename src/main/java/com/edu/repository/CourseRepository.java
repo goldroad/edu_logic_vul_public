@@ -125,4 +125,10 @@ public interface CourseRepository {
      */
     @Select("SELECT COUNT(*) FROM course WHERE status = #{status}")
     long countByStatus(String status);
+    
+    /**
+     * 获取所有课程的封面图片文件名
+     */
+    @Select("SELECT cover_image FROM course WHERE cover_image IS NOT NULL AND cover_image != ''")
+    List<String> findAllCoverImages();
 }
