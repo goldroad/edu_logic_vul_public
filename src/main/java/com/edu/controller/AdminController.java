@@ -7,10 +7,16 @@ import com.edu.service.LoginLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Copyright © 2025 八方网域-无涯老师. All rights reserved.
@@ -323,6 +329,97 @@ public class AdminController {
         response.put("success", true);
         response.put("loginLogs", loginLogs);
         response.put("statistics", statistics);
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    /**
+     * 管理员上传头像
+     */
+    @PostMapping("/upload-avatar")
+    public ResponseEntity<Map<String, Object>> uploadAvatar(@RequestParam("avatar") MultipartFile file,
+                                                           HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        User admin = (User) session.getAttribute("user");
+        if (admin == null || admin.getRole() != User.Role.ADMIN) {
+            response.put("success", false);
+            response.put("message", "请先登录管理员账户");
+            return ResponseEntity.ok(response);
+        }
+        
+        if (file.isEmpty()) {
+            response.put("success", false);
+            response.put("message", "请选择要上传的头像文件");
+            return ResponseEntity.ok(response);
+        }
+        
+        try {
+            // 检查文件类型
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                response.put("success", false);
+                response.put("message", "只能上传图片文件");
+                return ResponseEntity.ok(response);
+            }
+            
+            // 检查文件大小（限制为2MB）
+            if (file.getSize() > 2 * 1024 * 1024) {
+                response.put("success", false);
+                response.put("message", "头像文件大小不能超过2MB");
+                return ResponseEntity.ok(response);
+            }
+            
+            // 创建上传目录
+            String uploadDir = "uploads/avatars/";
+            File dir = new File(uploadDir);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            
+            // 生成唯一文件名
+            String originalFilename = file.getOriginalFilename();
+            String extension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+            String filename = UUID.randomUUID().toString() + extension;
+            
+            // 保存文件
+            Path filePath = Paths.get(uploadDir + filename);
+            Files.copy(file.getInputStream(), filePath);
+            
+            // 更新管理员头像路径
+            User currentAdmin = userService.findById(admin.getId());
+            if (currentAdmin != null) {
+                // 删除旧头像文件（如果存在）
+                if (currentAdmin.getAvatar() != null && !currentAdmin.getAvatar().isEmpty()) {
+                    try {
+                        Path oldFilePath = Paths.get(currentAdmin.getAvatar());
+                        Files.deleteIfExists(oldFilePath);
+                    } catch (Exception e) {
+                        // 忽略删除旧文件的错误
+                    }
+                }
+                
+                currentAdmin.setAvatar(uploadDir + filename);
+                userService.save(currentAdmin);
+                
+                // 更新session中的用户信息
+                session.setAttribute("user", currentAdmin);
+                
+                response.put("success", true);
+                response.put("message", "头像上传成功");
+                response.put("avatarUrl", "/edu/" + uploadDir + filename);
+            } else {
+                response.put("success", false);
+                response.put("message", "用户不存在");
+            }
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "头像上传失败：" + e.getMessage());
+        }
         
         return ResponseEntity.ok(response);
     }
