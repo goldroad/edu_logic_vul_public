@@ -10,7 +10,7 @@
 
 - **后端**: Spring Boot 2.7.14, MyBatis 2.3.1, MySQL 8.0
 - **前端**: Thymeleaf, HTML5, CSS3, JavaScript
-- **数据库**: MySQL  5.7 或者8.0
+- **数据库**: MySQL 5.7 或者8.0
 - **构建工具**: Maven
 - **Java版本**: JDK 8+
 
@@ -132,6 +132,7 @@ src/
 ```
 
 # TODO
+老师：导航条抽取
 管理员：更换头像功能
 管理员：用户管理：最后登录时间
 管理员：课程管理，封面显示不完整
