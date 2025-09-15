@@ -128,9 +128,9 @@
                                 <div th:each="learn : ${learns}" class="col-md-6 col-lg-4">
                                     <div class="card course-card">
                                         <div class="course-image">
-                                            <img th:src="${learn.course.coverImage != null ? '/edu/api/files/view/' + learn.course.coverImage : 'https://via.placeholder.com/300x200/667eea/ffffff?text=Course'}" 
+                                            <img th:src="${learn.course.coverImage != null ? '/edu/api/files/view/' + learn.course.coverImage : '/edu/pic/bafang.jpg'}" 
                                                  th:alt="${learn.course.title}" 
-                                                 onerror="this.src='https://via.placeholder.com/300x200/667eea/ffffff?text=Course'">
+                                                 onerror="this.src='/edu/pic/bafang.jpg'">
                                             <div class="course-status" 
                                                  th:classappend="${learn.status.name() == 'LEARNING'} ? 'status-learning' : 
                                                                  (${learn.status.name() == 'COMPLETED'} ? 'status-completed' : 'status-not-started')"
@@ -340,8 +340,8 @@
                     <div class="col-md-6 col-lg-4">
                         <div class="card course-card">
                             <div class="course-image">
-                                <img src="${learn.course.coverImage ? '/edu/api/files/view/' + learn.course.coverImage : 'https://via.placeholder.com/300x200/667eea/ffffff?text=Course'}" alt="${learn.course.title}" 
-                                     onerror="this.src='https://via.placeholder.com/300x200/667eea/ffffff?text=Course'">
+                                <img src="${learn.course.coverImage ? '/edu/api/files/view/' + learn.course.coverImage : '/edu/pic/bafang.jpg'}" alt="${learn.course.title}" 
+                                     onerror="this.src='/edu/pic/bafang.jpg'">
                                 <div class="course-status ${statusClass}">${statusText}</div>
                                 <div class="course-progress">
                                     <div class="d-flex justify-content-between mb-1">

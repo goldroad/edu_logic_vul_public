@@ -31,10 +31,10 @@
                     <div class="row mb-4">
                         <div class="col-md-4">
                             <div class="course-cover">
-                                <img th:src="${course.coverImage != null ? '/edu/api/files/view/' + course.coverImage : 'https://via.placeholder.com/400x300/667eea/ffffff?text=Course'}" 
+                                <img th:src="${course.coverImage != null ? '/edu/api/files/view/' + course.coverImage : '/edu/pic/bafang.jpg'}" 
                                      th:alt="${course.title}" 
                                      class="img-fluid rounded shadow"
-                                     onerror="this.src='https://via.placeholder.com/400x300/667eea/ffffff?text=Course'">
+                                     onerror="this.src='/edu/pic/bafang.jpg'">
                             </div>
                         </div>
                         <div class="col-md-8">

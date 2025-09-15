@@ -15,7 +15,7 @@ import java.util.UUID;
 /**
  * Copyright © 2025 八方网域-无涯老师. All rights reserved.
  * 作者：八方网域-无涯老师
- * 创建时间：2024-09
+ * 创建时间：2025-09
  */
 @Service
 public class OrderService {
@@ -338,7 +338,7 @@ public class OrderService {
             }
             
         } catch (Exception e) {
-            System.err.println("自动关闭过期订单失败: " + e.getMessage());
+            System.err.println("自动关闭过期订单失败【首次启动请到首页初始化数据库！】: " + e.getMessage());
             e.printStackTrace();
         }
     }

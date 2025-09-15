@@ -35,8 +35,8 @@
                     <!-- 头像与基本展示 -->
                     <div class="card mb-4">
                         <div class="profile-header">
-                            <img th:src="${targetUser.avatar != null ? '/edu/' + targetUser.avatar : 'https://via.placeholder.com/120x120/667eea/ffffff?text=头像'}"
-                                 src="https://via.placeholder.com/120x120/667eea/ffffff?text=头像"
+                            <img th:src="${targetUser.avatar != null ? '/edu/' + targetUser.avatar : '/edu/pic/bafang.jpg'}"
+                                 src="/edu/pic/bafang.jpg"
                                  alt="用户头像" class="profile-avatar mb-3" id="profileAvatar">
                             <h3 th:text="${targetUser.realName != null ? targetUser.realName : '未设置姓名'}">用户姓名</h3>
                             <p class="mb-0" th:text="'@' + ${targetUser.username}">@username</p>

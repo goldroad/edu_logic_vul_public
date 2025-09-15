@@ -50,7 +50,7 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-4 text-center">
-                                    <img th:src="${user != null && user.avatar != null ? '/edu/' + user.avatar : 'https://via.placeholder.com/120x120/dc3545/ffffff?text=ADMIN'}" 
+                                    <img th:src="${user != null && user.avatar != null ? '/edu/' + user.avatar : '/edu/pic/bafang.jpg'}" 
                                          class="profile-avatar mb-3" alt="管理员头像" id="profileAvatar">
                                     <h5 th:text="${user != null ? user.realName : '系统管理员'}">系统管理员</h5>
                                     <p class="text-muted">

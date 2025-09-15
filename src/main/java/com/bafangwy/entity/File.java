@@ -2,6 +2,11 @@ package com.bafangwy.entity;
 
 import java.time.LocalDateTime;
 
+/**
+ * Copyright © 2025 八方网域-无涯老师. All rights reserved.
+ * 作者：八方网域-无涯老师
+ * 创建时间：2025-09
+ */
 public class File {
     private Long id;
     private Long userId;

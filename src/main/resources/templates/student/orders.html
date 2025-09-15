@@ -70,7 +70,7 @@
                                         <div class="card-body">
                                             <div class="row align-items-center">
                                                 <div class="col-md-2">
-                                                    <img th:src="'/edu/files/' + ${order.course.coverImage != null ? order.course.coverImage : 'https://via.placeholder.com/120x80'}" class="img-fluid rounded" alt="课程封面">
+                                                    <img th:src="'/edu/files/' + ${order.course.coverImage != null ? order.course.coverImage : '/edu/pic/bafang.jpg'}" class="img-fluid rounded" alt="课程封面">
                                                 </div>
                                                 <div class="col-md-4">
                                                     <h6 th:text="${order.course.title}">课程标题</h6>

@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * Copyright © 2025 八方网域-无涯老师. All rights reserved.
  * 作者：八方网域-无涯老师
- * 创建时间：2024-09
+ * 创建时间：2025-09
  */
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -22,7 +22,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // 延迟执行，确保表已经创建
-        Thread.sleep(2000);
+        // Thread.sleep(2000);
         // 启动时不需要再初始化
         // initializeDataFromSql();
 

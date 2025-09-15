@@ -120,7 +120,7 @@
                                 <div class="col-md-4 mb-4" th:each="course : ${courses}">
                                     <div class="card h-100">
                                         <div class="position-relative">
-                                            <img th:src="${course.coverImage != null ? '/edu/files/' + course.coverImage : 'https://via.placeholder.com/300x200/007bff/ffffff?text=Course'}" 
+                                            <img th:src="${course.coverImage != null ? '/edu/files/' + course.coverImage : '/edu/pic/bafang.jpg'}" 
                                                  class="card-img-top course-image" alt="课程封面">
                                             <span class="badge position-absolute top-0 end-0 m-2 status-badge" 
                                                   th:classappend="${course.status.name() == 'PUBLISHED' ? 'bg-success' : (course.status.name() == 'OFFLINE' ? 'bg-secondary' : 'bg-warning')}"
@@ -465,7 +465,7 @@
                             document.getElementById('editCoverImage').src = '/edu/files/' + course.coverImage;
                             document.getElementById('editCoverPreview').style.display = 'block';
                         } else {
-                            document.getElementById('editCoverImage').src = 'https://via.placeholder.com/200x150/007bff/ffffff?text=No+Image';
+                            document.getElementById('editCoverImage').src = '/edu/pic/bafang.jpg';
                             document.getElementById('editCoverPreview').style.display = 'block';
                         }
                         
