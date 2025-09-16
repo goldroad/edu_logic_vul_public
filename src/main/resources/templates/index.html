@@ -272,78 +272,320 @@
         </div>
         
         <div class="api-section">
-            <h2>🔌 API 接口列表【这里列出的不完整】</h2>
+            <h2>🔌 API 接口列表【完整版本】</h2>
             <div class="api-list">
+                <!-- 认证相关接口 -->
                 <div class="api-item">
                     <div class="method">POST</div>
                     <div class="path">/api/auth/login</div>
-                    <div class="desc">登录接口（用户名枚举）</div>
+                    <div class="desc">登录接口（用户名枚举、弱口令、万能验证码）</div>
                 </div>
                 
                 <div class="api-item">
                     <div class="method">POST</div>
                     <div class="path">/api/auth/register</div>
-                    <div class="desc">注册接口（任意用户注册）</div>
+                    <div class="desc">注册接口（任意用户注册、短信轰炸）</div>
                 </div>
                 
                 <div class="api-item">
                     <div class="method">POST</div>
                     <div class="path">/api/auth/forgot-password</div>
-                    <div class="desc">忘记密码（任意重置）</div>
+                    <div class="desc">忘记密码（任意密码重置、验证码暴破）</div>
                 </div>
                 
                 <div class="api-item">
                     <div class="method">GET</div>
                     <div class="path">/api/auth/captcha</div>
-                    <div class="desc">获取验证码（回显漏洞）</div>
+                    <div class="desc">获取验证码（前端回显漏洞）</div>
                 </div>
                 
                 <div class="api-item">
                     <div class="method">GET</div>
+                    <div class="path">/api/auth/current-user</div>
+                    <div class="desc">获取当前用户信息</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">POST</div>
+                    <div class="path">/api/auth/logout</div>
+                    <div class="desc">用户登出</div>
+                </div>
+                
+                <!-- 用户管理接口 -->
+                <div class="api-item">
+                    <div class="method">GET</div>
                     <div class="path">/api/user/{id}</div>
-                    <div class="desc">获取用户信息</div>
+                    <div class="desc">获取用户信息（水平越权）</div>
                 </div>
                 
                 <div class="api-item">
                     <div class="method">GET</div>
                     <div class="path">/api/user/list</div>
-                    <div class="desc">用户列表</div>
+                    <div class="desc">用户列表（未授权访问）</div>
                 </div>
                 
                 <div class="api-item">
-                    <div class="method">POST</div>
-                    <div class="path">/api/order/create</div>
-                    <div class="desc">创建订单（支付逻辑漏洞）</div>
-                </div>
-                
-                <div class="api-item">
-                    <div class="method">POST</div>
-                    <div class="path">/api/coupon/{id}/receive</div>
-                    <div class="desc">领取优惠券</div>
+                    <div class="method">PUT</div>
+                    <div class="path">/api/user/{id}</div>
+                    <div class="desc">修改用户信息（水平越权、角色提升）</div>
                 </div>
                 
                 <div class="api-item">
                     <div class="method">GET</div>
-                    <div class="path">/api/file/read</div>
-                    <div class="desc">读取文件</div>
-                </div>
-                
-                <div class="api-item">
-                    <div class="method">GET</div>
-                    <div class="path">/api/file/list</div>
-                    <div class="desc">列出目录（目录遍历）</div>
-                </div>
-                
-                <div class="api-item">
-                    <div class="method">GET</div>
-                    <div class="path">/api/user/system/info</div>
-                    <div class="desc">系统信息（未授权访问）</div>
+                    <div class="path">/api/user/admin/info</div>
+                    <div class="desc">获取管理员信息（未授权访问）</div>
                 </div>
                 
                 <div class="api-item">
                     <div class="method">DELETE</div>
                     <div class="path">/api/user/{id}</div>
                     <div class="desc">删除用户（未授权访问）</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">GET</div>
+                    <div class="path">/api/user/system/info</div>
+                    <div class="desc">系统信息（未授权访问、敏感信息泄露）</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">POST</div>
+                    <div class="path">/api/user/{id}/reset-password</div>
+                    <div class="desc">重置用户密码（未授权访问）</div>
+                </div>
+                
+                <!-- 订单相关接口 -->
+                <div class="api-item">
+                    <div class="method">POST</div>
+                    <div class="path">/api/order/create</div>
+                    <div class="desc">创建订单（支付逻辑漏洞、金额篡改）</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">POST</div>
+                    <div class="path">/api/order/{orderNo}/pay</div>
+                    <div class="desc">支付订单</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">GET</div>
+                    <div class="path">/api/order/my</div>
+                    <div class="desc">获取我的订单</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">GET</div>
+                    <div class="path">/api/order/{orderNo}</div>
+                    <div class="desc">获取订单详情（水平越权）</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">GET</div>
+                    <div class="path">/api/order/all</div>
+                    <div class="desc">获取所有订单（未授权访问）</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">PUT</div>
+                    <div class="path">/api/order/{orderNo}/amount</div>
+                    <div class="desc">修改订单金额（支付逻辑漏洞）</div>
+                </div>
+                
+                <!-- 文件管理接口 -->
+                <div class="api-item">
+                    <div class="method">POST</div>
+                    <div class="path">/api/files/upload</div>
+                    <div class="desc">上传文件</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">GET</div>
+                    <div class="path">/api/files/list</div>
+                    <div class="desc">获取文件列表</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">GET</div>
+                    <div class="path">/api/files/search</div>
+                    <div class="desc">搜索文件</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">GET</div>
+                    <div class="path">/api/files/download/{fileId}</div>
+                    <div class="desc">下载文件（水平越权）</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">DELETE</div>
+                    <div class="path">/api/files/{fileId}</div>
+                    <div class="desc">删除文件（水平越权）</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">GET</div>
+                    <div class="path">/api/files/view/{fileName}</div>
+                    <div class="desc">查看文件（任意文件读取）</div>
+                </div>
+                
+                <!-- 短信验证码接口 -->
+                <div class="api-item">
+                    <div class="method">POST</div>
+                    <div class="path">/api/sms/send</div>
+                    <div class="desc">发送验证码（短信轰炸）</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">POST</div>
+                    <div class="path">/api/sms/verify</div>
+                    <div class="desc">验证验证码（暴破）</div>
+                </div>
+                
+                <!-- 个人资料接口 -->
+                <div class="api-item">
+                    <div class="method">POST</div>
+                    <div class="path">/api/profile/change-password</div>
+                    <div class="desc">修改密码</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">POST</div>
+                    <div class="path">/api/profile/update</div>
+                    <div class="desc">更新个人信息</div>
+                </div>
+                
+                <!-- 系统管理接口 -->
+                <div class="api-item">
+                    <div class="method">POST</div>
+                    <div class="path">/api/system/reset-data</div>
+                    <div class="desc">重置数据到初始状态</div>
+                </div>
+                
+                <!-- 管理员接口 -->
+                <div class="api-item">
+                    <div class="method">GET</div>
+                    <div class="path">/admin/api/users</div>
+                    <div class="desc">管理员获取用户列表</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">PUT</div>
+                    <div class="path">/admin/api/users/{userId}</div>
+                    <div class="desc">管理员更新用户信息</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">POST</div>
+                    <div class="path">/admin/api/users/{userId}/ban</div>
+                    <div class="desc">管理员封禁用户</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">POST</div>
+                    <div class="path">/admin/api/users/{userId}/unban</div>
+                    <div class="desc">管理员解封用户</div>
+                </div>
+                
+                <!-- 优惠券管理接口 -->
+                <div class="api-item">
+                    <div class="method">GET</div>
+                    <div class="path">/admin/api/coupons</div>
+                    <div class="desc">获取优惠券列表（垂直越权）</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">POST</div>
+                    <div class="path">/admin/api/coupons</div>
+                    <div class="desc">创建优惠券</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">PUT</div>
+                    <div class="path">/admin/api/coupons/{couponId}</div>
+                    <div class="desc">更新优惠券</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">DELETE</div>
+                    <div class="path">/admin/api/coupons/{couponId}</div>
+                    <div class="desc">删除优惠券</div>
+                </div>
+                
+                <!-- 课程管理接口 -->
+                <div class="api-item">
+                    <div class="method">GET</div>
+                    <div class="path">/admin/api/courses</div>
+                    <div class="desc">获取课程列表</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">POST</div>
+                    <div class="path">/admin/api/courses</div>
+                    <div class="desc">创建课程</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">PUT</div>
+                    <div class="path">/admin/api/courses/{courseId}</div>
+                    <div class="desc">更新课程信息</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">DELETE</div>
+                    <div class="path">/admin/api/courses/{courseId}</div>
+                    <div class="desc">删除课程</div>
+                </div>
+                
+                <!-- 教师管理接口 -->
+                <div class="api-item">
+                    <div class="method">GET</div>
+                    <div class="path">/edu/api/teachers</div>
+                    <div class="desc">获取教师列表（信息泄露）</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">GET</div>
+                    <div class="path">/edu/api/teachers/{id}</div>
+                    <div class="desc">获取教师详情</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">POST</div>
+                    <div class="path">/edu/api/teachers</div>
+                    <div class="desc">创建教师</div>
+                </div>
+                
+                <!-- 文件清理接口 -->
+                <div class="api-item">
+                    <div class="method">GET/POST</div>
+                    <div class="path">/api/admin/file-cleanup/manual</div>
+                    <div class="desc">手动清理文件</div>
+                </div>
+                
+                <!-- 验证码图片接口 -->
+                <div class="api-item">
+                    <div class="method">GET</div>
+                    <div class="path">/captcha/image</div>
+                    <div class="desc">获取验证码图片</div>
+                </div>
+                
+                <!-- 管理员用户管理接口 -->
+                <div class="api-item">
+                    <div class="method">GET</div>
+                    <div class="path">/api/admin/users/{id}</div>
+                    <div class="desc">管理员获取用户详情</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">POST</div>
+                    <div class="path">/api/admin/users</div>
+                    <div class="desc">管理员创建用户</div>
+                </div>
+                
+                <div class="api-item">
+                    <div class="method">POST</div>
+                    <div class="path">/api/admin/users/{id}/reset-password</div>
+                    <div class="desc">管理员重置用户密码</div>
                 </div>
             </div>
         </div>

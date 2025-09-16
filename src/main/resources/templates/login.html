@@ -233,31 +233,6 @@
             document.getElementById('captcha').value = 'wuya';
         }
         
-        // 恢复数据功能
-        function resetData() {
-            if (confirm('确定要恢复数据到初始状态吗？这将清空所有用户数据、订单、优惠券等信息。')) {
-                fetch('/edu/api/system/reset-data', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('数据恢复成功！');
-                        location.reload();
-                    } else {
-                        alert('数据恢复失败：' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('数据恢复失败，请稍后重试');
-                });
-            }
-        }
-        
         // 为测试账号添加点击事件
         document.addEventListener('DOMContentLoaded', function() {
             // 初始化验证码
