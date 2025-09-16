@@ -206,6 +206,59 @@ public class FileController {
     }
     
     /**
+     * 上传课程封面
+     */
+    @PostMapping("/course-files/upload-cover")
+    public ResponseEntity<Map<String, Object>> uploadCourseCover(
+            @RequestParam("file") MultipartFile file,
+            HttpSession session) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        User admin = (User) session.getAttribute("user");
+        if (admin == null || admin.getRole() != User.Role.ADMIN) {
+            response.put("success", false);
+            response.put("message", "无权限访问");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
+        
+        // 检查文件类型
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            response.put("success", false);
+            response.put("message", "只能上传图片文件");
+            return ResponseEntity.badRequest().body(response);
+        }
+        
+        // 检查文件大小（限制为5MB）
+        if (file.getSize() > 5 * 1024 * 1024) {
+            response.put("success", false);
+            response.put("message", "文件大小不能超过5MB");
+            return ResponseEntity.badRequest().body(response);
+        }
+        
+        try {
+            Map<String, Object> result = fileService.uploadFile(file, admin.getId());
+            if ((Boolean) result.get("success")) {
+                // 获取上传的文件信息
+                com.bafangwy.entity.File fileEntity = (com.bafangwy.entity.File) result.get("file");
+                response.put("success", true);
+                response.put("message", "文件上传成功");
+                response.put("filePath", fileEntity.getStoredName()); // 返回存储的文件名
+                response.put("fileUrl", "/bafangwy/files/" + fileEntity.getStoredName()); // 返回访问URL
+            } else {
+                response.put("success", false);
+                response.put("message", result.get("message"));
+            }
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "文件上传失败: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
      * 访问文件（用于显示图片等）
      */
     @GetMapping("/view/{fileName}")

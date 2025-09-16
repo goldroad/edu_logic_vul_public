@@ -8,7 +8,9 @@ import com.bafangwy.service.SmsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -205,5 +207,21 @@ public class AuthController {
         }
         
         return response;
+    }
+    
+    /**
+     * 获取验证码图片
+     */
+    @GetMapping("/captcha/image")
+    public void getCaptchaImage(HttpSession session, HttpServletResponse response) throws IOException {
+        byte[] imageBytes = simpleCaptchaService.generateCaptchaImage(session.getId());
+        
+        response.setContentType("image/png");
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+        
+        response.getOutputStream().write(imageBytes);
+        response.getOutputStream().flush();
     }
 }

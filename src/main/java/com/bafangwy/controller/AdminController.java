@@ -158,12 +158,12 @@ public class AdminController {
     }
     
     /**
-     * 重置用户密码API
+     * 重置用户密码API - 支持自动生成密码
      */
     @PostMapping("/users/{userId}/reset-password")
     public ResponseEntity<Map<String, Object>> resetUserPassword(
             @PathVariable Long userId,
-            @RequestBody Map<String, String> data,
+            @RequestBody(required = false) Map<String, String> data,
             HttpSession session) {
         
         User admin = (User) session.getAttribute("user");
@@ -171,9 +171,12 @@ public class AdminController {
             return ResponseEntity.status(403).body(Map.of("error", "无权限访问"));
         }
         
-        String newPassword = data.get("newPassword");
-        if (newPassword == null || newPassword.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "新密码不能为空"));
+        String newPassword;
+        if (data != null && data.get("newPassword") != null && !data.get("newPassword").trim().isEmpty()) {
+            newPassword = data.get("newPassword");
+        } else {
+            // 自动生成随机密码
+            newPassword = generateRandomPassword();
         }
         
         boolean success = userService.resetUserPassword(userId, newPassword);
@@ -182,9 +185,77 @@ public class AdminController {
         if (success) {
             response.put("success", true);
             response.put("message", "密码重置成功");
+            response.put("newPassword", newPassword);
         } else {
             response.put("success", false);
             response.put("message", "密码重置失败");
+        }
+        
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 创建新用户API
+     */
+    @PostMapping("/users")
+    public ResponseEntity<Map<String, Object>> createUser(
+            @RequestBody Map<String, String> request,
+            HttpSession session) {
+        
+        User admin = (User) session.getAttribute("user");
+        if (admin == null || admin.getRole() != User.Role.ADMIN) {
+            return ResponseEntity.status(403).body(Map.of("error", "无权限访问"));
+        }
+        
+        String username = request.get("username");
+        String realName = request.get("realName");
+        String email = request.get("email");
+        String phone = request.get("phone");
+        String role = request.get("role");
+        String password = request.get("password");
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        // 验证必填字段
+        if (username == null || username.trim().isEmpty()) {
+            response.put("success", false);
+            response.put("message", "用户名不能为空");
+            return ResponseEntity.ok(response);
+        }
+        
+        if (password == null || password.trim().isEmpty()) {
+            response.put("success", false);
+            response.put("message", "密码不能为空");
+            return ResponseEntity.ok(response);
+        }
+        
+        // 检查用户名是否已存在
+        if (userService.findByUsername(username) != null) {
+            response.put("success", false);
+            response.put("message", "用户名已存在");
+            return ResponseEntity.ok(response);
+        }
+        
+        // 检查邮箱是否已存在
+        if (email != null && !email.trim().isEmpty() && userService.findByEmail(email) != null) {
+            response.put("success", false);
+            response.put("message", "邮箱已存在");
+            return ResponseEntity.ok(response);
+        }
+        
+        try {
+            User newUser = userService.createUser(username, password, realName, email, phone, role);
+            if (newUser != null) {
+                response.put("success", true);
+                response.put("message", "用户创建成功");
+                response.put("user", newUser);
+            } else {
+                response.put("success", false);
+                response.put("message", "创建失败");
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "创建失败: " + e.getMessage());
         }
         
         return ResponseEntity.ok(response);
@@ -422,5 +493,17 @@ public class AdminController {
         }
         
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 生成随机密码
+     */
+    private String generateRandomPassword() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder password = new StringBuilder();
+        for (int i = 0; i < 8; i++) {
+            password.append(chars.charAt((int) (Math.random() * chars.length())));
+        }
+        return password.toString();
     }
 }

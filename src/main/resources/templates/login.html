@@ -147,7 +147,7 @@
                                 <div class="captcha-container">
                                     <input type="text" class="form-control" id="captcha" name="captcha" 
                                            placeholder="验证码" required style="flex: 1;">
-                                    <img id="captchaImage" src="/edu/captcha/image" 
+                                    <img id="captchaImage" src="/edu/api/auth/captcha/image" 
                                          onclick="refreshCaptcha()" title="点击刷新" 
                                          style="border: 2px solid #e9ecef; border-radius: 5px; cursor: pointer; height: 40px;">
                                 </div>
@@ -218,7 +218,7 @@
                         document.getElementById('realCaptcha').value = data.hiddenCode;
                         // 在获取到验证码数据后再刷新图片，确保图片和数据一致
                         const captchaImage = document.getElementById('captchaImage');
-                        captchaImage.src = '/edu/captcha/image?' + new Date().getTime();
+                        captchaImage.src = '/edu/api/auth/captcha/image?' + new Date().getTime();
                     }
                 })
                 .catch(error => {

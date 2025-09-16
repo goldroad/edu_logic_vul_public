@@ -1,4 +1,4 @@
-﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -355,7 +355,7 @@
         
         // 查看用户详情
         function viewUser(userId) {
-            fetch(`/edu/api/admin/users/${userId}`)
+            fetch(`/edu/admin/api/users/${userId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -392,7 +392,7 @@
         
         // 编辑用户
         function editUser(userId) {
-            fetch(`/edu/api/admin/users/${userId}`)
+            fetch(`/edu/admin/api/users/${userId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -424,7 +424,7 @@
                 role: document.getElementById('editRole').value
             };
             
-            fetch(`/edu/api/admin/users/${userId}`, {
+            fetch(`/edu/admin/api/users/${userId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -450,7 +450,7 @@
         // 封禁用户
         function banUser(userId) {
             if (confirm('确定要封禁这个用户吗？')) {
-                fetch(`/edu/api/admin/users/${userId}/ban`, {
+                fetch(`/edu/admin/api/users/${userId}/ban`, {
                     method: 'POST'
                 })
                 .then(response => response.json())
@@ -472,7 +472,7 @@
         // 解封用户
         function unbanUser(userId) {
             if (confirm('确定要解封这个用户吗？')) {
-                fetch(`/edu/api/admin/users/${userId}/unban`, {
+                fetch(`/edu/admin/api/users/${userId}/unban`, {
                     method: 'POST'
                 })
                 .then(response => response.json())
@@ -494,7 +494,7 @@
         // 重置密码
         function resetPassword(userId) {
             if (confirm('确定要重置这个用户的密码吗？')) {
-                fetch(`/edu/api/admin/users/${userId}/reset-password`, {
+                fetch(`/edu/admin/api/users/${userId}/reset-password`, {
                     method: 'POST'
                 })
                 .then(response => response.json())
@@ -542,7 +542,7 @@
             }
             
             // 发送创建请求
-            fetch('/edu/api/admin/users', {
+            fetch('/edu/admin/api/users', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
