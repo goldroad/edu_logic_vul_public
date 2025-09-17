@@ -451,7 +451,7 @@
 
         // 生成优惠券代码
         function generateCouponCode() {
-            fetch('/edu/admin/api/coupons/generate-code')
+            fetch('/edu/api/coupons/generate-code')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -479,7 +479,7 @@
                 endTime: document.getElementById('endTime').value.replace('T', ' ') + ':00'
             };
 
-            fetch('/edu/admin/api/coupons', {
+            fetch('/edu/api/coupons', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -503,7 +503,7 @@
 
         // 编辑优惠券
         function editCoupon(couponId) {
-            fetch('/edu/admin/api/coupons/' + couponId)
+            fetch('/edu/api/coupons/' + couponId)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -544,7 +544,7 @@
                 endTime: document.getElementById('editEndTime').value.replace('T', ' ') + ':00'
             };
 
-            fetch('/edu/admin/api/coupons/' + couponId, {
+            fetch('/edu/api/coupons/' + couponId, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -570,7 +570,7 @@
         function toggleCouponStatus(couponId, enabled) {
             const action = enabled ? '启用' : '禁用';
             if (confirm('确定要' + action + '这个优惠券吗？')) {
-                fetch('/edu/admin/api/coupons/' + couponId + '/status', {
+                fetch('/edu/api/coupons/' + couponId + '/status', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',

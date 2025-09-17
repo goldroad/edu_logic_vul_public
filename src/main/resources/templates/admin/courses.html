@@ -367,7 +367,7 @@
                 coverImage: coverImage
             };
             
-            fetch('/edu/admin/api/courses', {
+            fetch('/edu/api/courses', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -451,7 +451,7 @@
         
         // 编辑课程
         function editCourse(courseId) {
-            fetch(`/edu/admin/api/courses/${courseId}`)
+            fetch(`/edu/api/courses/${courseId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -536,7 +536,7 @@
                 updateData.coverImage = coverImage;
             }
             
-            fetch(`/edu/admin/api/courses/${courseId}`, {
+            fetch(`/edu/api/courses/${courseId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -568,7 +568,7 @@
                 return;
             }
             
-            fetch(`/edu/admin/api/courses/${courseId}/status`, {
+            fetch(`/edu/api/courses/${courseId}/status`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -596,7 +596,7 @@
                 return;
             }
             
-            fetch(`/edu/admin/api/courses/${courseId}`, {
+            fetch(`/edu/api/courses/${courseId}`, {
                 method: 'DELETE'
             })
             .then(response => response.json())

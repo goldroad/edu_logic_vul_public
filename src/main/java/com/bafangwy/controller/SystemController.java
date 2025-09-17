@@ -61,4 +61,26 @@ public class SystemController {
         
         return ResponseEntity.ok(response);
     }
+
+        
+    /**
+     * 获取系统敏感信息 - 未授权访问
+     */
+    @GetMapping("/info")
+    public Map<String, Object> getSystemInfo() {
+        Map<String, Object> systemInfo = new HashMap<>();
+        
+        // 漏洞：敏感信息未授权访问
+        systemInfo.put("javaVersion", System.getProperty("java.version"));
+        systemInfo.put("osName", System.getProperty("os.name"));
+        systemInfo.put("osVersion", System.getProperty("os.version"));
+        systemInfo.put("userHome", System.getProperty("user.home"));
+        systemInfo.put("userDir", System.getProperty("user.dir"));
+        systemInfo.put("totalMemory", Runtime.getRuntime().totalMemory());
+        systemInfo.put("freeMemory", Runtime.getRuntime().freeMemory());
+        systemInfo.put("maxMemory", Runtime.getRuntime().maxMemory());
+        
+        return systemInfo;
+    }
+    
 }

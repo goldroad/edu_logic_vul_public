@@ -126,9 +126,7 @@ public class UserController {
         List<User> adminUsers = userService.getUsersByRole(targetRole);
         
         response.put("success", true);
-        response.put("adminUsers", adminUsers);
-        response.put("systemInfo", getSystemInfo());
-        
+        response.put("adminUsers", adminUsers);        
         return response;
     }
     
@@ -153,27 +151,7 @@ public class UserController {
         
         return response;
     }
-    
-    /**
-     * 获取系统敏感信息 - 未授权访问
-     */
-    @GetMapping("/system/info")
-    public Map<String, Object> getSystemInfo() {
-        Map<String, Object> systemInfo = new HashMap<>();
-        
-        // 漏洞：敏感信息未授权访问
-        systemInfo.put("javaVersion", System.getProperty("java.version"));
-        systemInfo.put("osName", System.getProperty("os.name"));
-        systemInfo.put("osVersion", System.getProperty("os.version"));
-        systemInfo.put("userHome", System.getProperty("user.home"));
-        systemInfo.put("userDir", System.getProperty("user.dir"));
-        systemInfo.put("totalMemory", Runtime.getRuntime().totalMemory());
-        systemInfo.put("freeMemory", Runtime.getRuntime().freeMemory());
-        systemInfo.put("maxMemory", Runtime.getRuntime().maxMemory());
-        
-        return systemInfo;
-    }
-    
+
     /**
      * 重置用户密码 - 未授权访问
      */

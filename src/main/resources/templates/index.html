@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -414,162 +414,6 @@
                     </div>
                 </div>
 
-                <!-- /api/user 用户管理接口 -->
-                <div class="api-category">
-                    <div class="api-category-title">/api/user - 用户管理接口</div>
-                    <div class="api-items">
-                        <div class="api-item">
-                            <span class="method GET">GET</span>
-                            <span class="path">/api/user/{id}</span>
-                            <span class="vulnerability-tag">水平越权</span>
-                            <div class="desc">获取用户信息</div>
-                        </div>
-                        
-                        <div class="api-item">
-                            <span class="method GET">GET</span>
-                            <span class="path">/api/user/list</span>
-                            <span class="vulnerability-tag">未授权访问</span>
-                            <div class="desc">获取用户列表</div>
-                        </div>
-                        
-                        <div class="api-item">
-                            <span class="method PUT">PUT</span>
-                            <span class="path">/api/user/{id}</span>
-                            <span class="vulnerability-tag">水平越权</span>
-                            <span class="vulnerability-tag">角色提升</span>
-                            <div class="desc">修改用户信息</div>
-                        </div>
-                        
-                        <div class="api-item">
-                            <span class="method GET">GET</span>
-                            <span class="path">/api/user/admin/info</span>
-                            <span class="vulnerability-tag">未授权访问</span>
-                            <div class="desc">获取管理员信息</div>
-                        </div>
-                        
-                        <div class="api-item">
-                            <span class="method DELETE">DELETE</span>
-                            <span class="path">/api/user/{id}</span>
-                            <span class="vulnerability-tag">未授权访问</span>
-                            <div class="desc">删除用户</div>
-                        </div>
-                        
-                        <div class="api-item">
-                            <span class="method GET">GET</span>
-                            <span class="path">/api/user/system/info</span>
-                            <span class="vulnerability-tag">未授权访问</span>
-                            <span class="vulnerability-tag">敏感信息泄露</span>
-                            <div class="desc">获取系统信息</div>
-                        </div>
-                        
-                        <div class="api-item">
-                            <span class="method POST">POST</span>
-                            <span class="path">/api/user/{id}/reset-password</span>
-                            <span class="vulnerability-tag">未授权访问</span>
-                            <div class="desc">重置用户密码</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- /api/order 订单相关接口 -->
-                <div class="api-category">
-                    <div class="api-category-title">/api/order - 订单管理接口</div>
-                    <div class="api-items">
-                        <div class="api-item">
-                            <span class="method POST">POST</span>
-                            <span class="path">/api/order/create</span>
-                            <span class="vulnerability-tag">支付逻辑漏洞</span>
-                            <span class="vulnerability-tag">金额篡改</span>
-                            <div class="desc">创建订单</div>
-                        </div>
-                        
-                        <div class="api-item">
-                            <span class="method POST">POST</span>
-                            <span class="path">/api/order/{orderNo}/pay</span>
-                            <div class="desc">支付订单</div>
-                        </div>
-                        
-                        <div class="api-item">
-                            <span class="method GET">GET</span>
-                            <span class="path">/api/order/my</span>
-                            <div class="desc">获取我的订单</div>
-                        </div>
-                        
-                        <div class="api-item">
-                            <span class="method GET">GET</span>
-                            <span class="path">/api/order/{orderNo}</span>
-                            <span class="vulnerability-tag">水平越权</span>
-                            <div class="desc">获取订单详情</div>
-                        </div>
-                        
-                        <div class="api-item">
-                            <span class="method GET">GET</span>
-                            <span class="path">/api/order/all</span>
-                            <span class="vulnerability-tag">未授权访问</span>
-                            <div class="desc">获取所有订单</div>
-                        </div>
-                        
-                        <div class="api-item">
-                            <span class="method PUT">PUT</span>
-                            <span class="path">/api/order/{orderNo}/amount</span>
-                            <span class="vulnerability-tag">支付逻辑漏洞</span>
-                            <div class="desc">修改订单金额</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- /api/files 文件管理接口 -->
-                <div class="api-category">
-                    <div class="api-category-title">/api/files - 文件管理接口</div>
-                    <div class="api-items">
-                        <div class="api-item">
-                            <span class="method POST">POST</span>
-                            <span class="path">/api/files/upload</span>
-                            <div class="desc">上传文件</div>
-                        </div>
-                        
-                        <div class="api-item">
-                            <span class="method GET">GET</span>
-                            <span class="path">/api/files/list</span>
-                            <div class="desc">获取文件列表</div>
-                        </div>
-                        
-                        <div class="api-item">
-                            <span class="method GET">GET</span>
-                            <span class="path">/api/files/search</span>
-                            <div class="desc">搜索文件</div>
-                        </div>
-                        
-                        <div class="api-item">
-                            <span class="method GET">GET</span>
-                            <span class="path">/api/files/download/{fileId}</span>
-                            <span class="vulnerability-tag">水平越权</span>
-                            <div class="desc">下载文件</div>
-                        </div>
-                        
-                        <div class="api-item">
-                            <span class="method DELETE">DELETE</span>
-                            <span class="path">/api/files/{fileId}</span>
-                            <span class="vulnerability-tag">水平越权</span>
-                            <div class="desc">删除文件</div>
-                        </div>
-                        
-                        <div class="api-item">
-                            <span class="method GET">GET</span>
-                            <span class="path">/api/files/view/{fileName}</span>
-                            <span class="vulnerability-tag">任意文件读取</span>
-                            <div class="desc">查看文件</div>
-                        </div>
-                        
-                        <div class="api-item">
-                            <span class="method GET">GET</span>
-                            <span class="path">/api/files/stats</span>
-                            <div class="desc">获取文件统计信息</div>
-                        </div>
-                    </div>
-                </div>
-
-
                 <!-- /admin/api 用户管理接口（管理员） -->
                 <div class="api-category">
                     <div class="api-category-title">/admin/api - 用户管理接口（管理员）</div>
@@ -624,56 +468,184 @@
                     </div>
                 </div>
 
+                <!-- /api/user 用户管理接口 -->
                 <div class="api-category">
-                    <div class="api-category-title">/admin/api/coupons - 优惠券相关接口</div>
+                    <div class="api-category-title">/api/user - 用户管理接口</div>
+                    <div class="api-items">
+                        <div class="api-item">
+                            <span class="method GET">GET</span>
+                            <span class="path">/api/user/{id}</span>
+                            <span class="vulnerability-tag">水平越权</span>
+                            <div class="desc">获取用户信息</div>
+                        </div>
+                        
+                        <div class="api-item">
+                            <span class="method GET">GET</span>
+                            <span class="path">/api/user/list</span>
+                            <span class="vulnerability-tag">未授权访问</span>
+                            <div class="desc">获取用户列表</div>
+                        </div>
+                        
+                        <div class="api-item">
+                            <span class="method PUT">PUT</span>
+                            <span class="path">/api/user/{id}</span>
+                            <span class="vulnerability-tag">水平越权</span>
+                            <span class="vulnerability-tag">角色提升</span>
+                            <div class="desc">修改用户信息</div>
+                        </div>
+                        
+                        <div class="api-item">
+                            <span class="method GET">GET</span>
+                            <span class="path">/api/user/admin/info</span>
+                            <span class="vulnerability-tag">未授权访问</span>
+                            <div class="desc">获取管理员信息</div>
+                        </div>
+                        
+                        <div class="api-item">
+                            <span class="method DELETE">DELETE</span>
+                            <span class="path">/api/user/{id}</span>
+                            <span class="vulnerability-tag">未授权访问</span>
+                            <div class="desc">删除用户</div>
+                        </div>
+                        
+                        <div class="api-item">
+                            <span class="method POST">POST</span>
+                            <span class="path">/api/user/{id}/reset-password</span>
+                            <span class="vulnerability-tag">未授权访问</span>
+                            <div class="desc">重置用户密码</div>
+                        </div>
+                    </div>
+                </div>
+				
+                <!-- /api/courses 课程管理接口 -->
+                <div class="api-category">
+                    <div class="api-category-title">/api/courses - 课程管理接口</div>
+                    <div class="api-items">
+                        <div class="api-item">
+                            <span class="method GET">GET</span>
+                            <span class="path">/api/courses/{id}</span>
+                            <div class="desc">获取课程详情</div>
+                        </div>
+                        <div class="api-item">
+                            <span class="method PUT">PUT</span>
+                            <span class="path">/api/courses/{id}</span>
+                            <div class="desc">更新课程信息</div>
+                        </div>
+                        <div class="api-item">
+                            <span class="method PUT">PUT</span>
+                            <span class="path">/api/courses/{courseId}/status</span>
+                            <div class="desc">更新课程状态</div>
+                        </div>
+                        <div class="api-item">
+                            <span class="method POST">POST</span>
+                            <span class="path">/api/courses</span>
+                            <div class="desc">创建新课程</div>
+                        </div>
+                        <div class="api-item">
+                            <span class="method DELETE">DELETE</span>
+                            <span class="path">/api/courses/{courseId}</span>
+                            <div class="desc">删除课程</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- /api/order 订单相关接口 -->
+                <div class="api-category">
+                    <div class="api-category-title">/api/order - 订单管理接口</div>
+                    <div class="api-items">
+                        <div class="api-item">
+                            <span class="method POST">POST</span>
+                            <span class="path">/api/order/create</span>
+                            <span class="vulnerability-tag">支付逻辑漏洞</span>
+                            <span class="vulnerability-tag">金额篡改</span>
+                            <div class="desc">创建订单</div>
+                        </div>
+                        
+                        <div class="api-item">
+                            <span class="method POST">POST</span>
+                            <span class="path">/api/order/{orderNo}/pay</span>
+                            <div class="desc">支付订单</div>
+                        </div>
+                        
+                        <div class="api-item">
+                            <span class="method GET">GET</span>
+                            <span class="path">/api/order/my</span>
+                            <div class="desc">获取我的订单</div>
+                        </div>
+                        
+                        <div class="api-item">
+                            <span class="method GET">GET</span>
+                            <span class="path">/api/order/{orderNo}</span>
+                            <span class="vulnerability-tag">水平越权</span>
+                            <div class="desc">获取订单详情</div>
+                        </div>
+                        
+                        <div class="api-item">
+                            <span class="method GET">GET</span>
+                            <span class="path">/api/order/all</span>
+                            <span class="vulnerability-tag">未授权访问</span>
+                            <div class="desc">获取所有订单</div>
+                        </div>
+                        
+                        <div class="api-item">
+                            <span class="method PUT">PUT</span>
+                            <span class="path">/api/order/{orderNo}/amount</span>
+                            <span class="vulnerability-tag">支付逻辑漏洞</span>
+                            <div class="desc">修改订单金额</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-category">
+                    <div class="api-category-title">/api/coupons - 优惠券相关接口</div>
                     <div class="api-items">
                         
                         <div class="api-item">
                             <span class="method GET">GET</span>
-                            <span class="path">/admin/api/coupons</span>
+                            <span class="path">/api/coupons</span>
                             <span class="vulnerability-tag">垂直越权</span>
                             <div class="desc">获取优惠券列表</div>
                         </div>
                         
                         <div class="api-item">
                             <span class="method POST">POST</span>
-                            <span class="path">/admin/api/coupons</span>
+                            <span class="path">/api/coupons</span>
                             <div class="desc">创建优惠券</div>
                         </div>
                         
                         <div class="api-item">
                             <span class="method PUT">PUT</span>
-                            <span class="path">/admin/api/coupons/{couponId}</span>
+                            <span class="path">/api/coupons/{couponId}</span>
                             <div class="desc">更新优惠券</div>
                         </div>
                         
                         <div class="api-item">
                             <span class="method DELETE">DELETE</span>
-                            <span class="path">/admin/api/coupons/{couponId}</span>
+                            <span class="path">/api/coupons/{couponId}</span>
                             <div class="desc">删除优惠券</div>
                         </div>
                         
                         <div class="api-item">
                             <span class="method GET">GET</span>
-                            <span class="path">/admin/api/coupons/{couponId}</span>
+                            <span class="path">/api/coupons/{couponId}</span>
                             <div class="desc">获取优惠券详情</div>
                         </div>
                         
                         <div class="api-item">
                             <span class="method GET">GET</span>
-                            <span class="path">/admin/api/coupons/statistics</span>
+                            <span class="path">/api/coupons/statistics</span>
                             <div class="desc">获取优惠券统计信息</div>
                         </div>
                         
                         <div class="api-item">
                             <span class="method PUT">PUT</span>
-                            <span class="path">/admin/api/coupons/{couponId}/status</span>
+                            <span class="path">/api/coupons/{couponId}/status</span>
                             <div class="desc">更新优惠券状态</div>
                         </div>
                         
                         <div class="api-item">
                             <span class="method GET">GET</span>
-                            <span class="path">/admin/api/coupons/generate-code</span>
+                            <span class="path">/api/coupons/generate-code</span>
                             <div class="desc">生成优惠券代码</div>
                         </div>
 
@@ -709,6 +681,58 @@
                             <div class="desc">搜索教师</div>
                         </div>
                         
+                    </div>
+                </div>
+				
+
+                <!-- /api/files 文件管理接口 -->
+                <div class="api-category">
+                    <div class="api-category-title">/api/files - 文件管理接口</div>
+                    <div class="api-items">
+                        <div class="api-item">
+                            <span class="method POST">POST</span>
+                            <span class="path">/api/files/upload</span>
+                            <div class="desc">上传文件</div>
+                        </div>
+                        
+                        <div class="api-item">
+                            <span class="method GET">GET</span>
+                            <span class="path">/api/files/list</span>
+                            <div class="desc">获取文件列表</div>
+                        </div>
+                        
+                        <div class="api-item">
+                            <span class="method GET">GET</span>
+                            <span class="path">/api/files/search</span>
+                            <div class="desc">搜索文件</div>
+                        </div>
+                        
+                        <div class="api-item">
+                            <span class="method GET">GET</span>
+                            <span class="path">/api/files/download/{fileId}</span>
+                            <span class="vulnerability-tag">水平越权</span>
+                            <div class="desc">下载文件</div>
+                        </div>
+                        
+                        <div class="api-item">
+                            <span class="method DELETE">DELETE</span>
+                            <span class="path">/api/files/{fileId}</span>
+                            <span class="vulnerability-tag">水平越权</span>
+                            <div class="desc">删除文件</div>
+                        </div>
+                        
+                        <div class="api-item">
+                            <span class="method GET">GET</span>
+                            <span class="path">/api/files/view/{fileName}</span>
+                            <span class="vulnerability-tag">任意文件读取</span>
+                            <div class="desc">查看文件</div>
+                        </div>
+                        
+                        <div class="api-item">
+                            <span class="method GET">GET</span>
+                            <span class="path">/api/files/stats</span>
+                            <div class="desc">获取文件统计信息</div>
+                        </div>
                     </div>
                 </div>
 
@@ -756,18 +780,25 @@
                     <div class="api-category-title">/api/system - 系统管理接口</div>
                     <div class="api-items">
                         <div class="api-item">
+                            <span class="method GET">GET</span>
+                            <span class="path">/api/system/info</span>
+                            <span class="vulnerability-tag">未授权访问</span>
+                            <span class="vulnerability-tag">敏感信息泄露</span>
+                            <div class="desc">获取系统信息</div>
+                        </div>
+
+
+                        <div class="api-item">
                             <span class="method POST">POST</span>
                             <span class="path">/api/system/reset-data</span>
                             <div class="desc">重置数据到初始状态</div>
                         </div>
-                    </div>
-
-                    <div class="api-items">
                         <div class="api-item">
                             <span class="method GET">GET</span>
                             <span class="path">/api/system/file-cleanup/manual</span>
                             <div class="desc">手动清理文件</div>
                         </div>
+
                     </div>
                 </div>
 

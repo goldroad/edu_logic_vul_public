@@ -17,7 +17,7 @@ import java.util.Map;
  * 创建时间：2025-09
  */
 @RestController
-@RequestMapping("/admin/api/coupons")
+@RequestMapping("/api/coupons")
 public class CouponController {
 
     @Autowired
