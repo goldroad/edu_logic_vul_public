@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单详情 - 八方网域逻辑漏洞靶场</title>
+    <link href="/edu/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/edu/css/all.min.css" rel="stylesheet">
+    <link href="/edu/css/common.css" rel="stylesheet">
+    <style>
+        /* 订单详情页面特有样式 */
+        .order-detail-card {
+            transition: transform 0.3s;
+            border-left: 5px solid #007bff;
+        }
+        .order-detail-card:hover {
+            transform: translateY(-2px);
+        }
+        .order-number {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #007bff;
+        }
+        .price-info {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        .status-badge {
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+        }
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #dee2e6;
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -0.75rem;
+            top: 0.25rem;
+            width: 0.75rem;
+            height: 0.75rem;
+            background: #007bff;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 2px #007bff;
+        }
+        .course-info {
+            background: #f8f9fa;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <div th:replace="~{student/navbar :: navbar}"></div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 侧边栏 -->
+            <div th:replace="~{student/sidebar :: sidebar(active='orders')}"></div>
+
+            <!-- 主内容区 -->
+            <div class="col-md-9 col-lg-10">
+                <div class="main-content">
+                    <!-- 页面标题 -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-receipt me-2"></i>订单详情</h2>
+                        <div>
+                            <a href="/edu/student/orders" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-arrow-left me-1"></i>返回订单列表
+                            </a>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="/edu/student/dashboard">仪表板</a></li>
+                                    <li class="breadcrumb-item"><a href="/edu/student/orders">订单管理</a></li>
+                                    <li class="breadcrumb-item active">订单详情</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+
+                    <!-- 加载状态 -->
+                    <div class="loading-spinner" id="loadingSpinner">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">加载中...</span>
+                        </div>
+                        <p class="mt-2 text-muted">正在加载订单详情...</p>
+                    </div>
+
+                    <!-- 订单详情内容 -->
+                    <div id="orderDetailContent" style="display: none;">
+                        <!-- 订单基本信息 -->
+                        <div class="card order-detail-card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>订单基本信息
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted">订单号</label>
+                                            <div class="order-number" id="orderNumber">-</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted">订单状态</label>
+                                            <div>
+                                                <span class="badge status-badge" id="orderStatus">-</span>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted">下单时间</label>
+                                            <div id="createTime">-</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted">支付时间</label>
+                                            <div id="payTime">-</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted">支付方式</label>
+                                            <div id="paymentMethod">-</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted">交易流水号</label>
+                                            <div id="transactionId">-</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 课程信息 -->
+                        <div class="card order-detail-card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-book me-2"></i>课程信息
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="course-info">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-3">
+                                            <img id="courseCover" src="/edu/pic/bafang.jpg" class="img-fluid rounded" alt="课程封面">
+                                        </div>
+                                        <div class="col-md-9">
+                                            <h5 id="courseTitle">-</h5>
+                                            <p class="text-muted mb-2" id="courseDescription">-</p>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <small class="text-muted">讲师：</small>
+                                                    <span id="teacherName">-</span>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <small class="text-muted">课程时长：</small>
+                                                    <span id="courseDuration">-</span>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <small class="text-muted">难度等级：</small>
+                                                    <span id="courseLevel">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 价格信息 -->
+                        <div class="card order-detail-card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-money-bill-wave me-2"></i>价格信息
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>课程原价：</span>
+                                            <span class="price-info text-muted">¥<span id="originalAmount">0.00</span></span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2" id="discountRow" style="display: none;">
+                                            <span>优惠金额：</span>
+                                            <span class="text-success">-¥<span id="discountAmount">0.00</span></span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2" id="couponRow" style="display: none;">
+                                            <span>优惠券：</span>
+                                            <span class="text-success" id="couponInfo">-</span>
+                                        </div>
+                                        <hr>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="h5">实付金额：</span>
+                                            <span class="price-info text-danger">¥<span id="finalAmount">0.00</span></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="text-center">
+                                            <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">感谢您的购买</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 订单状态时间线 -->
+                        <div class="card order-detail-card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-history me-2"></i>订单状态跟踪
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="timeline" id="orderTimeline">
+                                    <!-- 时间线内容将通过JavaScript动态生成 -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 操作按钮 -->
+                        <div class="card order-detail-card">
+                            <div class="card-body text-center">
+                                <div id="orderActions">
+                                    <!-- 操作按钮将根据订单状态动态生成 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 错误状态 -->
+                    <div id="errorState" style="display: none;">
+                        <div class="card">
+                            <div class="card-body text-center py-5">
+                                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                                <h5 class="text-muted">加载订单详情失败</h5>
+                                <p class="text-muted" id="errorMessage">订单不存在或您没有权限查看此订单</p>
+                                <a href="/edu/student/orders" class="btn btn-primary">
+                                    <i class="fas fa-arrow-left me-2"></i>返回订单列表
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/edu/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 从URL获取订单号
+        function getOrderNoFromUrl() {
+            const pathParts = window.location.pathname.split('/');
+            return pathParts[pathParts.length - 1];
+        }
+
+        // 页面加载完成后获取订单详情
+        document.addEventListener('DOMContentLoaded', function() {
+            const orderNo = getOrderNoFromUrl();
+            if (orderNo) {
+                loadOrderDetail(orderNo);
+            } else {
+                showError('无效的订单号');
+            }
+        });
+
+        // 加载订单详情
+        function loadOrderDetail(orderNo) {
+            showLoading();
+            
+            fetch(`/edu/api/order/${orderNo}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        displayOrderDetail(data.order);
+                    } else {
+                        throw new Error(data.message || '获取订单详情失败');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading order detail:', error);
+                    showError(error.message);
+                });
+        }
+
+        // 显示加载状态
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('orderDetailContent').style.display = 'none';
+            document.getElementById('errorState').style.display = 'none';
+        }
+
+        // 显示错误状态
+        function showError(message) {
+            document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('orderDetailContent').style.display = 'none';
+            document.getElementById('errorState').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        // 显示订单详情
+        function displayOrderDetail(order) {
+            document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('errorState').style.display = 'none';
+            document.getElementById('orderDetailContent').style.display = 'block';
+
+            // 基本信息
+            document.getElementById('orderNumber').textContent = order.orderNo;
+            document.getElementById('orderStatus').textContent = getStatusText(order.status);
+            document.getElementById('orderStatus').className = 'badge status-badge ' + getStatusBadgeClass(order.status);
+            document.getElementById('createTime').textContent = formatDateTime(order.createTime);
+            document.getElementById('payTime').textContent = order.payTime ? formatDateTime(order.payTime) : '未支付';
+            document.getElementById('paymentMethod').textContent = order.paymentMethod || '未支付';
+            document.getElementById('transactionId').textContent = order.transactionId || '-';
+
+            // 课程信息
+            if (order.course) {
+                document.getElementById('courseCover').src = order.course.coverImage ? 
+                    `/edu/files/${order.course.coverImage}` : '/edu/pic/bafang.jpg';
+                document.getElementById('courseTitle').textContent = order.course.title || '-';
+                document.getElementById('courseDescription').textContent = order.course.description || '-';
+                document.getElementById('teacherName').textContent = order.course.teacherName || '-';
+                document.getElementById('courseDuration').textContent = order.course.duration ? 
+                    `${order.course.duration}小时` : '-';
+                document.getElementById('courseLevel').textContent = order.course.level || '-';
+            }
+
+            // 价格信息
+            document.getElementById('originalAmount').textContent = order.originalAmount.toFixed(2);
+            document.getElementById('finalAmount').textContent = order.finalAmount.toFixed(2);
+            
+            // 显示优惠信息
+            if (order.originalAmount > order.finalAmount) {
+                const discountAmount = order.originalAmount - order.finalAmount;
+                document.getElementById('discountAmount').textContent = discountAmount.toFixed(2);
+                document.getElementById('discountRow').style.display = 'flex';
+            }
+
+            // 显示优惠券信息
+            if (order.couponCode) {
+                document.getElementById('couponInfo').textContent = `${order.couponCode} (-¥${order.couponDiscount.toFixed(2)})`;
+                document.getElementById('couponRow').style.display = 'flex';
+            }
+
+            // 生成时间线
+            generateTimeline(order);
+
+            // 生成操作按钮
+            generateActionButtons(order);
+        }
+
+        // 生成订单状态时间线
+        function generateTimeline(order) {
+            const timeline = document.getElementById('orderTimeline');
+            timeline.innerHTML = '';
+
+            const timelineItems = [
+                { status: 'CREATED', text: '订单创建', time: order.createTime, completed: true },
+                { status: 'PAID', text: '支付完成', time: order.payTime, completed: order.status === 'PAID' },
+                { status: 'COMPLETED', text: '订单完成', time: order.completeTime, completed: order.status === 'COMPLETED' }
+            ];
+
+            if (order.status === 'CANCELLED') {
+                timelineItems.push({ status: 'CANCELLED', text: '订单取消', time: order.cancelTime, completed: true });
+            }
+
+            timelineItems.forEach(item => {
+                if (item.status === 'CANCELLED' || item.completed || item.time) {
+                    const timelineItem = document.createElement('div');
+                    timelineItem.className = 'timeline-item';
+                    timelineItem.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">${item.text}</h6>
+                                <small class="text-muted">${item.time ? formatDateTime(item.time) : '待处理'}</small>
+                            </div>
+                            <div>
+                                <i class="fas ${item.completed ? 'fa-check-circle text-success' : 'fa-clock text-muted'}"></i>
+                            </div>
+                        </div>
+                    `;
+                    timeline.appendChild(timelineItem);
+                }
+            });
+        }
+
+        // 生成操作按钮
+        function generateActionButtons(order) {
+            const actionsContainer = document.getElementById('orderActions');
+            actionsContainer.innerHTML = '';
+
+            if (order.status === 'PENDING') {
+                actionsContainer.innerHTML = `
+                    <a href="/edu/student/payment/${order.orderNo}" class="btn btn-success me-2">
+                        <i class="fas fa-credit-card me-1"></i>立即支付
+                    </a>
+                    <button class="btn btn-outline-danger" onclick="cancelOrder('${order.orderNo}')">
+                        <i class="fas fa-times me-1"></i>取消订单
+                    </button>
+                `;
+            } else if (order.status === 'PAID') {
+                actionsContainer.innerHTML = `
+                    <a href="/edu/student/course/${order.course.id}" class="btn btn-primary me-2">
+                        <i class="fas fa-play me-1"></i>开始学习
+                    </a>
+                `;
+            } else if (order.status === 'CANCELLED') {
+                actionsContainer.innerHTML = `
+                    <button class="btn btn-primary" onclick="reorder(${order.course.id})">
+                        <i class="fas fa-redo me-1"></i>重新购买
+                    </button>
+                `;
+            }
+        }
+
+        // 取消订单
+        function cancelOrder(orderNo) {
+            if (!confirm('确认取消此订单吗？')) {
+                return;
+            }
+            
+            fetch('/edu/student/cancel-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ orderNo: orderNo })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('订单已取消');
+                    location.reload();
+                } else {
+                    alert('取消订单失败：' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('取消订单过程中发生错误');
+            });
+        }
+
+        // 重新购买
+        function reorder(courseId) {
+            if (confirm('确认重新购买此课程吗？')) {
+                window.location.href = `/edu/student/dashboard?courseId=${courseId}`;
+            }
+        }
+
+        // 获取状态文本
+        function getStatusText(status) {
+            const statusMap = {
+                'PENDING': '待支付',
+                'PAID': '已支付',
+                'CANCELLED': '已取消',
+                'COMPLETED': '已完成',
+                'REFUNDED': '已退款'
+            };
+            return statusMap[status] || status;
+        }
+
+        // 获取状态徽章样式
+        function getStatusBadgeClass(status) {
+            const classMap = {
+                'PENDING': 'bg-warning',
+                'PAID': 'bg-success',
+                'CANCELLED': 'bg-danger',
+                'COMPLETED': 'bg-info',
+                'REFUNDED': 'bg-secondary'
+            };
+            return classMap[status] || 'bg-secondary';
+        }
+
+        // 格式化日期时间
+        function formatDateTime(dateTimeStr) {
+            if (!dateTimeStr) return '-';
+            const date = new Date(dateTimeStr);
+            return date.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+    </script>
+</body>
+<!-- 八方网域，无涯老师开发 -->
+</html>

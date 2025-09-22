@@ -845,6 +845,21 @@ public class StudentController {
     }
     
     /**
+     * 订单详情页面
+     */
+    @GetMapping("/order-detail/{orderNo}")
+    public String orderDetail(@PathVariable String orderNo, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/auth/login";
+        }
+        
+        model.addAttribute("user", user);
+        model.addAttribute("orderNo", orderNo);
+        return "student/order-detail";
+    }
+    
+    /**
      * 课程详情页面
      */
     @GetMapping("/course/{courseId}")
