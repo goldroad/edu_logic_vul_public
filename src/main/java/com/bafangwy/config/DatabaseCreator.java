@@ -3,7 +3,6 @@ package com.bafangwy.config;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;

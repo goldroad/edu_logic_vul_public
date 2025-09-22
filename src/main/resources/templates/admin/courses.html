@@ -340,7 +340,7 @@
             const formData = new FormData();
             formData.append('file', coverFile);
             
-            fetch('/edu/admin/api/course-files/upload-cover', {
+            fetch('/edu/api/files/course-files/upload-cover', {
                 method: 'POST',
                 body: formData
             })
@@ -377,7 +377,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('课程创建成功');
+                    alert('课程创建成功【注意课程必须点小眼睛图标发布以后才能显示】');
                     const modal = bootstrap.Modal.getInstance(document.getElementById('createCourseModal'));
                     modal.hide();
                     location.reload();
@@ -506,7 +506,7 @@
             const formData = new FormData();
             formData.append('file', coverFile);
             
-            fetch('/edu/admin/api/course-files/upload-cover', {
+            fetch('/edu/api/files/course-files/upload-cover', {
                 method: 'POST',
                 body: formData
             })

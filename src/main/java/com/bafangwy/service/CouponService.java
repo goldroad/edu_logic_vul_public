@@ -1,6 +1,7 @@
 package com.bafangwy.service;
 
 import com.bafangwy.entity.Coupon;
+import com.bafangwy.entity.UserCoupon;
 import com.bafangwy.repository.CouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,9 @@ public class CouponService {
 
     @Autowired
     private CouponRepository couponRepository;
+    
+    @Autowired
+    private UserCouponService userCouponService;
 
     /**
      * 分页查询优惠券
@@ -179,7 +183,8 @@ public class CouponService {
         if (now.isAfter(coupon.getEndTime())) {
             return "EXPIRED";
         }
-        
+
+        // 已用数量大于等于可用数量，显示已领完
         if (coupon.getUsedCount() >= coupon.getTotalCount()) {
             return "USED_UP";
         }
@@ -189,6 +194,59 @@ public class CouponService {
         }
         
         return "ACTIVE";
+    }
+
+    /**
+     * 兑换优惠券
+     */
+    public UserCoupon exchangeCoupon(String code, Long userId) {
+        // 根据兑换码查找优惠券
+        Coupon coupon = couponRepository.findByCode(code);
+        if (coupon == null) {
+            throw new RuntimeException("兑换码不存在");
+        }
+        
+        // 检查优惠券状态
+        String status = calculateCouponStatus(coupon);
+        if (!"ACTIVE".equals(status)) {
+            switch (status) {
+                case "DISABLED":
+                    throw new RuntimeException("优惠券已被禁用");
+                case "EXPIRED":
+                    throw new RuntimeException("优惠券已过期");
+                case "USED_UP":
+                    throw new RuntimeException("优惠券已被兑换完");
+                case "NOT_STARTED":
+                    throw new RuntimeException("优惠券尚未开始");
+                default:
+                    throw new RuntimeException("优惠券不可用");
+            }
+        }
+        
+        // 检查用户是否已经兑换过此优惠券
+        // 这里可以根据业务需求决定是否允许重复兑换
+        
+        // 创建用户优惠券记录
+        UserCoupon userCoupon = new UserCoupon();
+        userCoupon.setUserId(userId);
+        userCoupon.setCouponId(coupon.getId());
+        userCoupon.setCouponName(coupon.getName());
+        userCoupon.setCouponCode(coupon.getCode());
+        userCoupon.setType(UserCoupon.CouponType.valueOf(coupon.getType().name()));
+        userCoupon.setDiscountValue(coupon.getDiscountValue());
+        userCoupon.setMinAmount(coupon.getMinAmount());
+        userCoupon.setStatus(UserCoupon.CouponStatus.UNUSED);
+        userCoupon.setReceiveTime(LocalDateTime.now());
+        userCoupon.setExpireTime(coupon.getEndTime());
+        
+        // 保存用户优惠券
+        userCouponService.save(userCoupon);
+        
+        // 更新优惠券使用数量
+        coupon.setUsedCount(coupon.getUsedCount() + 1);
+        couponRepository.update(coupon);
+        
+        return userCoupon;
     }
 
     /**

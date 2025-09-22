@@ -1,10 +1,13 @@
 package com.bafangwy.controller;
 
+import com.bafangwy.entity.User;
 import com.bafangwy.entity.Coupon;
+import com.bafangwy.entity.UserCoupon;
 import com.bafangwy.service.CouponService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -236,6 +239,44 @@ public class CouponController {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "生成优惠券代码失败：" + e.getMessage());
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    /**
+     * 兑换优惠券API
+     */
+    @PostMapping("/exchange")
+    public ResponseEntity<Map<String, Object>> exchangeCoupon(@RequestBody Map<String, Object> requestData, HttpSession session) {
+        try {
+            String code = (String) requestData.get("code");
+            if (code == null || code.trim().isEmpty()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", false);
+                response.put("message", "请输入兑换码");
+                return ResponseEntity.ok(response);
+            }
+
+            User currentUser = (User) session.getAttribute("user");
+            if (currentUser == null) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", false);
+                response.put("message", "请先登录");
+                return ResponseEntity.ok(response);
+            }
+
+            UserCoupon userCoupon = couponService.exchangeCoupon(code.trim(), currentUser.getId());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "优惠券兑换成功");
+            response.put("coupon", userCoupon);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", e.getMessage());
             return ResponseEntity.ok(response);
         }
     }

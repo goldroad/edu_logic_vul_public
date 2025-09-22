@@ -162,7 +162,7 @@ public interface CouponRepository {
      * 更新优惠券
      */
     @Update("UPDATE coupon SET name = #{name}, code = #{code}, type = #{type}, discount_value = #{discountValue}, " +
-            "min_amount = #{minAmount}, total_count = #{totalCount}, start_time = #{startTime}, end_time = #{endTime}, " +
+            "min_amount = #{minAmount}, total_count = #{totalCount}, used_count=#{usedCount}, start_time = #{startTime}, end_time = #{endTime}, " +
             "enabled = #{enabled} WHERE id = #{id}")
     int update(Coupon coupon);
 
