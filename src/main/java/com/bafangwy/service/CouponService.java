@@ -2,6 +2,7 @@ package com.bafangwy.service;
 
 import com.bafangwy.entity.Coupon;
 import com.bafangwy.entity.UserCoupon;
+import com.bafangwy.dto.CouponUserStats;
 import com.bafangwy.repository.CouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -317,5 +318,81 @@ public class CouponService {
         public long getUsedUp() { return usedUp; }
         public long getExpired() { return expired; }
         public long getDisabled() { return disabled; }
+    }
+
+    /**
+     * 优惠券统计详情结果类
+     */
+    public static class CouponStatsResult {
+        private Coupon coupon;
+        private List<CouponUserStats> userStats;
+        private CouponStatsSummary summary;
+        private long total;
+        private int currentPage;
+        private int pageSize;
+        private int totalPages;
+
+        public CouponStatsResult(Coupon coupon, List<CouponUserStats> userStats, 
+                               CouponStatsSummary summary, long total, int currentPage, int pageSize) {
+            this.coupon = coupon;
+            this.userStats = userStats;
+            this.summary = summary;
+            this.total = total;
+            this.currentPage = currentPage;
+            this.pageSize = pageSize;
+            this.totalPages = (int) Math.ceil((double) total / pageSize);
+        }
+
+        // Getters
+        public Coupon getCoupon() { return coupon; }
+        public List<CouponUserStats> getUserStats() { return userStats; }
+        public CouponStatsSummary getSummary() { return summary; }
+        public long getTotal() { return total; }
+        public int getCurrentPage() { return currentPage; }
+        public int getPageSize() { return pageSize; }
+        public int getTotalPages() { return totalPages; }
+    }
+
+    /**
+     * 优惠券统计汇总信息类
+     */
+    public static class CouponStatsSummary {
+        private long totalReceived;
+        private long totalUsed;
+        private long totalUnused;
+
+        public CouponStatsSummary(long totalReceived, long totalUsed, long totalUnused) {
+            this.totalReceived = totalReceived;
+            this.totalUsed = totalUsed;
+            this.totalUnused = totalUnused;
+        }
+
+        // Getters
+        public long getTotalReceived() { return totalReceived; }
+        public long getTotalUsed() { return totalUsed; }
+        public long getTotalUnused() { return totalUnused; }
+    }
+
+    /**
+     * 获取优惠券统计详情
+     */
+    public CouponStatsResult getCouponStats(Long couponId, int page, int size, String type) {
+        // 获取优惠券信息
+        Coupon coupon = getCouponById(couponId);
+        if (coupon == null) {
+            throw new RuntimeException("优惠券不存在");
+        }
+
+        // 获取用户统计数据
+        int offset = (page - 1) * size;
+        List<CouponUserStats> userStats = userCouponService.getCouponUserStats(couponId, type, offset, size);
+        
+        // 获取总数
+        long total = userCouponService.getCouponUserStatsCount(couponId, type);
+        
+        // 获取汇总信息
+        CouponStatsSummary summary = userCouponService.getCouponStatsSummary(couponId);
+
+        return new CouponStatsResult(coupon, userStats, summary, total, page, size);
     }
 }

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -379,6 +379,86 @@
         </div>
     </div>
 
+    <!-- 优惠券统计模态框 -->
+    <div class="modal fade" id="couponStatsModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">优惠券统计详情</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- 统计汇总 -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary">总领取数</h5>
+                                    <h3 class="card-text" id="totalReceived">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h5 class="card-title text-success">已使用数</h5>
+                                    <h3 class="card-text" id="totalUsed">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h5 class="card-title text-warning">未使用数</h5>
+                                    <h3 class="card-text" id="totalUnused">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 筛选器 -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">筛选类型：</label>
+                            <select class="form-select form-select-sm" id="statsTypeFilter" onchange="filterStatsType()">
+                                <option value="">全部用户</option>
+                                <option value="used">已使用</option>
+                                <option value="received">已领取</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 用户统计表格 -->
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>用户名</th>
+                                    <th>真实姓名</th>
+                                    <th>手机号</th>
+                                    <th>邮箱</th>
+                                    <th>状态</th>
+                                    <th>领取时间</th>
+                                    <th>使用时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 分页 -->
+                    <nav id="statsPagination" style="display: none;">
+                        <ul class="pagination justify-content-center">
+                            <!-- 分页按钮将通过JavaScript生成 -->
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="/edu/js/bootstrap.bundle.min.js"></script>
     <script>
         // 筛选优惠券
@@ -595,7 +675,152 @@
 
         // 查看优惠券统计
         function viewCouponStats(couponId) {
-            alert('统计功能开发中...');
+            showCouponStats(couponId);
+        }
+
+        let currentCouponId = null;
+        let currentStatsPage = 1;
+        let pageSize = 10;
+        let currentStatsType = '';
+
+        // 显示优惠券统计
+        function showCouponStats(couponId) {
+            currentCouponId = couponId;
+            currentStatsPage = 1;
+            currentStatsType = '';
+            document.getElementById('statsTypeFilter').value = '';
+            loadCouponStats();
+            new bootstrap.Modal(document.getElementById('couponStatsModal')).show();
+        }
+
+        // 加载优惠券统计数据
+        function loadCouponStats() {
+            if (!currentCouponId) return;
+
+            const url = `/edu/api/coupons/${currentCouponId}/stats?page=${currentStatsPage}&size=${pageSize}&type=${currentStatsType}`;
+            
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        displayCouponStats(data);
+                    } else {
+                        throw new Error(data.message || '获取统计信息失败');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading coupon stats:', error);
+                    alert('获取统计信息失败：' + error.message);
+                });
+        }
+
+        // 筛选统计类型
+        function filterStatsType() {
+            currentStatsType = document.getElementById('statsTypeFilter').value;
+            currentStatsPage = 1;
+            loadCouponStats();
+        }
+
+        // 显示优惠券统计
+        function displayCouponStats(data) {
+            // 显示汇总信息
+            document.getElementById('totalReceived').textContent = data.summary.totalReceived;
+            document.getElementById('totalUsed').textContent = data.summary.totalUsed;
+            document.getElementById('totalUnused').textContent = data.summary.totalUnused;
+
+            // 显示用户统计表格
+            const tbody = document.querySelector('#couponStatsModal tbody');
+            tbody.innerHTML = '';
+            
+            if (data.userStats && data.userStats.length > 0) {
+                data.userStats.forEach(stat => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${stat.username || '未知用户'}</td>
+                        <td>${stat.realName || '未设置'}</td>
+                        <td>${stat.phone || '未设置'}</td>
+                        <td>${stat.email || '未设置'}</td>
+                        <td><span class="badge ${getStatusBadgeClass(stat.status)}">${getStatusText(stat.status)}</span></td>
+                        <td>${stat.receiveTime ? new Date(stat.receiveTime).toLocaleString() : '-'}</td>
+                        <td>${stat.useTime ? new Date(stat.useTime).toLocaleString() : '-'}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center">暂无数据</td></tr>';
+            }
+            
+            // 显示分页
+            displayStatsPagination(data.currentPage, data.totalPages, data.total);
+        }
+
+        // 显示分页
+        function displayStatsPagination(currentPage, totalPages, total) {
+            const pagination = document.getElementById('statsPagination');
+            const ul = pagination.querySelector('ul');
+            
+            if (totalPages <= 1) {
+                pagination.style.display = 'none';
+                return;
+            }
+            
+            pagination.style.display = 'block';
+            ul.innerHTML = '';
+            
+            // 上一页
+            const prevLi = document.createElement('li');
+            prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            prevLi.innerHTML = `<a class="page-link" href="#" onclick="goToStatsPage(${currentPage - 1})">上一页</a>`;
+            ul.appendChild(prevLi);
+            
+            // 页码
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const li = document.createElement('li');
+                li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#" onclick="goToStatsPage(${i})">${i}</a>`;
+                ul.appendChild(li);
+            }
+            
+            // 下一页
+            const nextLi = document.createElement('li');
+            nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextLi.innerHTML = `<a class="page-link" href="#" onclick="goToStatsPage(${currentPage + 1})">下一页</a>`;
+            ul.appendChild(nextLi);
+        }
+
+        // 跳转到指定页
+        function goToStatsPage(page) {
+            if (page < 1) return;
+            currentStatsPage = page;
+            loadCouponStats();
+        }
+
+        // 获取状态徽章样式
+        function getStatusBadgeClass(status) {
+            switch (status) {
+                case 'USED': return 'bg-success';
+                case 'UNUSED': return 'bg-primary';
+                case 'EXPIRED': return 'bg-secondary';
+                default: return 'bg-secondary';
+            }
+        }
+
+        // 获取状态文本
+        function getStatusText(status) {
+            switch (status) {
+                case 'USED': return '已使用';
+                case 'UNUSED': return '未使用';
+                case 'EXPIRED': return '已过期';
+                default: return '未知';
+            }
         }
     </script>
 </body>

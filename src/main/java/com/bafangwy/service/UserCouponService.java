@@ -1,6 +1,7 @@
 package com.bafangwy.service;
 
 import com.bafangwy.entity.UserCoupon;
+import com.bafangwy.dto.CouponUserStats;
 import com.bafangwy.repository.UserCouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -152,5 +153,30 @@ public class UserCouponService {
                 userCouponRepository.update(coupon);
             }
         }
+    }
+
+    /**
+     * 获取优惠券用户统计数据
+     */
+    public List<CouponUserStats> getCouponUserStats(Long couponId, String type, int offset, int size) {
+        return userCouponRepository.getCouponUserStats(couponId, type, offset, size);
+    }
+
+    /**
+     * 获取优惠券用户统计数据总数
+     */
+    public long getCouponUserStatsCount(Long couponId, String type) {
+        return userCouponRepository.getCouponUserStatsCount(couponId, type);
+    }
+
+    /**
+     * 获取优惠券统计汇总信息
+     */
+    public CouponService.CouponStatsSummary getCouponStatsSummary(Long couponId) {
+        long totalReceived = userCouponRepository.countByCouponId(couponId);
+        long totalUsed = userCouponRepository.countByCouponIdAndStatus(couponId, "USED");
+        long totalUnused = totalReceived - totalUsed;
+        
+        return new CouponService.CouponStatsSummary(totalReceived, totalUsed, totalUnused);
     }
 }

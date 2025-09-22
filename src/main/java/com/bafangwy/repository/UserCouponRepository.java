@@ -1,8 +1,10 @@
 package com.bafangwy.repository;
 
 import com.bafangwy.entity.UserCoupon;
+import com.bafangwy.dto.CouponUserStats;
 import org.apache.ibatis.annotations.*;
 import java.util.List;
+import java.time.LocalDateTime;
 
 /**
  * Copyright © 2025 八方网域-无涯老师. All rights reserved.
@@ -132,4 +134,51 @@ public interface UserCouponRepository {
     
     @Delete("DELETE FROM user_coupon WHERE id = #{id}")
     int deleteById(Long id);
+
+    // 统计优惠券相关方法
+    @Select("SELECT COUNT(*) FROM user_coupon WHERE coupon_id = #{couponId}")
+    long countByCouponId(Long couponId);
+
+    @Select("SELECT COUNT(*) FROM user_coupon WHERE coupon_id = #{couponId} AND status = #{status}")
+    long countByCouponIdAndStatus(Long couponId, String status);
+
+    // 获取优惠券用户统计数据
+    @Select("<script>" +
+            "SELECT uc.user_id, u.username, u.real_name, u.phone, u.email, uc.status, uc.receive_time, uc.use_time " +
+            "FROM user_coupon uc " +
+            "LEFT JOIN users u ON uc.user_id = u.id " +
+            "WHERE uc.coupon_id = #{couponId} " +
+            "<if test='type != null and type != \"\"'>" +
+            "  <if test='type == \"used\"'>AND uc.status = 'USED'</if>" +
+            "  <if test='type == \"received\"'>AND uc.status IN ('UNUSED', 'USED', 'EXPIRED')</if>" +
+            "</if>" +
+            "ORDER BY uc.receive_time DESC " +
+            "LIMIT #{offset}, #{size}" +
+            "</script>")
+    @Results({
+        @Result(property = "userId", column = "user_id"),
+        @Result(property = "username", column = "username"),
+        @Result(property = "realName", column = "real_name"),
+        @Result(property = "phone", column = "phone"),
+        @Result(property = "email", column = "email"),
+        @Result(property = "status", column = "status"),
+        @Result(property = "receiveTime", column = "receive_time"),
+        @Result(property = "useTime", column = "use_time")
+    })
+    List<CouponUserStats> getCouponUserStats(@Param("couponId") Long couponId, 
+                                            @Param("type") String type, 
+                                            @Param("offset") int offset, 
+                                            @Param("size") int size);
+
+    // 获取优惠券用户统计数据总数
+    @Select("<script>" +
+            "SELECT COUNT(*) " +
+            "FROM user_coupon uc " +
+            "WHERE uc.coupon_id = #{couponId} " +
+            "<if test='type != null and type != \"\"'>" +
+            "  <if test='type == \"used\"'>AND uc.status = 'USED'</if>" +
+            "  <if test='type == \"received\"'>AND uc.status IN ('UNUSED', 'USED', 'EXPIRED')</if>" +
+            "</if>" +
+            "</script>")
+    long getCouponUserStatsCount(@Param("couponId") Long couponId, @Param("type") String type);
 }

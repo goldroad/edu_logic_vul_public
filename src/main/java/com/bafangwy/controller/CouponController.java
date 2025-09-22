@@ -280,4 +280,35 @@ public class CouponController {
             return ResponseEntity.ok(response);
         }
     }
+
+    /**
+     * 获取优惠券统计详情API
+     */
+    @GetMapping("/{couponId}/stats")
+    public ResponseEntity<Map<String, Object>> getCouponStats(
+            @PathVariable Long couponId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String type) {
+        try {
+            CouponService.CouponStatsResult result = couponService.getCouponStats(couponId, page, size, type);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("coupon", result.getCoupon());
+            response.put("userStats", result.getUserStats());
+            response.put("summary", result.getSummary());
+            response.put("total", result.getTotal());
+            response.put("currentPage", result.getCurrentPage());
+            response.put("pageSize", result.getPageSize());
+            response.put("totalPages", result.getTotalPages());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "获取统计信息失败：" + e.getMessage());
+            return ResponseEntity.ok(response);
+        }
+    }
 }
