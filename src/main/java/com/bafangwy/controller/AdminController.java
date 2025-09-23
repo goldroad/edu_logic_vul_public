@@ -4,6 +4,7 @@ import com.bafangwy.entity.User;
 import com.bafangwy.entity.LoginLog;
 import com.bafangwy.service.UserService;
 import com.bafangwy.service.LoginLogService;
+import com.bafangwy.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,9 @@ public class AdminController {
     
     @Autowired
     private LoginLogService loginLogService;
+    
+    @Autowired
+    private OrderService orderService;
     
     /**
      * 获取用户列表API
@@ -490,6 +494,64 @@ public class AdminController {
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "头像上传失败：" + e.getMessage());
+        }
+        
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 退款订单API
+     */
+    @PostMapping("/orders/{orderNo}/refund")
+    public ResponseEntity<Map<String, Object>> refundOrder(
+            @PathVariable String orderNo,
+            @RequestBody(required = false) Map<String, String> request,
+            HttpSession session) {
+        
+        User admin = (User) session.getAttribute("user");
+        if (admin == null || admin.getRole() != User.Role.ADMIN) {
+            return ResponseEntity.status(403).body(Map.of("error", "无权限访问"));
+        }
+        
+        String refundReason = request != null ? request.get("reason") : null;
+        boolean success = orderService.refundOrder(orderNo, refundReason);
+        
+        Map<String, Object> response = new HashMap<>();
+        if (success) {
+            response.put("success", true);
+            response.put("message", "订单退款成功");
+        } else {
+            response.put("success", false);
+            response.put("message", "订单退款失败，请检查订单状态");
+        }
+        
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 取消订单API
+     */
+    @PostMapping("/orders/{orderNo}/cancel")
+    public ResponseEntity<Map<String, Object>> cancelOrder(
+            @PathVariable String orderNo,
+            @RequestBody(required = false) Map<String, String> request,
+            HttpSession session) {
+        
+        User admin = (User) session.getAttribute("user");
+        if (admin == null || admin.getRole() != User.Role.ADMIN) {
+            return ResponseEntity.status(403).body(Map.of("error", "无权限访问"));
+        }
+        
+        String cancelReason = request != null ? request.get("reason") : null;
+        boolean success = orderService.cancelOrder(orderNo, cancelReason);
+        
+        Map<String, Object> response = new HashMap<>();
+        if (success) {
+            response.put("success", true);
+            response.put("message", "订单取消成功");
+        } else {
+            response.put("success", false);
+            response.put("message", "订单取消失败，请检查订单状态");
         }
         
         return ResponseEntity.ok(response);

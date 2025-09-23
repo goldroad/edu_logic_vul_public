@@ -159,6 +159,23 @@ public class LearnService {
     }
     
     /**
+     * 删除用户的课程学习记录（退款时使用）
+     */
+    public boolean deleteLearnRecord(Long userId, Long courseId) {
+        try {
+            Learn learn = learnRepository.findByUserIdAndCourseId(userId, courseId);
+            if (learn != null) {
+                learnRepository.deleteById(learn.getId());
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            System.err.println("删除学习记录失败: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
      * 获取所有学习记录（管理员用）
      */
     public List<Learn> findAll() {

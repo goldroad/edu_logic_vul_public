@@ -52,6 +52,11 @@
                                     <i class="fas fa-times-circle me-2"></i>已取消
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" onclick="filterOrders('REFUNDED')">
+                                    <i class="fas fa-undo me-2"></i>已退款
+                                </a>
+                            </li>
                         </ul>
                     </div>
 
@@ -78,8 +83,8 @@
                                                     <small class="text-muted">下单时间：<span th:text="${#temporals.format(order.createTime, 'yyyy-MM-dd HH:mm:ss')}">2024-09-05 10:30:00</span></small>
                                                 </div>
                                                 <div class="col-md-2 text-center">
-                                                    <span th:class="'badge ' + ${order.status.name() == 'PAID' ? 'bg-success' : (order.status.name() == 'PENDING' ? 'bg-warning' : (order.status.name() == 'CANCELLED' ? 'bg-danger' : 'bg-info'))}"
-                                                          th:text="${order.status.name() == 'PAID' ? '已支付' : (order.status.name() == 'PENDING' ? '待支付' : (order.status.name() == 'CANCELLED' ? '已取消' : '处理中'))}">
+                                                    <span th:class="'badge ' + ${order.status.name() == 'PAID' ? 'bg-success' : (order.status.name() == 'PENDING' ? 'bg-warning' : (order.status.name() == 'CANCELLED' ? 'bg-danger' : (order.status.name() == 'REFUNDED' ? 'bg-info' : 'bg-secondary')))}"
+                                                          th:text="${order.status.name() == 'PAID' ? '已支付' : (order.status.name() == 'PENDING' ? '待支付' : (order.status.name() == 'CANCELLED' ? '已取消' : (order.status.name() == 'REFUNDED' ? '已退款' : '处理中')))}">
                                                         订单状态
                                                     </span>
                                                 </div>
@@ -100,6 +105,12 @@
                                                         <button class="btn btn-outline-primary btn-sm" th:data-order-no="${order.orderNo}" onclick="viewOrderDetail(this.dataset.orderNo)">查看详情</button>
                                                     </div>
                                                     <div th:if="${order.status.name() == 'CANCELLED'}">
+                                                        <button class="btn btn-outline-primary btn-sm" th:data-course-id="${order.course.id}" onclick="reorder(this.dataset.courseId)">再次购买</button>
+                                                    </div>
+                                                    <div th:if="${order.status.name() == 'REFUNDED'}">
+                                                        <span class="badge bg-info me-2">
+                                                            <i class="fas fa-check-circle me-1"></i>已退款
+                                                        </span>
                                                         <button class="btn btn-outline-primary btn-sm" th:data-course-id="${order.course.id}" onclick="reorder(this.dataset.courseId)">再次购买</button>
                                                     </div>
                                                 </div>

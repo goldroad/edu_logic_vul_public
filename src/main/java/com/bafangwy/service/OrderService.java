@@ -284,8 +284,25 @@ public class OrderService {
         long paidCount = allOrders.stream().filter(o -> o.getStatus() == Order.OrderStatus.PAID).count();
         long pendingCount = allOrders.stream().filter(o -> o.getStatus() == Order.OrderStatus.PENDING).count();
         long cancelledCount = allOrders.stream().filter(o -> o.getStatus() == Order.OrderStatus.CANCELLED).count();
+        long refundedCount = allOrders.stream().filter(o -> o.getStatus() == Order.OrderStatus.REFUNDED).count();
         
-        return new OrderStatistics(totalOrders, paidCount, pendingCount, cancelledCount);
+        // 计算总收入（已支付订单的金额总和）
+        double totalRevenue = allOrders.stream()
+                .filter(o -> o.getStatus() == Order.OrderStatus.PAID)
+                .mapToDouble(o -> o.getFinalAmount().doubleValue())
+                .sum();
+        
+        // 计算支付率（已支付订单数 / 总订单数 * 100）
+        double paymentRate = totalOrders > 0 ? (double) paidCount / totalOrders * 100 : 0;
+        
+        // 计算今日订单数
+        LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+        long todayOrders = allOrders.stream()
+                .filter(o -> o.getCreateTime().isAfter(todayStart))
+                .count();
+        
+        return new OrderStatistics(totalOrders, paidCount, pendingCount, cancelledCount, 
+                                 refundedCount, totalRevenue, paymentRate, todayOrders);
     }
     
     /**
@@ -296,20 +313,130 @@ public class OrderService {
         private final long paidCount;
         private final long pendingCount;
         private final long cancelledCount;
+        private final long refundedCount;
+        private final double totalRevenue;
+        private final double paymentRate;
+        private final long todayOrders;
         
-        public OrderStatistics(long totalOrders, long paidCount, long pendingCount, long cancelledCount) {
+        public OrderStatistics(long totalOrders, long paidCount, long pendingCount, long cancelledCount,
+                             long refundedCount, double totalRevenue, double paymentRate, long todayOrders) {
             this.totalOrders = totalOrders;
             this.paidCount = paidCount;
             this.pendingCount = pendingCount;
             this.cancelledCount = cancelledCount;
+            this.refundedCount = refundedCount;
+            this.totalRevenue = totalRevenue;
+            this.paymentRate = Math.round(paymentRate * 100.0) / 100.0; // 保留两位小数
+            this.todayOrders = todayOrders;
         }
         
         public long getTotalOrders() { return totalOrders; }
         public long getPaidCount() { return paidCount; }
         public long getPendingCount() { return pendingCount; }
         public long getCancelledCount() { return cancelledCount; }
+        public long getRefundedCount() { return refundedCount; }
+        public double getTotalRevenue() { return totalRevenue; }
+        public double getPaymentRate() { return paymentRate; }
+        public long getTodayOrders() { return todayOrders; }
     }
     
+    /**
+     * 退款订单
+     */
+    public boolean refundOrder(String orderNo, String refundReason) {
+        Order order = orderRepository.findByOrderNo(orderNo);
+        if (order == null) {
+            return false;
+        }
+
+        // 只有已支付的订单才能退款
+        if (order.getStatus() != Order.OrderStatus.PAID) {
+            return false;
+        }
+
+        try {
+            // 更新订单状态为已退款
+            order.setStatus(Order.OrderStatus.REFUNDED);
+            order.setRemark(refundReason != null ? "退款原因: " + refundReason : "管理员退款");
+            
+            // 更新订单到数据库
+            orderRepository.update(order);
+
+            // 如果是余额支付，需要退还余额给用户
+            if (order.getPaymentMethod() == Order.PaymentMethod.BALANCE) {
+                User user = userService.findById(order.getUserId());
+                if (user != null) {
+                    double refundAmount = order.getFinalAmount().doubleValue();
+                    double oldBalance = user.getBalance();
+                    double newBalance = oldBalance + refundAmount;
+                    user.setBalance(newBalance);
+                    
+                    // 保存用户信息
+                    User savedUser = userService.save(user);
+                    
+                    // 验证余额是否更新成功
+                    User verifyUser = userService.findById(order.getUserId());
+                    if (verifyUser != null && Math.abs(verifyUser.getBalance() - newBalance) < 0.01) {
+                        System.out.println("退款成功：用户ID=" + user.getId() + 
+                                         ", 退款金额=" + refundAmount + 
+                                         ", 原余额=" + oldBalance + 
+                                         ", 新余额=" + newBalance);
+                    } else {
+                        System.err.println("余额更新可能失败：用户ID=" + user.getId() + 
+                                         ", 期望余额=" + newBalance + 
+                                         ", 实际余额=" + (verifyUser != null ? verifyUser.getBalance() : "null"));
+                    }
+                } else {
+                    System.err.println("退款失败：找不到用户ID=" + order.getUserId());
+                }
+            } else {
+                System.out.println("非余额支付订单退款：订单号=" + orderNo + 
+                                 ", 支付方式=" + order.getPaymentMethod());
+            }
+
+            // 删除学习记录（如果存在）
+            try {
+                learnService.deleteLearnRecord(order.getUserId(), order.getCourseId());
+            } catch (Exception e) {
+                // 忽略删除学习记录的错误，不影响退款流程
+                System.err.println("删除学习记录失败: " + e.getMessage());
+            }
+
+            return true;
+        } catch (Exception e) {
+            System.err.println("退款处理失败: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * 取消订单
+     */
+    public boolean cancelOrder(String orderNo, String cancelReason) {
+        Order order = orderRepository.findByOrderNo(orderNo);
+        if (order == null) {
+            return false;
+        }
+
+        // 只有待支付的订单才能取消
+        if (order.getStatus() != Order.OrderStatus.PENDING) {
+            return false;
+        }
+
+        try {
+            // 更新订单状态为已取消
+            order.setStatus(Order.OrderStatus.CANCELLED);
+            order.setRemark(cancelReason != null ? "取消原因: " + cancelReason : "管理员取消");
+            
+            // 更新订单到数据库
+            orderRepository.update(order);
+            return true;
+        } catch (Exception e) {
+            System.err.println("取消订单失败: " + e.getMessage());
+            return false;
+        }
+    }
+
     /**
      * 自动关闭过期订单的定时任务
      * 每分钟执行一次，关闭15分钟前创建且仍未支付的订单

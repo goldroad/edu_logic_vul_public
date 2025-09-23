@@ -13,6 +13,24 @@
         .order-table {
             font-size: 0.9rem;
         }
+        
+        /* 订单状态样式 */
+        .status-paid {
+            background-color: #28a745 !important;
+        }
+        
+        .status-pending {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+        
+        .status-cancelled {
+            background-color: #dc3545 !important;
+        }
+        
+        .status-refunded {
+            background-color: #17a2b8 !important;
+        }
     </style>
 </head>
 <body>
@@ -77,6 +95,46 @@
                         </div>
                     </div>
 
+                    <!-- 第二行统计信息 -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-undo fa-2x text-info mb-3"></i>
+                                    <h4 th:text="${statistics.refundedCount != null ? statistics.refundedCount : 0}">0</h4>
+                                    <p class="text-muted">已退款</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-chart-line fa-2x text-success mb-3"></i>
+                                    <h4 th:text="'¥' + ${statistics.totalRevenue != null ? statistics.totalRevenue : 0}">¥0</h4>
+                                    <p class="text-muted">总收入</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-percentage fa-2x text-warning mb-3"></i>
+                                    <h4 th:text="${statistics.paymentRate != null ? statistics.paymentRate + '%' : '0%'}">0%</h4>
+                                    <p class="text-muted">支付率</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-calendar-day fa-2x text-primary mb-3"></i>
+                                    <h4 th:text="${statistics.todayOrders != null ? statistics.todayOrders : 0}">0</h4>
+                                    <p class="text-muted">今日订单</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- 订单列表 -->
                     <div class="card">
                         <div class="card-header">
@@ -90,6 +148,7 @@
                                         <option value="PAID" th:selected="${selectedStatus == 'PAID'}">已支付</option>
                                         <option value="PENDING" th:selected="${selectedStatus == 'PENDING'}">待支付</option>
                                         <option value="CANCELLED" th:selected="${selectedStatus == 'CANCELLED'}">已取消</option>
+                                        <option value="REFUNDED" th:selected="${selectedStatus == 'REFUNDED'}">已退款</option>
                                     </select>
                                     <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="搜索订单..." style="width: 200px;" 
                                            th:value="${search}" onkeyup="searchOrders()">
@@ -143,7 +202,7 @@
                                             <td><strong class="text-danger" th:text="'¥' + ${order.finalAmount}">¥0.00</strong></td>
                                             <td>
                                                 <span th:class="'badge status-' + ${#strings.toLowerCase(order.status.name())}" 
-                                                      th:text="${order.status.name() == 'PAID' ? '已支付' : (order.status.name() == 'PENDING' ? '待支付' : '已取消')}">状态</span>
+                                                      th:text="${order.status.name() == 'PAID' ? '已支付' : (order.status.name() == 'PENDING' ? '待支付' : (order.status.name() == 'CANCELLED' ? '已取消' : (order.status.name() == 'REFUNDED' ? '已退款' : '未知')))}">状态</span>
                                             </td>
                                             <td>
                                                 <div th:text="${#temporals.format(order.createTime, 'yyyy-MM-dd HH:mm')}">创建时间</div>
@@ -165,6 +224,11 @@
                                                             title="退款">
                                                         <i class="fas fa-undo"></i>
                                                     </button>
+                                                    <span th:if="${order.status.name() == 'REFUNDED'}" 
+                                                          class="badge bg-info" 
+                                                          title="已退款">
+                                                        <i class="fas fa-check-circle"></i> 已退款
+                                                    </span>
                                                     <button th:if="${order.status.name() == 'PENDING'}" 
                                                             class="btn btn-outline-warning" 
                                                             th:data-order-no="${order.orderNo}" 
@@ -192,7 +256,7 @@
                     <nav aria-label="订单分页" th:if="${totalPages > 1}">
                         <ul class="pagination justify-content-center">
                             <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled' : ''">
-                                <a class="page-link" th:href="@{/edu/admin/orders(page=${currentPage - 1}, status=${selectedStatus}, search=${search})}" 
+                                <a class="page-link" th:href="@{/admin/orders(page=${currentPage - 1}, status=${selectedStatus}, search=${search})}"
                                    th:if="${currentPage > 1}">上一页</a>
                                 <span class="page-link" th:if="${currentPage == 1}">上一页</span>
                             </li>
@@ -201,7 +265,7 @@
                             <th:block th:each="pageNum : ${#numbers.sequence(1, totalPages)}">
                                 <li class="page-item" th:if="${pageNum <= 3 || pageNum >= totalPages - 2 || (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)}"
                                     th:classappend="${pageNum == currentPage} ? 'active' : ''">
-                                    <a class="page-link" th:href="@{/edu/admin/orders(page=${pageNum}, status=${selectedStatus}, search=${search})}" 
+                                    <a class="page-link" th:href="@{/admin/orders(page=${pageNum}, status=${selectedStatus}, search=${search})}"
                                        th:text="${pageNum}" th:if="${pageNum != currentPage}">1</a>
                                     <span class="page-link" th:if="${pageNum == currentPage}" th:text="${pageNum}">1</span>
                                 </li>
@@ -214,7 +278,7 @@
                             </th:block>
                             
                             <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled' : ''">
-                                <a class="page-link" th:href="@{/edu/admin/orders(page=${currentPage + 1}, status=${selectedStatus}, search=${search})}" 
+                                <a class="page-link" th:href="@{/admin/orders(page=${currentPage + 1}, status=${selectedStatus}, search=${search})}"
                                    th:if="${currentPage < totalPages}">下一页</a>
                                 <span class="page-link" th:if="${currentPage == totalPages}">下一页</span>
                             </li>
@@ -260,9 +324,48 @@
         // 退款订单
         function refundOrder(button) {
             const orderNo = button.getAttribute('data-order-no');
+            
+            // 弹出确认对话框，并询问退款原因
+            const reason = prompt('请输入退款原因（可选）：', '');
+            if (reason === null) {
+                return; // 用户取消了操作
+            }
+            
             if (confirm('确定要退款订单 ' + orderNo + ' 吗？')) {
-                alert('退款功能待实现');
-                // 这里可以实现退款逻辑
+                // 禁用按钮，防止重复点击
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                
+                // 发送退款请求
+                fetch('/edu/admin/api/orders/' + orderNo + '/refund', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        reason: reason
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('退款成功！');
+                        // 刷新页面以显示最新状态
+                        window.location.reload();
+                    } else {
+                        alert('退款失败：' + (data.message || '未知错误'));
+                        // 恢复按钮状态
+                        button.disabled = false;
+                        button.innerHTML = '<i class="fas fa-undo"></i>';
+                    }
+                })
+                .catch(error => {
+                    console.error('退款请求失败:', error);
+                    alert('退款请求失败，请稍后重试');
+                    // 恢复按钮状态
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-undo"></i>';
+                });
             }
         }
         
@@ -278,9 +381,48 @@
         // 取消订单
         function cancelOrder(button) {
             const orderNo = button.getAttribute('data-order-no');
+            
+            // 弹出确认对话框，并询问取消原因
+            const reason = prompt('请输入取消原因（可选）：', '');
+            if (reason === null) {
+                return; // 用户取消了操作
+            }
+            
             if (confirm('确定要取消订单 ' + orderNo + ' 吗？')) {
-                alert('取消订单功能待实现');
-                // 这里可以实现取消订单逻辑
+                // 禁用按钮，防止重复点击
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                
+                // 发送取消请求
+                fetch('/edu/admin/api/orders/' + orderNo + '/cancel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        reason: reason
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('订单取消成功！');
+                        // 刷新页面以显示最新状态
+                        window.location.reload();
+                    } else {
+                        alert('取消失败：' + (data.message || '未知错误'));
+                        // 恢复按钮状态
+                        button.disabled = false;
+                        button.innerHTML = '<i class="fas fa-times"></i>';
+                    }
+                })
+                .catch(error => {
+                    console.error('取消请求失败:', error);
+                    alert('取消请求失败，请稍后重试');
+                    // 恢复按钮状态
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-times"></i>';
+                });
             }
         }
         
