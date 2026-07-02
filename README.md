@@ -74,13 +74,20 @@ java -jar target/bafangwy-logic-vul-1.0.0.jar
 ```
 
 ### 5. 访问系统
+默认使用80端口，可省略。
+如果端口冲突，可以在application.yml中修改端口号：
 
-打开浏览器访问：<http://localhost:8081/edu> ，首页有漏洞描述
+```yaml
+server:
+  port: 8081
+```
+
+打开浏览器访问：<http://localhost/edu> ，首页有漏洞描述
 
 密码自动填充的值在 login.html 里面配置。
 
 如果需要直接在数据库修改密码，可以用MD5加密工具页：
-<http://localhost:8081/edu/md5>
+<http://localhost/edu/md5>
 
 ## 四、功能特性
 
@@ -181,7 +188,7 @@ java -jar target/bafangwy-logic-vul-1.0.0.jar
 
 ### 5.5 测试账号
 
-> 如果密码不正确，可以使用 MD5 密码生成工具修改密码：<http://localhost:8081/edu/md5>
+> 如果密码不正确，可以使用 MD5 密码生成工具修改密码：<http://localhost:80/edu/md5>
 
 | 角色 | 用户名 | 密码 |
 |-----|-------|------|
