@@ -32,8 +32,11 @@ public class OrderService {
     @Autowired
     private LearnService learnService;
     
+    @Autowired
+    private UserCouponService userCouponService;
+    
     /**
-     * 创建订单 - 包含支付逻辑漏洞
+     * 创建订单
      */
     public Order createOrder(Long userId, Long courseId, BigDecimal clientPrice, 
                            Integer quantity, BigDecimal discount, BigDecimal shippingFee) {
@@ -54,19 +57,15 @@ public class OrderService {
         order.setUser(user);
         order.setCourse(course);
         
-        // 漏洞1：直接使用客户端传来的价格，不验证
         order.setOriginalAmount(clientPrice);
         
-        // 漏洞2：允许负数数量
         order.setQuantity(quantity);
         
-        // 漏洞3：允许任意折扣
         order.setDiscountAmount(discount != null ? discount : BigDecimal.ZERO);
         
-        // 漏洞4：允许修改运费（在线课程不应该有运费）
         order.setShippingFee(shippingFee != null ? shippingFee : BigDecimal.ZERO);
         
-        // 计算最终金额（存在漏洞的计算逻辑）
+        // 计算最终金额
         BigDecimal finalAmount = clientPrice
                 .multiply(BigDecimal.valueOf(quantity))
                 .subtract(order.getDiscountAmount())
@@ -112,7 +111,7 @@ public class OrderService {
     }
     
     /**
-     * 支付订单 - 支持抓包修改金额的漏洞版本
+     * 支付订单
      */
     public boolean payOrder(String orderNo, Order.PaymentMethod paymentMethod) {
         Order order = orderRepository.findByOrderNo(orderNo);
@@ -132,7 +131,6 @@ public class OrderService {
         
         // 模拟支付逻辑
         if (paymentMethod == Order.PaymentMethod.BALANCE) {
-            // 漏洞：直接使用订单中的finalAmount，不验证是否被篡改
             double paymentAmount = order.getFinalAmount().doubleValue();
             
             if (user.getBalance() >= paymentAmount) {
@@ -400,6 +398,22 @@ public class OrderService {
             } catch (Exception e) {
                 // 忽略删除学习记录的错误，不影响退款流程
                 System.err.println("删除学习记录失败: " + e.getMessage());
+            }
+
+            // 恢复优惠券状态（如果使用了优惠券）
+            try {
+                // 使用与支付时相同的订单ID计算方式
+                Long orderIdForCoupon = Long.parseLong(order.getOrderNo().replaceAll("\\D", ""));
+                boolean couponRestored = userCouponService.restoreCoupon(orderIdForCoupon);
+                if (couponRestored) {
+                    System.out.println("优惠券恢复成功：订单号=" + order.getOrderNo() + ", 优惠券关联ID=" + orderIdForCoupon);
+                } else {
+                    System.out.println("无需恢复优惠券或恢复失败：订单号=" + order.getOrderNo() + ", 优惠券关联ID=" + orderIdForCoupon);
+                }
+            } catch (Exception e) {
+                // 忽略优惠券恢复的错误，不影响退款流程
+                System.err.println("恢复优惠券失败: " + e.getMessage());
+                e.printStackTrace();
             }
 
             return true;

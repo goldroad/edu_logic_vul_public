@@ -3,7 +3,8 @@
 
 /* ========== 基础样式 ========== */
 body {
-    background-color: #f8f9fa;
+    background-color: #f2f4f0;
+    background-image: linear-gradient(180deg, #f7f8f6 0%, #f2f4f0 60%, #eef2ec 100%);
     margin: 0;
     padding: 0;
 }
@@ -19,7 +20,7 @@ body {
 
 /* ========== 导航栏样式 ========== */
 .navbar {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1b6f5a 0%, #0f4d3f 100%);
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     margin-bottom: 0 !important;
 }
@@ -39,11 +40,11 @@ body {
 
 .sidebar .nav-link:hover {
     background-color: #f8f9fa;
-    color: #667eea;
+    color: #1b6f5a;
 }
 
 .sidebar .nav-link.active {
-    background-color: #667eea;
+    background-color: #1b6f5a;
     color: white;
 }
 
@@ -74,7 +75,7 @@ body {
 }
 
 .card-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1b6f5a 0%, #0f4d3f 100%);
     color: white;
     border-radius: 15px 15px 0 0 !important;
     padding: 1.5rem;
@@ -82,7 +83,7 @@ body {
 
 /* ========== 按钮样式 ========== */
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1b6f5a 0%, #0f4d3f 100%);
     border: none;
     border-radius: 10px;
 }
@@ -94,7 +95,7 @@ body {
 
 /* ========== 统计卡片样式 ========== */
 .stats-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1b6f5a 0%, #0f4d3f 100%);
     color: white;
     border-radius: 15px;
     padding: 2rem;
@@ -141,7 +142,7 @@ body {
 }
 
 .filter-tabs .nav-link.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1b6f5a 0%, #0f4d3f 100%);
     color: white;
 }
 
@@ -289,7 +290,7 @@ body {
 
 /* ========== 课程学习页面样式 ========== */
 .course-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1b6f5a 0%, #0f4d3f 100%);
     color: white;
     padding: 2rem 0;
 }
@@ -325,7 +326,7 @@ body {
 
 .chapter-list {
     background: #f8f9fa;
-    border-left: 3px solid #667eea;
+    border-left: 3px solid #1b6f5a;
 }
 
 .chapter-item {
@@ -340,7 +341,7 @@ body {
 }
 
 .chapter-item.active {
-    background-color: #667eea;
+    background-color: #1b6f5a;
     color: white;
 }
 
@@ -373,13 +374,13 @@ body {
 }
 
 .payment-method:hover {
-    border-color: #667eea;
+    border-color: #1b6f5a;
     background-color: #f8f9fa;
 }
 
 .payment-method.selected {
-    border-color: #667eea;
-    background-color: #e7f3ff;
+    border-color: #1b6f5a;
+    background-color: #eaf5f1;
 }
 
 .payment-method input[type="radio"] {
@@ -407,7 +408,7 @@ body {
 
 /* ========== 个人资料页面样式 ========== */
 .profile-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1b6f5a 0%, #0f4d3f 100%);
     color: white;
     padding: 2rem;
     border-radius: 15px 15px 0 0;
@@ -424,18 +425,18 @@ body {
 
 /* ========== 上传区域样式 ========== */
 .upload-area {
-    border: 2px dashed #667eea;
+    border: 2px dashed #1b6f5a;
     border-radius: 15px;
     padding: 3rem;
     text-align: center;
-    background: linear-gradient(135deg, #f8f9ff 0%, #e9ecff 100%);
+    background: linear-gradient(135deg, #f4fbf7 0%, #eaf5f1 100%);
     margin-bottom: 2rem;
     transition: all 0.3s ease;
 }
 
 .upload-area:hover {
-    border-color: #764ba2;
-    background: linear-gradient(135deg, #e9ecff 0%, #d4d8ff 100%);
+    border-color: #0f4d3f;
+    background: linear-gradient(135deg, #eaf5f1 0%, #dbeee6 100%);
 }
 
 .upload-area.dragover {
@@ -468,12 +469,12 @@ body {
 
 /* ========== 面包屑导航样式 ========== */
 .breadcrumb-item a {
-    color: #667eea;
+    color: #1b6f5a;
     text-decoration: none;
 }
 
 .breadcrumb-item a:hover {
-    color: #764ba2;
+    color: #0f4d3f;
 }
 
 /* ========== 文件大小和日期样式 ========== */
@@ -567,7 +568,7 @@ body {
 /* ========== 课程图片样式 ========== */
 .course-image {
     height: 200px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1b6f5a 0%, #0f4d3f 100%);
     position: relative;
     overflow: hidden;
 }
@@ -647,7 +648,7 @@ body {
 
 /* ========== 工具类 ========== */
 .text-gradient {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1b6f5a 0%, #0f4d3f 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

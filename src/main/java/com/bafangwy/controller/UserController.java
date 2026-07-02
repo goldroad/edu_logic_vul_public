@@ -28,7 +28,6 @@ public class UserController {
     public Map<String, Object> getUserInfo(@PathVariable Long id, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         
-        // 漏洞：不验证当前用户是否有权限查看该用户信息
         User user = userService.getUserById(id);
         
         if (user != null) {
@@ -48,8 +47,7 @@ public class UserController {
     @GetMapping("/list")
     public Map<String, Object> getUserList(@RequestParam(required = false) String role, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
-        
-        // 漏洞：不验证当前用户是否有管理员权限
+
         List<User> users;
         if (role != null) {
             users = userService.getUsersByRole(role);
@@ -78,7 +76,6 @@ public class UserController {
             return response;
         }
         
-        // 漏洞：不验证用户是否有权限修改该用户信息
         User user = userService.getUserById(id);
         if (user == null) {
             response.put("success", false);
@@ -96,11 +93,9 @@ public class UserController {
         if (request.containsKey("phone")) {
             user.setPhone((String) request.get("phone"));
         }
-        // 漏洞：允许修改角色
         if (request.containsKey("role")) {
             user.setRole(User.Role.valueOf((String) request.get("role")));
         }
-        // 漏洞：允许修改余额
         if (request.containsKey("balance")) {
             user.setBalance(((Number) request.get("balance")).doubleValue());
         }
@@ -121,7 +116,6 @@ public class UserController {
     public Map<String, Object> getAdminInfo(@RequestParam(required = false) String role, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         
-        // 漏洞：不验证当前用户是否为管理员，通过修改role参数可以查看管理员信息
         String targetRole = role != null ? role : "ADMIN";
         List<User> adminUsers = userService.getUsersByRole(targetRole);
         
@@ -137,7 +131,6 @@ public class UserController {
     public Map<String, Object> deleteUser(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
         
-        // 漏洞：接口未鉴权，任何人都可以删除用户
         User user = userService.getUserById(id);
         if (user != null) {
             user.setEnabled(false);
@@ -161,7 +154,6 @@ public class UserController {
         
         String newPassword = request.get("newPassword");
         
-        // 漏洞：接口未鉴权，任何人都可以重置他人密码
         User user = userService.getUserById(id);
         if (user != null) {
             user.setPassword(newPassword);

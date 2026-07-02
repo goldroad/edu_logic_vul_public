@@ -12,7 +12,8 @@ import java.util.List;
 @Mapper
 public interface FileRepository {
     
-    @Select("SELECT * FROM files WHERE id = #{id} AND user_id = #{userId} AND is_deleted = 0")
+    // @Select("SELECT * FROM files WHERE id = #{id} AND user_id = #{userId} AND is_deleted = 0")
+    @Select("SELECT * FROM files WHERE id = #{id}  AND is_deleted = 0")
     @Results({
         @Result(property = "userId", column = "user_id"),
         @Result(property = "originalName", column = "original_name"),

@@ -109,8 +109,6 @@ public class UserCouponService {
      */
     public boolean useCoupon(Long couponId, Long orderId) {
         UserCoupon coupon = userCouponRepository.findById(couponId);
-        // if (coupon == null || !coupon.isAvailable()) {
-        // 支付时未检查优惠券状态，导致并发漏洞（查询的时候可用，但是支付的时候已经不可用）
         if (coupon == null ) {
             return false;
         }
@@ -178,5 +176,53 @@ public class UserCouponService {
         long totalUnused = totalReceived - totalUsed;
         
         return new CouponService.CouponStatsSummary(totalReceived, totalUsed, totalUnused);
+    }
+
+    /**
+     * 根据订单ID查找优惠券
+     */
+    public UserCoupon findByOrderId(Long orderId) {
+        return userCouponRepository.findByOrderId(orderId);
+    }
+
+    /**
+     * 恢复优惠券状态（用于退款时）
+     */
+    public boolean restoreCoupon(Long orderId) {
+        System.out.println("尝试恢复优惠券，订单ID: " + orderId);
+        
+        UserCoupon coupon = userCouponRepository.findByOrderId(orderId);
+        if (coupon == null) {
+            System.out.println("未找到与订单ID " + orderId + " 关联的优惠券");
+            return false; // 没有使用优惠券，直接返回false表示无需恢复
+        }
+        
+        System.out.println("找到优惠券: ID=" + coupon.getId() + ", 状态=" + coupon.getStatus() + ", 名称=" + coupon.getCouponName());
+        
+        // 只有已使用的优惠券才能恢复
+        if (coupon.getStatus() != UserCoupon.CouponStatus.USED) {
+            System.out.println("优惠券状态不是已使用，无法恢复: " + coupon.getStatus());
+            return false;
+        }
+        
+        // 检查优惠券是否已过期
+        if (coupon.isExpired()) {
+            // 如果已过期，恢复为过期状态
+            coupon.setStatus(UserCoupon.CouponStatus.EXPIRED);
+            System.out.println("优惠券已过期，恢复为过期状态");
+        } else {
+            // 如果未过期，恢复为可使用状态
+            coupon.setStatus(UserCoupon.CouponStatus.UNUSED);
+            System.out.println("优惠券未过期，恢复为可使用状态");
+        }
+        
+        // 清除使用时间和订单关联
+        coupon.setUseTime(null);
+        coupon.setOrderId(null);
+        
+        int updateResult = userCouponRepository.update(coupon);
+        System.out.println("优惠券更新结果: " + updateResult);
+        
+        return updateResult > 0;
     }
 }

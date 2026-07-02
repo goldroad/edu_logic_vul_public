@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,8 @@
     <link href="/edu/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: #f2f4f0;
+            background-image: linear-gradient(180deg, #f7f8f6 0%, #f2f4f0 60%, #eef2ec 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -20,7 +21,7 @@
             overflow: hidden;
         }
         .login-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1b6f5a 0%, #0f4d3f 100%);
             color: white;
             padding: 2rem;
             text-align: center;
@@ -34,11 +35,11 @@
             padding: 12px 15px;
         }
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            border-color: #1b6f5a;
+            box-shadow: 0 0 0 0.2rem rgba(27, 111, 90, 0.25);
         }
         .btn-login {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1b6f5a 0%, #0f4d3f 100%);
             border: none;
             border-radius: 10px;
             padding: 12px;
@@ -97,6 +98,14 @@
             padding-top: 1rem;
             margin-top: 1rem;
             text-align: center;
+        }
+        .login-footer {
+            border-top: 1px solid #e9ecef;
+            padding: 1rem 2rem;
+            background: #fafbfc;
+        }
+        .footer-links .btn {
+            border-radius: 999px;
         }
     </style>
 </head>
@@ -198,6 +207,14 @@
                             </div>
                         </div>
                     </div>
+                    <div class="login-footer">
+                        <div class="footer-links d-flex flex-wrap justify-content-center gap-2">
+                            <a class="btn btn-outline-secondary btn-sm" href="/edu/md5">🗝️ 生成md5密码</a>
+                            <a class="btn btn-outline-secondary btn-sm" href="/edu/sms/records">📱 查看验证码发送记录</a>
+                            <a class="btn btn-outline-secondary btn-sm" href="/edu/api/system/file-cleanup/manual" target="_blank" rel="noopener">🧹 清理文件</a>
+                            <button class="btn btn-outline-danger btn-sm" type="button" onclick="resetData(event)">🔄 初始化数据库</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -231,6 +248,53 @@
             document.getElementById('username').value = username;
             document.getElementById('password').value = password;
             document.getElementById('captcha').value = 'wuya';
+        }
+
+        function resetData(e) {
+            const firstMessage = "警告：确定要恢复数据到初始状态吗？\n\n这将把用户数据、订单、优惠券等信息恢复到初始状态，此操作不可逆！";
+            if (!confirm(firstMessage)) {
+                return;
+            }
+
+            const secondMessage = "最后确认：您真的要执行数据恢复操作吗？\n\n请再次确认您了解此操作的后果：\n• 系统将恢复到初始状态，只有少数几条测试数据 \n\n点击确定继续执行，点击取消放弃操作。";
+            if (!confirm(secondMessage)) {
+                return;
+            }
+
+            const button = e && e.currentTarget ? e.currentTarget : null;
+            const originalText = button ? button.innerHTML : '';
+            if (button) {
+                button.innerHTML = '正在初始化...';
+                button.disabled = true;
+            }
+
+            fetch('/edu/api/system/reset-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('数据恢复成功！\n\n系统已恢复到初始状态，所有数据已重置。');
+                    window.location.reload();
+                } else {
+                    alert('数据恢复失败：' + data.message);
+                    if (button) {
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('数据恢复失败，请稍后重试\n\n错误信息：网络连接异常');
+                if (button) {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }
+            });
         }
         
         // 为测试账号添加点击事件

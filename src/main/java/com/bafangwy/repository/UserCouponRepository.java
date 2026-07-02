@@ -181,4 +181,22 @@ public interface UserCouponRepository {
             "</if>" +
             "</script>")
     long getCouponUserStatsCount(@Param("couponId") Long couponId, @Param("type") String type);
+
+    // 根据订单ID查找优惠券
+    @Select("SELECT * FROM user_coupon WHERE order_id = #{orderId}")
+    @Results({
+        @Result(property = "userId", column = "user_id"),
+        @Result(property = "couponId", column = "coupon_id"),
+        @Result(property = "orderId", column = "order_id"),
+        @Result(property = "couponName", column = "coupon_name"),
+        @Result(property = "couponCode", column = "coupon_code"),
+        @Result(property = "discountValue", column = "discount_value"),
+        @Result(property = "minAmount", column = "min_amount"),
+        @Result(property = "receiveTime", column = "receive_time"),
+        @Result(property = "useTime", column = "use_time"),
+        @Result(property = "expireTime", column = "expire_time"),
+        @Result(property = "usageRestriction", column = "usage_restriction"),
+        @Result(property = "applicableCategory", column = "applicable_category")
+    })
+    UserCoupon findByOrderId(Long orderId);
 }

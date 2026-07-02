@@ -24,7 +24,7 @@ public class OrderController {
     private OrderService orderService;
     
     /**
-     * 创建订单 - 支付逻辑漏洞
+     * 创建订单
      */
     @PostMapping("/create")
     public Map<String, Object> createOrder(@RequestBody Map<String, Object> request, HttpSession session) {
@@ -40,7 +40,6 @@ public class OrderController {
         try {
             Long courseId = ((Number) request.get("courseId")).longValue();
             
-            // 支付逻辑漏洞：直接使用客户端传来的价格和参数
             BigDecimal clientPrice = new BigDecimal(request.get("price").toString());
             Integer quantity = request.containsKey("quantity") ? 
                 ((Number) request.get("quantity")).intValue() : 1;
@@ -125,7 +124,6 @@ public class OrderController {
     public Map<String, Object> getOrderDetail(@PathVariable String orderNo, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         
-        // 漏洞：不验证订单是否属于当前用户
         Order order = orderService.findByOrderNo(orderNo);
         
         if (order != null) {
@@ -146,7 +144,6 @@ public class OrderController {
     public Map<String, Object> getAllOrders() {
         Map<String, Object> response = new HashMap<>();
         
-        // 漏洞：接口未鉴权，任何人都可以查看所有订单
         List<Order> orders = orderService.findAll();
         
         response.put("success", true);
@@ -157,14 +154,13 @@ public class OrderController {
     }
     
     /**
-     * 修改订单金额 - 支付逻辑漏洞
+     * 修改订单金额
      */
     @PutMapping("/{orderNo}/amount")
     public Map<String, Object> updateOrderAmount(@PathVariable String orderNo, 
                                                 @RequestBody Map<String, Object> request) {
         Map<String, Object> response = new HashMap<>();
         
-        // 漏洞：允许修改订单金额
         Order order = orderService.findByOrderNo(orderNo);
         if (order == null) {
             response.put("success", false);
@@ -199,7 +195,7 @@ public class OrderController {
         if (request.containsKey("finalAmount") && request.size() == 1) {
             // 直接使用客户端传来的金额
         } else {
-            // 重新计算最终金额（仍然存在漏洞）
+            // 重新计算最终金额
             BigDecimal finalAmount = order.getOriginalAmount()
                     .multiply(BigDecimal.valueOf(order.getQuantity()))
                     .subtract(order.getDiscountAmount())

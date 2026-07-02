@@ -64,13 +64,12 @@ public class SystemController {
 
         
     /**
-     * 获取系统敏感信息 - 未授权访问
+     * 获取系统信息
      */
     @GetMapping("/info")
     public Map<String, Object> getSystemInfo() {
         Map<String, Object> systemInfo = new HashMap<>();
         
-        // 漏洞：敏感信息未授权访问
         systemInfo.put("javaVersion", System.getProperty("java.version"));
         systemInfo.put("osName", System.getProperty("os.name"));
         systemInfo.put("osVersion", System.getProperty("os.version"));

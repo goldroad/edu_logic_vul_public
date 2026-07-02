@@ -375,7 +375,7 @@ public class StudentController {
     }
     
     /**
-     * 确认支付 - 支持抓包修改金额的漏洞版本
+     * 确认支付
      */
     @PostMapping("/confirm-payment")
     @ResponseBody
@@ -394,7 +394,6 @@ public class StudentController {
             String orderNo = request.get("orderNo").toString();
             String paymentMethod = request.get("paymentMethod").toString();
             
-            // 漏洞：如果请求中包含金额，直接修改订单金额
             if (request.containsKey("amount")) {
                 BigDecimal clientAmount = new BigDecimal(request.get("amount").toString());
                 Order order = orderService.findByOrderNo(orderNo);

@@ -37,7 +37,7 @@ public class WebAuthController {
     private SmsService smsService;
     
     /**
-     * 用户登录处理 - 包含用户名枚举漏洞
+     * 用户登录处理
      */
     @PostMapping("/login")
     public String login(@RequestParam String username, 
@@ -47,7 +47,7 @@ public class WebAuthController {
                        HttpServletRequest request,
                        RedirectAttributes redirectAttributes) {
         
-        // 验证码验证（包含多个漏洞）
+        // 验证码验证
         if (!simpleCaptchaService.verifyCaptcha(session.getId(), captcha)) {
             // 记录登录失败日志 - 验证码错误
             User user = userService.findByUsernameOrEmailOrPhone(username);
@@ -59,7 +59,6 @@ public class WebAuthController {
             return "redirect:/auth/login";
         }
         
-        // 用户名枚举漏洞
         User user = userService.findByUsernameOrEmailOrPhone(username);
         if (user == null) {
             redirectAttributes.addFlashAttribute("error", "用户名不存在");
@@ -211,7 +210,7 @@ public class WebAuthController {
     }
     
     /**
-     * 用户注册处理 - 任意用户注册漏洞
+     * 用户注册处理
      */
     @PostMapping("/register")
     public String register(@RequestParam String username,
@@ -234,10 +233,8 @@ public class WebAuthController {
             return "redirect:/auth/register";
         }
         
-        // 漏洞：不验证邮箱和手机号是否已被其他用户使用
         User user = userService.registerWithoutValidation(username, password, email, phone);
         if (user != null) {
-            // 漏洞：允许用户自己选择角色，包括管理员角色
             try {
                 user.setRole(User.Role.valueOf(role.toUpperCase()));
                 user.setRealName(realName);

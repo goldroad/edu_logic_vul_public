@@ -1,19 +1,19 @@
 DROP TABLE IF EXISTS `coupon`;
 CREATE TABLE `coupon`  (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `create_time` datetime(6) NULL DEFAULT NULL,
-  `discount_value` decimal(10, 2) NULL DEFAULT NULL,
-  `enabled` tinyint(1) NULL DEFAULT 1,
-  `end_time` datetime(6) NULL DEFAULT NULL,
-  `min_amount` decimal(10, 2) NULL DEFAULT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `start_time` datetime(6) NULL DEFAULT NULL,
-  `total_count` int(11) NULL DEFAULT NULL,
-  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `used_count` int(11) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `UK_eplt0kkm9yf2of2lnx6c1oy9b`(`code`) USING BTREE
+                           `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                           `code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                           `create_time` datetime(6) NULL DEFAULT NULL,
+                           `discount_value` decimal(10, 2) NULL DEFAULT NULL,
+                           `enabled` tinyint(1) NULL DEFAULT 1,
+                           `end_time` datetime(6) NULL DEFAULT NULL,
+                           `min_amount` decimal(10, 2) NULL DEFAULT NULL,
+                           `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                           `start_time` datetime(6) NULL DEFAULT NULL,
+                           `total_count` int(11) NULL DEFAULT NULL,
+                           `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                           `used_count` int(11) NULL DEFAULT NULL,
+                           PRIMARY KEY (`id`) USING BTREE,
+                           UNIQUE INDEX `UK_eplt0kkm9yf2of2lnx6c1oy9b`(`code`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 INSERT INTO `coupon` VALUES (1, 'NEW50', '2025-09-04 10:37:53.299429', 50.00, 1, '2026-05-04 10:37:53.299429', 100.00, '新用户专享', '2025-09-04 10:37:53.299429', 100, 'FIXED', 0);
@@ -29,20 +29,20 @@ INSERT INTO `coupon` VALUES (11, '5Y3FLKWR', '2025-09-07 18:03:11.754385', 100.0
 
 DROP TABLE IF EXISTS `course`;
 CREATE TABLE `course`  (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `cover_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `create_time` datetime(6) NULL DEFAULT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
-  `duration` int(11) NULL DEFAULT NULL,
-  `original_price` decimal(10, 2) NULL DEFAULT NULL,
-  `price` decimal(10, 2) NOT NULL,
-  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `student_count` int(11) NULL DEFAULT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `update_time` datetime(6) NULL DEFAULT NULL,
-  `teacher_id` bigint(20) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `FKt4ba5fab1x56tmt4nsypv5lm5`(`teacher_id`) USING BTREE
+                           `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                           `cover_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                           `create_time` datetime(6) NULL DEFAULT NULL,
+                           `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
+                           `duration` int(11) NULL DEFAULT NULL,
+                           `original_price` decimal(10, 2) NULL DEFAULT NULL,
+                           `price` decimal(10, 2) NOT NULL,
+                           `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                           `student_count` int(11) NULL DEFAULT NULL,
+                           `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                           `update_time` datetime(6) NULL DEFAULT NULL,
+                           `teacher_id` bigint(20) NULL DEFAULT NULL,
+                           PRIMARY KEY (`id`) USING BTREE,
+                           INDEX `FKt4ba5fab1x56tmt4nsypv5lm5`(`teacher_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 52 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 INSERT INTO `course` VALUES (1, 'd5102708-8818-4aa9-8670-a3f4ea1bf1a9.jfif', '2025-09-04 10:37:53.134427', '从零开始学习Java编程语言，掌握面向对象编程思想', NULL, 199.00, 199.00, 'DRAFT', 0, 'Java基础编程', '2025-09-07 17:35:08.458461', 2);
@@ -54,21 +54,21 @@ INSERT INTO `course` VALUES (51, 'bc7480f4-0faf-46e7-b6c7-691a55303f3a.jpg', '20
 
 DROP TABLE IF EXISTS `files`;
 CREATE TABLE `files`  (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(20) NOT NULL,
-  `original_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `stored_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `file_path` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `file_size` bigint(20) NOT NULL,
-  `file_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `mime_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `upload_time` datetime(6) NULL DEFAULT NULL,
-  `download_count` int(11) NOT NULL DEFAULT 0,
-  `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_user_id`(`user_id`) USING BTREE,
-  INDEX `idx_stored_name`(`stored_name`) USING BTREE,
-  INDEX `idx_upload_time`(`upload_time`) USING BTREE
+                          `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                          `user_id` bigint(20) NOT NULL,
+                          `original_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                          `stored_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                          `file_path` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                          `file_size` bigint(20) NOT NULL,
+                          `file_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                          `mime_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                          `upload_time` datetime(6) NULL DEFAULT NULL,
+                          `download_count` int(11) NOT NULL DEFAULT 0,
+                          `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
+                          PRIMARY KEY (`id`) USING BTREE,
+                          INDEX `idx_user_id`(`user_id`) USING BTREE,
+                          INDEX `idx_stored_name`(`stored_name`) USING BTREE,
+                          INDEX `idx_upload_time`(`upload_time`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 31 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 INSERT INTO `files` VALUES (1, 3, 'CTF战队名称.pdf', '0a5e17f2-a5b6-4188-b133-c53d4a1502ef.pdf', 'files\\0a5e17f2-a5b6-4188-b133-c53d4a1502ef.pdf', 598660, 'PDF', 'application/pdf', '2025-09-06 13:50:42.490337', 0, 1);
@@ -86,21 +86,21 @@ INSERT INTO `files` VALUES (30, 3, 'CVE-2024-53677-s2-067漏洞.txt', '1f130f5e-
 
 DROP TABLE IF EXISTS `learn`;
 CREATE TABLE `learn`  (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(20) NOT NULL COMMENT '学生ID',
-  `course_id` bigint(20) NOT NULL COMMENT '课程ID',
-  `progress` int(11) NOT NULL DEFAULT 0 COMMENT '学习进度(0-100)',
-  `status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'NOT_STARTED' COMMENT '学习状态',
-  `start_time` datetime(6) NULL DEFAULT NULL COMMENT '开始学习时间',
-  `last_study_time` datetime(6) NULL DEFAULT NULL COMMENT '最后学习时间',
-  `complete_time` datetime(6) NULL DEFAULT NULL COMMENT '完成时间',
-  `create_time` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '创建时间',
-  `update_time` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6) COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `uk_user_course`(`user_id`, `course_id`) USING BTREE,
-  INDEX `idx_user_id`(`user_id`) USING BTREE,
-  INDEX `idx_course_id`(`course_id`) USING BTREE,
-  INDEX `idx_status`(`status`) USING BTREE
+                          `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                          `user_id` bigint(20) NOT NULL COMMENT '学生ID',
+                          `course_id` bigint(20) NOT NULL COMMENT '课程ID',
+                          `progress` int(11) NOT NULL DEFAULT 0 COMMENT '学习进度(0-100)',
+                          `status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'NOT_STARTED' COMMENT '学习状态',
+                          `start_time` datetime(6) NULL DEFAULT NULL COMMENT '开始学习时间',
+                          `last_study_time` datetime(6) NULL DEFAULT NULL COMMENT '最后学习时间',
+                          `complete_time` datetime(6) NULL DEFAULT NULL COMMENT '完成时间',
+                          `create_time` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '创建时间',
+                          `update_time` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6) COMMENT '更新时间',
+                          PRIMARY KEY (`id`) USING BTREE,
+                          UNIQUE INDEX `uk_user_course`(`user_id`, `course_id`) USING BTREE,
+                          INDEX `idx_user_id`(`user_id`) USING BTREE,
+                          INDEX `idx_course_id`(`course_id`) USING BTREE,
+                          INDEX `idx_status`(`status`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '学习记录表' ROW_FORMAT = Dynamic;
 
 INSERT INTO `learn` VALUES (1, 3, 1, 75, 'LEARNING', '2025-09-01 10:00:00.000000', '2025-09-09 11:30:54.006342', NULL, '2025-09-01 10:00:00.000000', '2025-09-09 11:30:54.006342');
@@ -117,22 +117,22 @@ INSERT INTO `learn` VALUES (12, 11, 5, 90, 'LEARNING', '2025-08-05 12:15:00.0000
 
 DROP TABLE IF EXISTS `login_logs`;
 CREATE TABLE `login_logs`  (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(20) NOT NULL,
-  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ip_address` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `user_agent` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
-  `operating_system` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `browser` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `location` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `login_time` datetime(6) NULL DEFAULT NULL,
-  `status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'SUCCESS',
-  `session_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_user_id`(`user_id`) USING BTREE,
-  INDEX `idx_login_time`(`login_time`) USING BTREE,
-  INDEX `idx_status`(`status`) USING BTREE,
-  INDEX `idx_ip_address`(`ip_address`) USING BTREE
+                               `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                               `user_id` bigint(20) NOT NULL,
+                               `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                               `ip_address` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                               `user_agent` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
+                               `operating_system` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                               `browser` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                               `location` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                               `login_time` datetime(6) NULL DEFAULT NULL,
+                               `status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'SUCCESS',
+                               `session_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                               PRIMARY KEY (`id`) USING BTREE,
+                               INDEX `idx_user_id`(`user_id`) USING BTREE,
+                               INDEX `idx_login_time`(`login_time`) USING BTREE,
+                               INDEX `idx_status`(`status`) USING BTREE,
+                               INDEX `idx_ip_address`(`ip_address`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 185 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 INSERT INTO `login_logs` VALUES (1, 1, 'admin', '192.168.1.100', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36', 'Windows 10', 'Google Chrome', '本地网络', '2025-09-07 09:10:22.000000', 'SUCCESS', 'session-001');
@@ -156,25 +156,25 @@ INSERT INTO `login_logs` VALUES (17, 1, 'admin', '0:0:0:0:0:0:0:1', 'Mozilla/5.0
 
 DROP TABLE IF EXISTS `order`;
 CREATE TABLE `order`  (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `create_time` datetime(6) NULL DEFAULT NULL,
-  `discount_amount` decimal(10, 2) NOT NULL,
-  `final_amount` decimal(10, 2) NOT NULL,
-  `order_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `original_amount` decimal(10, 2) NOT NULL,
-  `pay_time` datetime(6) NULL DEFAULT NULL,
-  `payment_method` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `payment_transaction_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `quantity` int(11) NULL DEFAULT NULL,
-  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `shipping_fee` decimal(10, 2) NOT NULL,
-  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `course_id` bigint(20) NULL DEFAULT NULL,
-  `user_id` bigint(20) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `UK_g8pohnngqi5x1nask7nff2u7w`(`order_no`) USING BTREE,
-  INDEX `FK68snkj0g5gsjxllhjc3v5lm0r`(`course_id`) USING BTREE,
-  INDEX `FK32ql8ubntj5uh44ph9659tiih`(`user_id`) USING BTREE
+                          `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                          `create_time` datetime(6) NULL DEFAULT NULL,
+                          `discount_amount` decimal(10, 2) NOT NULL,
+                          `final_amount` decimal(10, 2) NOT NULL,
+                          `order_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                          `original_amount` decimal(10, 2) NOT NULL,
+                          `pay_time` datetime(6) NULL DEFAULT NULL,
+                          `payment_method` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                          `payment_transaction_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                          `quantity` int(11) NULL DEFAULT NULL,
+                          `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                          `shipping_fee` decimal(10, 2) NOT NULL,
+                          `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                          `course_id` bigint(20) NULL DEFAULT NULL,
+                          `user_id` bigint(20) NULL DEFAULT NULL,
+                          PRIMARY KEY (`id`) USING BTREE,
+                          UNIQUE INDEX `UK_g8pohnngqi5x1nask7nff2u7w`(`order_no`) USING BTREE,
+                          INDEX `FK68snkj0g5gsjxllhjc3v5lm0r`(`course_id`) USING BTREE,
+                          INDEX `FK32ql8ubntj5uh44ph9659tiih`(`user_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 22 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 INSERT INTO `order` VALUES (15, '2025-09-06 18:16:27.185855', 0.00, 199.00, 'ORD17571537871854923', 199.00, '2025-09-06 18:16:34.166305', 'BALANCE', 'cb5d3350-5abf-4531-9f4b-def62565da18', 1, NULL, 0.00, 'PAID', 1, 3);
@@ -187,42 +187,42 @@ INSERT INTO `order` VALUES (21, '2025-09-09 11:26:05.144773', 0.00, 399.00, 'ORD
 
 DROP TABLE IF EXISTS `sms_records`;
 CREATE TABLE `sms_records`  (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '手机号',
-  `code` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '验证码',
-  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '短信内容',
-  `send_time` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '发送时间',
-  `is_used` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否已使用',
-  `expire_time` datetime(6) NOT NULL COMMENT '过期时间',
-  `type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'REGISTER' COMMENT '短信类型',
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_phone`(`phone`) USING BTREE,
-  INDEX `idx_send_time`(`send_time`) USING BTREE,
-  INDEX `idx_expire_time`(`expire_time`) USING BTREE
+                                `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                                `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '手机号',
+                                `code` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '验证码',
+                                `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '短信内容',
+                                `send_time` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '发送时间',
+                                `is_used` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否已使用',
+                                `expire_time` datetime(6) NOT NULL COMMENT '过期时间',
+                                `type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'REGISTER' COMMENT '短信类型',
+                                PRIMARY KEY (`id`) USING BTREE,
+                                INDEX `idx_phone`(`phone`) USING BTREE,
+                                INDEX `idx_send_time`(`send_time`) USING BTREE,
+                                INDEX `idx_expire_time`(`expire_time`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1014 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '短信记录表' ROW_FORMAT = Dynamic;
 
-INSERT INTO `sms_records` VALUES (1013, '13800007777', '4942', '您的验证码是：4942，有效期1分钟，请勿泄露给他人。', '2025-09-09 14:42:04.371369', 1, '2025-09-09 14:43:04.371369', 'REGISTER');
+INSERT INTO `sms_records` VALUES (1013, '13800007777', '4942', '您的验证码是：4942，有效期1分钟，请勿泄露给他人。', '2026-06-16 14:42:04.371369', 1, '2026-06-16 14:43:04.371369', 'REGISTER');
 
 DROP TABLE IF EXISTS `teacher`;
 CREATE TABLE `teacher`  (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `id_card` varchar(18) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `title` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `speciality` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `introduction` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
-  `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `experience` int(11) NULL DEFAULT 0,
-  `enabled` tinyint(1) NULL DEFAULT 1,
-  `create_time` datetime(6) NULL DEFAULT NULL,
-  `update_time` datetime(6) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `UK_teacher_id_card`(`id_card`) USING BTREE,
-  UNIQUE INDEX `UK_teacher_phone`(`phone`) USING BTREE,
-  UNIQUE INDEX `UK_teacher_email`(`email`) USING BTREE
+                            `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                            `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                            `id_card` varchar(18) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                            `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                            `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                            `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                            `title` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                            `speciality` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                            `introduction` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
+                            `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                            `experience` int(11) NULL DEFAULT 0,
+                            `enabled` tinyint(1) NULL DEFAULT 1,
+                            `create_time` datetime(6) NULL DEFAULT NULL,
+                            `update_time` datetime(6) NULL DEFAULT NULL,
+                            PRIMARY KEY (`id`) USING BTREE,
+                            UNIQUE INDEX `UK_teacher_id_card`(`id_card`) USING BTREE,
+                            UNIQUE INDEX `UK_teacher_phone`(`phone`) USING BTREE,
+                            UNIQUE INDEX `UK_teacher_email`(`email`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 INSERT INTO `teacher` VALUES (1, '张伟', '110101198001011234', '13800000001', 'zhangwei@bafangwy.com', '北京市朝阳区建国路88号', '高级讲师', 'Java后端开发', '10年Java开发经验，精通Spring Boot、微服务架构', NULL, 10, 1, '2025-09-04 10:35:29.000000', '2025-09-04 10:35:29.000000');
@@ -233,27 +233,27 @@ INSERT INTO `teacher` VALUES (5, '刘娜', '110101199005055678', '13800000005', 
 
 DROP TABLE IF EXISTS `user_coupon`;
 CREATE TABLE `user_coupon`  (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(20) NOT NULL,
-  `coupon_id` bigint(20) NULL DEFAULT NULL,
-  `coupon_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `coupon_code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
-  `type` enum('FIXED','PERCENT') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `discount_value` decimal(10, 2) NOT NULL,
-  `min_amount` decimal(10, 2) NULL DEFAULT 0.00,
-  `status` enum('UNUSED','USED','EXPIRED') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT 'UNUSED',
-  `receive_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP,
-  `use_time` datetime(0) NULL DEFAULT NULL,
-  `expire_time` datetime(0) NULL DEFAULT NULL,
-  `usage_restriction` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `applicable_category` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `order_id` bigint(20) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_user_id`(`user_id`) USING BTREE,
-  INDEX `idx_status`(`status`) USING BTREE,
-  INDEX `idx_expire_time`(`expire_time`) USING BTREE,
-  INDEX `idx_coupon_code`(`coupon_code`) USING BTREE
+                                `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                                `user_id` bigint(20) NOT NULL,
+                                `coupon_id` bigint(20) NULL DEFAULT NULL,
+                                `coupon_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+                                `coupon_code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+                                `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+                                `type` enum('FIXED','PERCENT') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+                                `discount_value` decimal(10, 2) NOT NULL,
+                                `min_amount` decimal(10, 2) NULL DEFAULT 0.00,
+                                `status` enum('UNUSED','USED','EXPIRED') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT 'UNUSED',
+                                `receive_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP,
+                                `use_time` datetime(0) NULL DEFAULT NULL,
+                                `expire_time` datetime(0) NULL DEFAULT NULL,
+                                `usage_restriction` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+                                `applicable_category` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+                                `order_id` bigint(20) NULL DEFAULT NULL,
+                                PRIMARY KEY (`id`) USING BTREE,
+                                INDEX `idx_user_id`(`user_id`) USING BTREE,
+                                INDEX `idx_status`(`status`) USING BTREE,
+                                INDEX `idx_expire_time`(`expire_time`) USING BTREE,
+                                INDEX `idx_coupon_code`(`coupon_code`) USING BTREE
 ) ENGINE = MyISAM AUTO_INCREMENT = 30 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 INSERT INTO `user_coupon` VALUES (1, 1, 1, '新用户优惠', 'NEW50', '新用户专项，首次下单使用', 'PERCENT', 50.00, 0.00, 'UNUSED', '2024-09-01 10:00:00', NULL, '2024-12-31 23:59:59', 'First purchase only', 'All courses', NULL);
@@ -274,23 +274,23 @@ INSERT INTO `user_coupon` VALUES (29, 3, 10, '免单', 'FREE', '通过兑换码�
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users`  (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `real_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `role` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `balance` decimal(10, 2) NULL DEFAULT 0.00,
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `phone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `enabled` tinyint(1) NULL DEFAULT 1,
-  `create_time` datetime(6) NULL DEFAULT NULL,
-  `update_time` datetime(6) NULL DEFAULT NULL,
-  `last_log` datetime(0) NULL DEFAULT NULL COMMENT '最后登录时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `UK_r43af9ap4edm43mmtq01oddj6`(`username`) USING BTREE,
-  UNIQUE INDEX `UK_6dotkott2kjsp8vw4d0m25fb7`(`email`) USING BTREE,
-  UNIQUE INDEX `UK_du5v5sr43g5bfnji4vb8hg5s3`(`phone`) USING BTREE
+                          `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                          `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                          `real_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                          `role` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                          `balance` decimal(10, 2) NULL DEFAULT 0.00,
+                          `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                          `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                          `phone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                          `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+                          `enabled` tinyint(1) NULL DEFAULT 1,
+                          `create_time` datetime(6) NULL DEFAULT NULL,
+                          `update_time` datetime(6) NULL DEFAULT NULL,
+                          `last_log` datetime(0) NULL DEFAULT NULL COMMENT '最后登录时间',
+                          PRIMARY KEY (`id`) USING BTREE,
+                          UNIQUE INDEX `UK_r43af9ap4edm43mmtq01oddj6`(`username`) USING BTREE,
+                          UNIQUE INDEX `UK_6dotkott2kjsp8vw4d0m25fb7`(`email`) USING BTREE,
+                          UNIQUE INDEX `UK_du5v5sr43g5bfnji4vb8hg5s3`(`phone`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 INSERT INTO `users` VALUES (1, 'admin', '系统管理员', 'ADMIN', 10000.00, 'admin@bafangwy.com', 'e10adc3949ba59abbe56e057f20f883e', '13800000001', 'uploads/avatars/d04a82c5-1f57-4e8c-9f3c-9dc7d0214f77.jpeg', 1, '2025-09-04 10:35:29.870634', '2025-09-10 14:46:02.828697', '2025-09-10 14:45:54');

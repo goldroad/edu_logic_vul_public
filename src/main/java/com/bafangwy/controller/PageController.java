@@ -48,7 +48,7 @@ public class PageController {
      */
     @GetMapping("/")
     public String index() {
-        return "index";
+        return "redirect:/auth/login";
     }
     
     /**
@@ -144,7 +144,6 @@ public class PageController {
         // 获取仪表盘统计数据
         DashboardService.DashboardStatistics statistics = dashboardService.getDashboardStatistics();
         
-        // 如果URL参数中包含role=ADMIN，就允许访问（漏洞）
         if ("ADMIN".equals(role) || (user.getRole() == User.Role.ADMIN)) {
             model.addAttribute("user", user);
             model.addAttribute("statistics", statistics);
@@ -355,7 +354,6 @@ public class PageController {
                               @RequestParam(required = false) String status,
                               @RequestParam(required = false) String keyword) {
         User user = (User) session.getAttribute("user");
-        // 这里注释了权限校验，存在垂直越权漏洞
         // if (user == null || user.getRole() != User.Role.ADMIN) {
             // return "redirect:/auth/login";
         // }

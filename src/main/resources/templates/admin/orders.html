@@ -331,7 +331,7 @@
                 return; // 用户取消了操作
             }
             
-            if (confirm('确定要退款订单 ' + orderNo + ' 吗？')) {
+            if (confirm(`确定要退款订单 ` + orderNo + `吗？\n注意：退款将会：\n1. 退还支付金额到用户账户 \n2. 恢复用户使用的优惠券（如有）\n3. 删除相关学习记录`)) {
                 // 禁用按钮，防止重复点击
                 button.disabled = true;
                 button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
@@ -349,7 +349,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('退款成功！');
+                        alert('退款成功！\n已完成：\n✓ 退还支付金额\n✓ 恢复优惠券状态\n✓ 删除学习记录');
                         // 刷新页面以显示最新状态
                         window.location.reload();
                     } else {
